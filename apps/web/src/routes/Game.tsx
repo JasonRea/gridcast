@@ -280,6 +280,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
             {...(g.current ? { currentId: g.current.id } : {})}
             onSelect={(i) => g.showPlay(i)}
             showEpa={!!features.epa}
+            clips={g.clips}
           />
         </aside>
       </div>

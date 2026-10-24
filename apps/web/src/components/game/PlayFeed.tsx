@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
-import type { PlayEvent, TeamInfo } from '@gridcast/types';
+import type { Clip, PlayEvent, TeamInfo } from '@gridcast/types';
+import { ClipEmbed } from './ClipEmbed';
 import type { Lines } from '@/store/game';
 import { clockLabel, periodLabel } from '@/lib/format';
 import { cn } from '@/lib/utils';
@@ -17,6 +18,7 @@ export function PlayFeed({
   currentId,
   onSelect,
   showEpa = false,
+  clips = {},
 }: {
   plays: PlayEvent[];
   commentary: Record<string, Lines>;
@@ -25,6 +27,7 @@ export function PlayFeed({
   currentId?: string;
   onSelect: (index: number) => void;
   showEpa?: boolean;
+  clips?: Record<string, Clip[]>;
 }) {
   const rows = plays.map((p, i) => ({ p, i })).reverse();
   return (
@@ -112,6 +115,7 @@ export function PlayFeed({
                   {stripClock(p.raw.text)}
                 </p>
               </button>
+              {clips[p.id]?.[0] && <ClipEmbed clip={clips[p.id]![0]!} />}
             </motion.li>
           );
         })}

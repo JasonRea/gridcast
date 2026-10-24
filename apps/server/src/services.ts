@@ -11,6 +11,7 @@ import { ScoreboardService } from './games/scoreboard.ts';
 import { createKalshiClient } from './kalshi/client.ts';
 import { OddsService } from './kalshi/poller.ts';
 import { LivePoller } from './live/poller.ts';
+import { ClipPoller, manualClips } from './clips/poller.ts';
 import type { Fetcher } from './util/fetchJson.ts';
 
 export type Services = {
@@ -22,6 +23,7 @@ export type Services = {
   odds: OddsService;
   live: LivePoller;
   analytics: Analytics | undefined;
+  clips: ClipPoller | undefined;
 };
 
 export function createServices(
@@ -54,6 +56,7 @@ export function createServices(
     (gameId) => void registry.refresh(gameId),
   );
   registry.addRebuildEnricher(commentary.enrichRebuild);
+  registry.addRebuildEnricher(manualClips(config.assetsDir));
   registry.onSession((s) => commentary.attach(s));
   const kalshi = createKalshiClient({
     fixturesDir: config.fixturesDir,
@@ -70,5 +73,12 @@ export function createServices(
     intervalMs: config.espnPollMs,
     ...(opts.persist === false ? {} : { recordDir: join(config.dataDir, 'recordings') }),
   });
-  return { config, espn, registry, scoreboard, commentary, odds, live, analytics };
+  const clips =
+    config.flags.clips && config.xBearer
+      ? new ClipPoller(registry, {
+          bearer: config.xBearer,
+          ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
+        })
+      : undefined;
+  return { config, espn, registry, scoreboard, commentary, odds, live, analytics, clips };
 }
