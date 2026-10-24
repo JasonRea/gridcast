@@ -2,10 +2,11 @@
  * ESPN site API client. Every call validates with zod and fails soft. When the network call fails
  * (or the server runs offline) it falls back to a saved fixture if one exists, and says so.
  */
-import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import {
   EspnDepthChartSchema,
+  EspnEventSchema,
   EspnRosterSchema,
   EspnScoreboardSchema,
   EspnSummarySchema,
@@ -63,6 +64,33 @@ export function createEspnClient(opts: {
     return f === undefined ? undefined : { data: f, source: 'fixture' };
   }
 
+  function summaryFromScoreboards(id: string): EspnSummary | undefined {
+    if (!existsSync(dir)) return undefined;
+    for (const file of readdirSync(dir).filter((f) => f.startsWith('scoreboard_'))) {
+      const sb = fixture(file, EspnScoreboardSchema);
+      for (const raw of sb?.events ?? []) {
+        const ev = EspnEventSchema.safeParse(raw);
+        if (!ev.success || ev.data.id !== id) continue;
+        const comps = ev.data.competitions.map((c) => ({
+          ...c,
+          status: c.status ?? ev.data.status,
+        }));
+        const parsed = EspnSummarySchema.safeParse({
+          header: {
+            id,
+            ...(ev.data.season ? { season: ev.data.season } : {}),
+            ...(ev.data.week ? { week: ev.data.week.number } : {}),
+            competitions: comps,
+          },
+          pickcenter: comps[0]?.odds ?? [],
+          gameInfo: { venue: comps[0]?.venue ?? {} },
+        });
+        if (parsed.success) return parsed.data;
+      }
+    }
+    return undefined;
+  }
+
   return {
     scoreboard: (season, week) =>
       get(
@@ -70,8 +98,19 @@ export function createEspnClient(opts: {
         EspnScoreboardSchema,
         `scoreboard_${season}_wk${week}.json`,
       ),
-    summary: (id, o) =>
-      get(`${BASE}/summary?event=${id}`, EspnSummarySchema, `summary_${id}.json`, o?.fresh),
+    summary: async (id, o) => {
+      const res = await get(
+        `${BASE}/summary?event=${id}`,
+        EspnSummarySchema,
+        `summary_${id}.json`,
+        o?.fresh,
+      );
+      if (res || (o?.fresh && !opts.offline)) return res;
+      // No summary saved (e.g. a game that has not kicked off): build a header-only summary
+      // from the saved scoreboard entry, so the game page and pollers still work.
+      const fromBoard = summaryFromScoreboards(id);
+      return fromBoard ? { data: fromBoard, source: 'fixture' as const } : undefined;
+    },
     roster: async (teamId, abbr) =>
       (await get(`${BASE}/teams/${teamId}/roster`, EspnRosterSchema, `roster_${abbr}.json`))?.data,
     depthChart: async (teamId, abbr) =>
