@@ -1,6 +1,6 @@
 /** Loads and caches GameSessions. The single entry point for "give me game X". */
 import { mkdirSync } from 'node:fs';
-import type { GameEvent } from '@gridcast/types';
+import type { GameEvent, PlayEvent } from '@gridcast/types';
 import type { Config } from '../config.ts';
 import type { EspnClient } from '../espn/client.ts';
 import { EventLog } from '../log/eventLog.ts';
@@ -19,7 +19,7 @@ export class GameRegistry {
   constructor(
     private readonly config: Config,
     private readonly espn: EspnClient,
-    private readonly opts: { persist?: boolean } = {},
+    private readonly opts: { persist?: boolean; enrichPlay?: (p: PlayEvent) => PlayEvent } = {},
   ) {
     if (opts.persist !== false) mkdirSync(config.logsDir, { recursive: true });
   }
@@ -73,7 +73,13 @@ export class GameRegistry {
     }
     const summary = res.data;
     const eventLog = new EventLog(gameId, this.config.logsDir, this.opts.persist !== false);
-    const session = new GameSession(gameId, eventLog, summary, this.config.logsDir);
+    const session = new GameSession(
+      gameId,
+      eventLog,
+      summary,
+      this.config.logsDir,
+      this.opts.enrichPlay,
+    );
     if (res.source === 'live') session.lastUpdate = Date.now();
 
     if (session.status === 'final') {

@@ -15,6 +15,7 @@ import {
   type GameEvent,
   type GameState,
   type GameStatus,
+  type PlayEvent,
   type RosterPlayer,
   type StreamControl,
   type TeamInfo,
@@ -30,7 +31,7 @@ import {
 } from '../pipeline/normalize.ts';
 
 /** Bump when the normalizer or parser output changes, so finished games rebuild their logs. */
-export const PIPELINE_VERSION = 4;
+export const PIPELINE_VERSION = 5;
 
 export type Source = 'live' | 'replay';
 
@@ -150,6 +151,7 @@ export class GameSession extends EventEmitter<{
     readonly log: EventLog,
     summary: EspnSummary,
     private readonly metaDir: string,
+    private readonly enrich?: (p: PlayEvent) => PlayEvent,
   ) {
     super();
     this.setMaxListeners(0);
@@ -160,7 +162,7 @@ export class GameSession extends EventEmitter<{
     this.meta = meta;
     this.status = card.status;
     this.source = this.status === 'final' ? 'replay' : 'live';
-    this.normalizer = new GameNormalizer(meta);
+    this.normalizer = new GameNormalizer(meta, this.enrich);
     for (const { event } of log.all()) this.trackId(event);
   }
 
@@ -228,7 +230,7 @@ export class GameSession extends EventEmitter<{
 
   /** Rebuilds a finished game's log from scratch. */
   rebuild(summary: EspnSummary, extra: (events: GameEvent[]) => GameEvent[] = (e) => e): void {
-    this.normalizer = new GameNormalizer(this.meta);
+    this.normalizer = new GameNormalizer(this.meta, this.enrich);
     const wp = winProbMap(summary);
     const events: GameEvent[] = [];
     for (const { play, driveId } of playsFromSummary(summary)) {

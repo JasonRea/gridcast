@@ -1,5 +1,6 @@
 /** Wires the pipeline together. Shared by the server entry point, the CLI and tests. */
 import { join } from 'node:path';
+import { Analytics, loadTables } from './analytics/model.ts';
 import type { Config } from './config.ts';
 import { CommentaryCache } from './commentary/cache.ts';
 import { createClaudeWriter, type Writer } from './commentary/claude.ts';
@@ -20,6 +21,7 @@ export type Services = {
   commentary: CommentaryService;
   odds: OddsService;
   live: LivePoller;
+  analytics: Analytics | undefined;
 };
 
 export function createServices(
@@ -31,7 +33,12 @@ export function createServices(
     offline: config.offline,
     ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
   });
-  const registry = new GameRegistry(config, espn, opts.persist === false ? { persist: false } : {});
+  const tables = loadTables(config.assetsDir);
+  const analytics = tables ? new Analytics(tables) : undefined;
+  const registry = new GameRegistry(config, espn, {
+    ...(opts.persist === false ? { persist: false } : {}),
+    ...(analytics ? { enrichPlay: analytics.enrich } : {}),
+  });
   const scoreboard = new ScoreboardService(espn, config);
   // Missing key disables Claude, not the app: commentary falls back to templates.
   const writer =
@@ -63,5 +70,5 @@ export function createServices(
     intervalMs: config.espnPollMs,
     ...(opts.persist === false ? {} : { recordDir: join(config.dataDir, 'recordings') }),
   });
-  return { config, espn, registry, scoreboard, commentary, odds, live };
+  return { config, espn, registry, scoreboard, commentary, odds, live, analytics };
 }

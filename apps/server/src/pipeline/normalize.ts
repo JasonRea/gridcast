@@ -108,7 +108,11 @@ export class GameNormalizer {
   private twoMinuteDone = new Set<number>();
   private readonly seen = new Set<string>();
 
-  constructor(private readonly meta: GameMeta) {
+  constructor(
+    private readonly meta: GameMeta,
+    /** Optional per-play enrichment (EPA, 4th-down bot). */
+    private readonly enrich: (p: PlayEvent) => PlayEvent = (p) => p,
+  ) {
     this.names = {
       home: meta.home.name,
       away: meta.away.name,
@@ -366,7 +370,7 @@ export class GameNormalizer {
       ...(wpBefore !== undefined ? { wpBefore } : {}),
       ...(wpAfter !== undefined ? { wpAfter } : {}),
     };
-    out.push(ev);
+    out.push(this.enrich(ev));
 
     // Stoppages that come from inside a play.
     if (parsed.penalty && (parsed.penalty.accepted || parsed.penalty.offsetting)) {
