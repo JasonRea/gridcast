@@ -90,9 +90,11 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     if (s.source === 'replay' && streamRef.current) {
       const all = await streamRef.current.events();
       // From the play on screen, not the last event received (the stream runs ahead).
-      const curSeq = all.find((e) => e.event.kind === 'play' && e.event.id === s.current?.id)?.seq ?? -1;
+      const curSeq =
+        all.find((e) => e.event.kind === 'play' && e.event.id === s.current?.id)?.seq ?? -1;
       const target = all.find((e) => e.seq > curSeq && e.event.kind === 'play' && e.event.big);
-      if (target) await streamRef.current.start({ from: target.seq, speed: replaySpeed, source: 'replay' });
+      if (target)
+        await streamRef.current.start({ from: target.seq, speed: replaySpeed, source: 'replay' });
       return;
     }
     const i = s.current ? s.plays.findIndex((p) => p.id === s.current?.id) : -1;
