@@ -130,12 +130,15 @@ Kill switch from a laptop or phone: open `/admin`, paste the token, press **Swit
 From a terminal:
 
 ```bash
-curl -X POST https://gridcast.fly.dev/api/admin/source \
+curl -X POST https://gridcast-028f.fly.dev/api/admin/source \
   -H "Authorization: Bearer $ADMIN_TOKEN" -H 'content-type: application/json' \
   -d '{"source":"replay","speed":4,"from":0}'
 ```
 
 Keyboard on the game page: space pause/play, left/right previous/next play, B next big play.
+
+Open a replay mid-game with `?from=`: a play index (`/game/401873002?from=150`) or a period
+(`?from=q4`, `?from=ot`). The **Q4** button next to **Big play** jumps to the 4th quarter.
 
 Checklist (from `AGENTS.md`):
 
@@ -162,9 +165,8 @@ CI deploys `main` automatically when the `FLY_API_TOKEN` repository secret is se
 
 ## Data and fixtures
 
-`data/fixtures/` holds the saved upstream responses tests use. ESPN and Kalshi were not reachable
-from the build environment, so the ESPN-shaped files are generated from real nflverse data and
-marked `"_synthetic": true`; see `data/fixtures/README.md`. Run `pnpm fixtures:fetch` on a networked
-machine before demo day to replace them with real responses.
+`data/fixtures/` holds the saved upstream responses tests use. The ESPN and Kalshi files are real
+responses saved with `pnpm fixtures:fetch` on Oct 24 (behind an HTTPS proxy, run it as
+`NODE_USE_ENV_PROXY=1 pnpm fixtures:fetch`); see `data/fixtures/README.md`.
 
 Odds shown for information only. Not betting advice.
