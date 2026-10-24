@@ -1,4 +1,5 @@
 /** Wires the pipeline together. Shared by the server entry point, the CLI and tests. */
+import { join } from 'node:path';
 import type { Config } from './config.ts';
 import { CommentaryCache } from './commentary/cache.ts';
 import { createClaudeWriter, type Writer } from './commentary/claude.ts';
@@ -8,6 +9,7 @@ import { GameRegistry } from './games/registry.ts';
 import { ScoreboardService } from './games/scoreboard.ts';
 import { createKalshiClient } from './kalshi/client.ts';
 import { OddsService } from './kalshi/poller.ts';
+import { LivePoller } from './live/poller.ts';
 import type { Fetcher } from './util/fetchJson.ts';
 
 export type Services = {
@@ -17,6 +19,7 @@ export type Services = {
   scoreboard: ScoreboardService;
   commentary: CommentaryService;
   odds: OddsService;
+  live: LivePoller;
 };
 
 export function createServices(
@@ -55,5 +58,10 @@ export function createServices(
     featuredGameId: config.featuredGameId,
     intervalMs: config.kalshiPollMs,
   });
-  return { config, espn, registry, scoreboard, commentary, odds };
+  const live = new LivePoller(espn, registry, {
+    featuredGameId: config.featuredGameId,
+    intervalMs: config.espnPollMs,
+    ...(opts.persist === false ? {} : { recordDir: join(config.dataDir, 'recordings') }),
+  });
+  return { config, espn, registry, scoreboard, commentary, odds, live };
 }

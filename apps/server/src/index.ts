@@ -13,6 +13,7 @@ void services.registry.get(config.demoGameId);
 void services.registry.get(config.featuredGameId);
 
 services.odds.start();
+if (!config.offline) services.live.start();
 
 serve({ fetch: app.fetch, port: config.port }, () => {
   log.info(`gridcast server on :${config.port}`, {
