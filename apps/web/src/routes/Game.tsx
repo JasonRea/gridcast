@@ -9,6 +9,7 @@ import { Timeline } from '@/components/analytics/Timeline';
 import { Field } from '@/field/Field';
 import { OddsFooter } from '@/components/OddsFooter';
 import { WpBar } from '@/components/WpBar';
+import { ChatDrawer } from '@/components/game/ChatDrawer';
 import { DriveTracker } from '@/components/game/DriveTracker';
 import { PlayFeed } from '@/components/game/PlayFeed';
 import { PlaybackControls } from '@/components/game/PlaybackControls';
@@ -17,6 +18,7 @@ import { Scorebug } from '@/components/game/Scorebug';
 import { StoppageCard } from '@/components/game/StoppageCard';
 import { api } from '@/lib/api';
 import { Announcer } from '@/lib/announcer';
+import { playLabel } from '@/lib/plays';
 import { GameStream } from '@/lib/stream';
 import { useGame } from '@/store/game';
 
@@ -106,6 +108,22 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     [replaySpeed],
   );
   const lastPresented = presentedPlays[presentedPlays.length - 1];
+
+  // Chat citations like [Q3 4:12] replay that play on the field.
+  const cite = useCallback(
+    async (label: string) => {
+      const s = useGame.getState();
+      const i = s.plays.findIndex((p, k) => k < s.presented && playLabel(p) === label);
+      if (i >= 0) return s.showPlay(i);
+      if (s.source === 'replay' && streamRef.current) {
+        const all = await streamRef.current.events();
+        const hit = all.find((e) => e.event.kind === 'play' && playLabel(e.event) === label);
+        if (hit)
+          await streamRef.current.start({ from: hit.seq, speed: replaySpeed, source: 'replay' });
+      }
+    },
+    [replaySpeed],
+  );
 
   const prev = useCallback(() => {
     const s = useGame.getState();
@@ -265,6 +283,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
           />
         </aside>
       </div>
+      {features.chat && <ChatDrawer gameId={detail.id} onCite={(l) => void cite(l)} />}
     </div>
   );
 }

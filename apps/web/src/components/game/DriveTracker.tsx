@@ -14,6 +14,7 @@ export function DriveTracker({
   const drive = (driveId ? plays.filter((p) => p.driveId === driveId) : plays.slice(-6)).filter(
     (p) => p.parsed.type !== 'kickoff' && p.pre.possession === last.pre.possession,
   );
+  if (!drive.length) return null;
   const team = last.pre.possession === teams.home.abbr ? teams.home : teams.away;
   const start = drive[0]?.pre.yardLine ?? last.pre.yardLine;
   const end =
