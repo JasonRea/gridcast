@@ -1,4 +1,5 @@
 import { createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/react-router';
+import { Admin } from './routes/Admin';
 import { GamePage } from './routes/Game';
 import { Home } from './routes/Home';
 
@@ -14,7 +15,15 @@ const gameRoute = createRoute({
   component: GamePage,
 });
 
-export const router = createRouter({ routeTree: rootRoute.addChildren([homeRoute, gameRoute]) });
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin',
+  component: Admin,
+});
+
+export const router = createRouter({
+  routeTree: rootRoute.addChildren([homeRoute, gameRoute, adminRoute]),
+});
 
 declare module '@tanstack/react-router' {
   interface Register {
