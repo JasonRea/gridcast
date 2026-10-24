@@ -19,9 +19,12 @@ export type PlayContext = {
     players: { role: string; name: string; team: string }[];
     penalty?: { name: string; team: string; yards: number; accepted: boolean };
     points?: number;
+    kickYards?: number;
   };
   offense: string;
   defense: string;
+  /** City names for the call ("Pittsburgh ball"). */
+  names: { offense: string; defense: string };
   before: { quarter: number; clock: string; down?: number; distance?: number; ballOn: string };
   score: { [abbr: string]: number };
   last5: string[];
@@ -51,6 +54,11 @@ function ballOn(yardLine: number, team: string, other: string): string {
 
 function stripClock(t: string) {
   return t.replace(/^\(\s*\d{0,2}:\d{2}\s*\)\s*/, '');
+}
+
+function cityOf(abbr: string, teams: { home: TeamNames; away: TeamNames }): string {
+  const t = abbr === teams.home.abbr ? teams.home : teams.away;
+  return t.location || t.name;
 }
 
 /** Notable by the PRD rule. */
@@ -112,9 +120,14 @@ export function buildPlayContext(
           }
         : {}),
       ...(pp.points ? { points: pp.points } : {}),
+      ...(pp.kickYards !== undefined ? { kickYards: pp.kickYards } : {}),
     },
     offense,
     defense,
+    names: {
+      offense: cityOf(offense, teams),
+      defense: cityOf(defense, teams),
+    },
     before: {
       quarter: play.pre.quarter,
       clock: play.pre.clock,
@@ -225,6 +238,7 @@ export function allowedVocabulary(
     add(ctx.play.text);
     for (const l of ctx.last5) add(l);
     add(ctx.play.penalty?.name);
+    phrase(ctx.play.penalty?.name);
   } else {
     add(ctx.stoppage.title);
     add(ctx.stoppage.detail);

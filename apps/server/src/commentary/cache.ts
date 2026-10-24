@@ -7,7 +7,13 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { LinePair } from './template.ts';
 
-export type CachedLines = LinePair & { source: 'claude' | 'template' };
+/**
+ * Bump when the commentary style changes (prompt or templates): older cached lines are ignored
+ * and regenerated.
+ */
+export const COMMENTARY_STYLE = 2;
+
+export type CachedLines = LinePair & { source: 'claude' | 'template'; style?: number };
 
 export class CommentaryCache {
   private readonly maps = new Map<string, Record<string, CachedLines>>();
@@ -40,18 +46,22 @@ export class CommentaryCache {
   }
 
   get(gameId: string, id: string): CachedLines | undefined {
-    return this.load(gameId)[id];
+    const hit = this.load(gameId)[id];
+    return hit && hit.style === COMMENTARY_STYLE ? hit : undefined;
   }
 
   set(gameId: string, id: string, lines: CachedLines): void {
     const m = this.load(gameId);
-    m[id] = lines;
+    m[id] = { ...lines, style: COMMENTARY_STYLE };
     if (!this.persist) return;
     mkdirSync(join(this.cacheDir, 'commentary'), { recursive: true });
     writeFileSync(this.file(gameId), JSON.stringify(m));
   }
 
+  /** Current-style lines only. */
   all(gameId: string): Record<string, CachedLines> {
-    return this.load(gameId);
+    return Object.fromEntries(
+      Object.entries(this.load(gameId)).filter(([, v]) => v.style === COMMENTARY_STYLE),
+    );
   }
 }
