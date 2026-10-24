@@ -1,5 +1,7 @@
 # Gridcast build plan
 
+Status (2026-10-24): step 0, P0-1 to P0-7 and every P1 item except tracking-play retrieval are built. See README.md "Status".
+
 Source of truth: `PRD.md` (what) and `AGENTS.md` (how). This plan is the concrete execution order.
 
 ## Step 0: contract, fixtures, skeleton

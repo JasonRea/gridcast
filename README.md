@@ -8,6 +8,17 @@ playback clock differs.
 - `PRD.md`: what to build. `AGENTS.md`: how. `PLAN.md`: build plan. `DECISIONS.md`: every judgment call.
 - `packages/parser/REPORT.md`: parser accuracy against nflverse labels (99.8% type, 99.3% yards, 99.99% direction).
 
+## Status
+
+| Tier | Feature | State |
+| --- | --- | --- |
+| P0 | Parser, server pipeline, replay engine, SSE, field with 10 templates, commentary + stoppage cards, Kalshi odds + WP bar + LIVE pill, live mode + kill switch, deploy config | Done |
+| P1 | Preview page, timeline scrubber + big-play jumps, EPA, odds vs model chart + swing callouts, two-voice TTS, 4th-down bot, Ask the game, X clips, sound | Done, each behind a flag |
+| P1 | Tracking-play retrieval (Big Data Bowl) | Not built: needs Kaggle data (see `DECISIONS.md`) |
+| P2 | Self-recorded clips, The Odds API lines, postgame recap | Not started |
+
+Review checkpoints from `AGENTS.md`: step 0 is commit `data: step 0 fixtures...`, P0-3 is `test(web): browser smoke test...`.
+
 ## Setup
 
 Requires Node 22.12+ and pnpm 10 (`corepack enable`).
