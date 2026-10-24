@@ -5,6 +5,27 @@
  */
 import { API_BASE } from './api';
 
+/** Deeper US English system voices, best first. Names vary by OS and browser. */
+const DEEP_VOICES = [
+  /daniel/i,
+  /\bguy\b/i,
+  /david/i,
+  /\bmark\b/i,
+  /\balex\b/i,
+  /\bfred\b/i,
+  /male/i,
+];
+
+function pickVoice(kind: 'pbp' | 'color'): SpeechSynthesisVoice | undefined {
+  const english = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en'));
+  const us = english.filter((v) => v.lang === 'en-US');
+  const deep = DEEP_VOICES.map(
+    (re) => us.find((v) => re.test(v.name)) ?? english.find((v) => re.test(v.name)),
+  ).filter((v): v is SpeechSynthesisVoice => !!v);
+  if (kind === 'pbp') return deep[0] ?? us[0] ?? english[0];
+  return english.find((v) => v !== (deep[0] ?? us[0])) ?? english[0];
+}
+
 export type Line = { text: string; voice: 'pbp' | 'color'; playIndex: number };
 
 export class Announcer {
@@ -79,11 +100,11 @@ export class Announcer {
     if (typeof speechSynthesis === 'undefined') return Promise.resolve();
     return new Promise((resolve) => {
       const u = new SpeechSynthesisUtterance(line.text);
-      const english = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en'));
-      const voice = line.voice === 'pbp' ? english[0] : (english[1] ?? english[0]);
+      const voice = pickVoice(line.voice);
       if (voice) u.voice = voice;
-      u.rate = line.voice === 'pbp' ? 1.12 : 0.98;
-      u.pitch = line.voice === 'pbp' ? 1.05 : 0.85;
+      // Play-by-play: lower and unhurried, network style. Color: natural, a touch brighter.
+      u.rate = line.voice === 'pbp' ? 0.95 : 1.0;
+      u.pitch = line.voice === 'pbp' ? 0.85 : 1.0;
       u.onend = () => resolve();
       u.onerror = () => resolve();
       speechSynthesis.speak(u);

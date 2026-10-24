@@ -13,7 +13,8 @@ playback clock differs.
 | Tier | Feature | State |
 | --- | --- | --- |
 | P0 | Parser, server pipeline, replay engine, SSE, field with 10 templates, commentary + stoppage cards, Kalshi odds + WP bar + LIVE pill, live mode + kill switch, deploy config | Done |
-| P1 | Preview page, timeline scrubber + big-play jumps, EPA, odds vs model chart + swing callouts, two-voice TTS, 4th-down bot, Ask the game, X clips, sound | Done, each behind a flag |
+| P1 | Preview page, timeline scrubber + big-play jumps, EPA, odds vs model chart + swing callouts, two-voice TTS, 4th-down bot, Ask the game, X clips | Done, each behind a flag |
+| P1 | Sound design (crowd noise) | Removed by owner decision |
 | P1 | Tracking-play retrieval (Big Data Bowl) | Not built: needs Kaggle data (see `DECISIONS.md`) |
 | P2 | Self-recorded clips, The Odds API lines, postgame recap | Not started |
 
@@ -51,7 +52,7 @@ GRIDCAST_OFFLINE=1 pnpm dev
 | `pnpm check` | typecheck + lint + format check + test (run before every push) |
 | `pnpm replay <gameId> [--speed 4] [--from 0]` | Streams a game's event log to the console through the replay clock |
 | `pnpm parser:eval` | Scores the parser on 3 seasons of nflverse plays and rewrites `packages/parser/REPORT.md` |
-| `pnpm pregen <gameId>` | Pre-generates and caches Claude commentary for a finished game (needs `ANTHROPIC_API_KEY`) |
+| `pnpm pregen <gameId>` | Pre-generates a finished game: Claude commentary (with `ANTHROPIC_API_KEY`) and announcer audio with the higher-quality model (with `ELEVENLABS_API_KEY`) |
 | `pnpm smoke [baseUrl] [outDir] [seconds]` | Chromium smoke test: home page and demo replay, screenshots, fails on console errors |
 | `pnpm fixtures:fetch` | Replaces the saved fixtures with real ESPN and Kalshi responses (needs network) |
 | `python scripts/fetch_nflverse.py && python scripts/build_fixtures.py` | Rebuilds fixtures from nflverse (needs pandas) |
@@ -70,6 +71,10 @@ Missing keys disable features, never the app.
 | `COMMENTARY_MODEL` | `claude-haiku-5-5` | Fast model for per-play lines |
 | `CHAT_MODEL` | `claude-opus-5-5` | Stronger model for Ask the game (P1) |
 | `ELEVENLABS_API_KEY` | none | Announcer voices (P1). Unset means browser speech synthesis |
+| `ELEVENLABS_PBP_VOICE` / `ELEVENLABS_COLOR_VOICE` | ElevenLabs premade voices | Voice IDs for the play-by-play and color voices. Use a voice you own or are licensed to use; Gridcast never clones voices |
+| `ELEVENLABS_LIVE_MODEL` | `eleven_flash_v2_5` | Fast model for live lines |
+| `ELEVENLABS_PREGEN_MODEL` | `eleven_multilingual_v2` | Higher-quality model used by `pnpm pregen`; served first when present |
+| `ELEVENLABS_STABILITY` / `_SIMILARITY` / `_STYLE` / `_SPEED` | `0.6` / `0.8` / `0.15` / `0.95` | Voice settings: steady, slightly unhurried network delivery |
 | `X_BEARER_TOKEN` | none | X clips (P1). Unset means no clips |
 | `ODDS_API_KEY` | none | Sportsbook lines (P2) |
 | `GRIDCAST_OFFLINE` | off | Never call ESPN or Kalshi; serve fixtures and recorded logs |
@@ -93,7 +98,6 @@ Server-side flags, returned to the web app in `GET /api/games/:id` (`features`).
 | `FLAG_FOURTH_DOWN` | on | 4th-down decision bot |
 | `FLAG_CHAT` | on (needs `ANTHROPIC_API_KEY`) | Ask the game |
 | `FLAG_CLIPS` | on (needs `X_BEARER_TOKEN`) | X clips |
-| `FLAG_SOUND` | off | Crowd sound |
 
 ## Architecture
 

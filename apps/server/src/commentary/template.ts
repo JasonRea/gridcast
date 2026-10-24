@@ -30,6 +30,20 @@ function where(c: PlayContext): string {
   return `${d}${dir}`.trim();
 }
 
+const ORDINAL = ['', 'First', 'Second', 'Third', 'Fourth'];
+
+/** "Third and six. " on third and fourth down, where the situation is the story. */
+function situation(c: PlayContext): string {
+  const d = c.before.down;
+  if (d !== 3 && d !== 4) return '';
+  const dist = c.before.distance;
+  return `${ORDINAL[d]} and ${dist !== undefined && dist <= 1 ? 'one' : (dist ?? '')}. `;
+}
+
+/**
+ * Network play-by-play: who, what, where, then stop. Routine plays are called plainly; big
+ * moments get one short, punchy call. No exclamation marks on ordinary plays.
+ */
 function playLine(c: PlayContext): string {
   const p = c.play;
   const qb = role(c, 'passer');
@@ -38,60 +52,64 @@ function playLine(c: PlayContext): string {
   const tackler = role(c, 'tackler');
   const kicker = role(c, 'kicker');
   const ret = role(c, 'returner');
-  const off = c.offense;
+  const off = c.names.offense;
+  const def = c.names.defense;
+  const sit = situation(c);
   switch (p.type) {
     case 'run': {
       const who = rusher || off;
-      if (p.result === 'td')
-        return `${who} punches it in from ${yds(p.yards)} out. Touchdown ${off}!`;
-      if (p.result === 'fumble') return `${who} fumbles and ${c.defense} recover!`;
-      if (p.yards === 0) return `${who} is stopped for no gain${tackler ? ` by ${tackler}` : ''}.`;
-      if (p.yards < 0) return `${who} is dropped for a loss of ${yds(p.yards)}.`;
+      if (p.result === 'td') return `${who}, in for the score. Touchdown, ${off}.`;
+      if (p.result === 'fumble') return `${who} fumbles. ${def} has it.`;
+      if (p.yards === 0)
+        return `${sit}${who}, stopped for no gain${tackler ? ` by ${tackler}` : ''}.`;
+      if (p.yards < 0) return `${sit}${who}, dropped for a loss of ${yds(p.yards)}.`;
       const dir =
         p.direction === 'middle'
-          ? 'up the middle'
+          ? ' up the middle'
           : p.direction
-            ? `around the ${p.direction} side`
+            ? ` around the ${p.direction} side`
             : '';
-      return `${who} runs ${dir ? `${dir} ` : ''}for ${yds(p.yards)}.`;
+      if (p.yards >= 20) return `${who}${dir}. Breaks free. ${yds(p.yards)}.`;
+      return `${sit}${who}${dir}, picks up ${yds(p.yards)}.`;
     }
     case 'pass': {
       const w = where(c);
+      const to = rec || 'his receiver';
       if (p.result === 'interception')
-        return `${qb || off} is intercepted${ret ? ` by ${ret}` : ''}! ${c.defense} take over.`;
+        return `${qb || off} throws, and it's picked off${ret ? `. ${ret}` : ''}. ${def} ball.`;
       if (p.result === 'incomplete')
-        return `${qb || off} throws ${w ? `${w} ` : ''}${rec ? `for ${rec}` : ''}, incomplete.`.replace(
-          /\s+,/,
-          ',',
-        );
-      if (p.result === 'td')
-        return `${qb || off} finds ${rec || 'his receiver'} for a ${yds(p.yards)} touchdown!`;
-      if (p.result === 'fumble')
-        return `${rec || 'The receiver'} catches it but fumbles, ${c.defense} recover!`;
-      return `${qb || off} hits ${rec || 'his receiver'} ${w ? `${w} ` : ''}for ${yds(p.yards)}.`;
+        return `${sit}${qb || off} looking${w ? ` ${w}` : ''}${rec ? ` for ${rec}` : ''}. Incomplete.`;
+      if (p.result === 'td') return `${qb || off} to ${to}. Touchdown.`;
+      if (p.result === 'fumble') return `${to} with the catch, and he fumbles. ${def} ball.`;
+      if (p.depth === 'deep' || p.yards >= 20)
+        return `${qb || off} goes deep for ${to}. Caught. ${yds(p.yards)}.`;
+      return `${sit}${qb || off} to ${to}${w ? `, ${w}` : ''}, ${yds(p.yards)}.`;
     }
     case 'sack':
-      return `${qb || off} is sacked${tackler ? ` by ${tackler}` : ''} for a loss of ${yds(p.yards)}.`;
+      return `${sit}${qb || off}, sacked${tackler ? ` by ${tackler}` : ''}. A loss of ${yds(p.yards)}.`;
     case 'punt':
-      return `${kicker || off} punts it away${ret ? `, ${ret} fields it` : ''}.`;
+      return `${kicker || off} punts it away${ret ? `, ${ret} back to receive` : ''}.`;
     case 'kickoff':
+      if (p.result === 'td') return `${ret || 'The return man'} takes it all the way. Touchdown.`;
       return p.result === 'touchback'
-        ? `${kicker || 'The kick'} sends it deep for a touchback.`
-        : `${kicker || 'Kickoff'} kicks off${ret ? `, returned by ${ret}` : ''}.`;
-    case 'fg':
+        ? `${kicker || 'The kick'} sends it deep. Touchback.`
+        : `${kicker || off} kicks off${ret ? `, ${ret} brings it out` : ''}.`;
+    case 'fg': {
+      const from = p.kickYards ? ` from ${p.kickYards}` : '';
       return p.result === 'good'
-        ? `${kicker || off} drills the field goal. Good!`
-        : `${kicker || off} misses the field goal.`;
+        ? `${kicker || off}${from}. It's good.`
+        : `${kicker || off}${from}. No good.`;
+    }
     case 'pat':
-      return p.result === 'good' ? `Extra point is good.` : `Extra point is no good.`;
+      return p.result === 'good' ? 'Extra point is good.' : 'The extra point is no good.';
     case 'penalty':
       return p.penalty
-        ? `Flag: ${p.penalty.name} on ${p.penalty.team}, ${yds(p.penalty.yards)}.`
+        ? `Flag down. ${p.penalty.name}, on ${p.penalty.team}.`
         : 'Flag on the play.';
     case 'kneel':
       return `${qb || off} takes a knee.`;
     case 'spike':
-      return `${qb || off} spikes it to stop the clock.`;
+      return `${qb || off} spikes it. The clock stops.`;
     default:
       return p.text.length > 120 ? `${p.text.slice(0, 117)}...` : p.text;
   }
