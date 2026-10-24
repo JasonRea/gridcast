@@ -12,6 +12,8 @@ const app = createApp(services);
 void services.registry.get(config.demoGameId);
 void services.registry.get(config.featuredGameId);
 
+services.odds.start();
+
 serve({ fetch: app.fetch, port: config.port }, () => {
   log.info(`gridcast server on :${config.port}`, {
     offline: config.offline,

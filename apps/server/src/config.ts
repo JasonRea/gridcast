@@ -25,6 +25,7 @@ export type Config = {
   /** Never call upstream APIs; serve fixtures and recorded logs only. */
   offline: boolean;
   espnPollMs: number;
+  kalshiBase?: string;
   kalshiPollMs: number;
   season: number;
   /** Fast model for per-play commentary, stronger model for chat. */
@@ -60,6 +61,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     ...(oddsApiKey ? { oddsApiKey } : {}),
     offline: bool(env.GRIDCAST_OFFLINE, false),
     espnPollMs: Number(env.ESPN_POLL_MS ?? 10_000),
+    ...(opt(env.KALSHI_BASE) ? { kalshiBase: opt(env.KALSHI_BASE)! } : {}),
     kalshiPollMs: Number(env.KALSHI_POLL_MS ?? 5_000),
     season: Number(env.SEASON ?? 2026),
     commentaryModel: env.COMMENTARY_MODEL ?? 'claude-haiku-5-5',

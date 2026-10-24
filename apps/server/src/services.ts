@@ -6,6 +6,8 @@ import { CommentaryService } from './commentary/service.ts';
 import { createEspnClient, type EspnClient } from './espn/client.ts';
 import { GameRegistry } from './games/registry.ts';
 import { ScoreboardService } from './games/scoreboard.ts';
+import { createKalshiClient } from './kalshi/client.ts';
+import { OddsService } from './kalshi/poller.ts';
 import type { Fetcher } from './util/fetchJson.ts';
 
 export type Services = {
@@ -14,6 +16,7 @@ export type Services = {
   registry: GameRegistry;
   scoreboard: ScoreboardService;
   commentary: CommentaryService;
+  odds: OddsService;
 };
 
 export function createServices(
@@ -42,5 +45,15 @@ export function createServices(
   );
   registry.addRebuildEnricher(commentary.enrichRebuild);
   registry.onSession((s) => commentary.attach(s));
-  return { config, espn, registry, scoreboard, commentary };
+  const kalshi = createKalshiClient({
+    fixturesDir: config.fixturesDir,
+    offline: config.offline,
+    ...(config.kalshiBase ? { base: config.kalshiBase } : {}),
+    ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
+  });
+  const odds = new OddsService(kalshi, registry, {
+    featuredGameId: config.featuredGameId,
+    intervalMs: config.kalshiPollMs,
+  });
+  return { config, espn, registry, scoreboard, commentary, odds };
 }

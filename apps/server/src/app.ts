@@ -7,12 +7,14 @@ import type { EventsResponse, GameDetail } from '@gridcast/types';
 import type { Config } from './config.ts';
 import type { GameRegistry } from './games/registry.ts';
 import { currentWeek, type ScoreboardService } from './games/scoreboard.ts';
+import type { OddsService } from './kalshi/poller.ts';
 import { streamGame } from './routes/stream.ts';
 
 export type AppDeps = {
   config: Config;
   registry: GameRegistry;
   scoreboard: ScoreboardService;
+  odds?: OddsService;
   /** Extra routes registered by feature modules (admin, chat, ...). */
   extend?: (app: Hono) => void;
 };
@@ -39,8 +41,9 @@ export function createApp(deps: AppDeps): Hono {
   app.get('/api/games', async (c) => {
     const season = Number(c.req.query('season')) || config.season;
     const week = Number(c.req.query('week')) || currentWeek(season);
-    const res = await scoreboard.get(season, week);
-    if (!res) return c.json({ season, week, games: [], dataSource: 'fixture' as const });
+    const sb = await scoreboard.get(season, week);
+    if (!sb) return c.json({ season, week, games: [], dataSource: 'fixture' as const });
+    const res = deps.odds ? { ...sb, games: await deps.odds.forCards(sb.games) } : sb;
     // Pin the demo replay game to every week so it is always one click away.
     if (!res.games.some((g) => g.id === config.demoGameId)) {
       const demo = await registry.get(config.demoGameId);
@@ -60,6 +63,9 @@ export function createApp(deps: AppDeps): Hono {
       ...(s.gameId === config.demoGameId ? { demo: true } : {}),
       source: s.source,
       ...(state ? { state } : {}),
+      ...(deps.odds?.homeProb(s.gameId) !== undefined
+        ? { kalshiHomeProb: deps.odds.homeProb(s.gameId)! }
+        : {}),
       rosters: s.rosters,
       depth: s.depth,
       eventCount: s.log.length,
