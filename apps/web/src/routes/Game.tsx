@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Ear, Radio } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GameDetail, LoggedEvent } from '@gridcast/types';
 import { AnalyticsPanel } from '@/components/analytics/AnalyticsPanel';
@@ -16,6 +16,9 @@ import { PlaybackControls } from '@/components/game/PlaybackControls';
 import { Preview } from '@/components/game/Preview';
 import { Scorebug } from '@/components/game/Scorebug';
 import { StoppageCard } from '@/components/game/StoppageCard';
+import { Button } from '@/components/ui/button';
+import { RadioView } from '@/components/game/RadioView';
+import { AccessAudio, describePlay } from '@/lib/access';
 import { api } from '@/lib/api';
 import { Announcer } from '@/lib/announcer';
 import { firstPlayOfQuarter, playLabel, startSeq } from '@/lib/plays';
@@ -23,6 +26,16 @@ import { GameStream } from '@/lib/stream';
 import { useGame } from '@/store/game';
 
 const DEFAULT_REPLAY_SPEED = 2;
+
+const RADIO_KEY = 'gridcast.radio';
+function readRadioPref(): boolean {
+  if (new URLSearchParams(window.location.search).get('mode') === 'radio') return true;
+  try {
+    return localStorage.getItem(RADIO_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 function LiveGame({ detail }: { detail: GameDetail }) {
   const g = useGame();
@@ -69,6 +82,38 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     g.animSpeed * (isReplay ? Math.max(1, g.streamSpeed / 2) : 1) * (queuedPlays > 2 ? 2 : 1);
 
   const onDone = useCallback((id: string) => useGame.getState().finishPlay(id), []);
+
+  // Access mode (hear and feel the field) and radio mode (large high-contrast text).
+  const audio = useRef<AccessAudio | null>(null);
+  if (!audio.current) audio.current = new AccessAudio();
+  const [access, setAccess] = useState(false);
+  const [radio, setRadio] = useState(readRadioPref);
+  const toggleAccess = useCallback(async () => {
+    const a = audio.current!;
+    if (a.enabled) {
+      a.disable();
+      setAccess(false);
+      return;
+    }
+    await a.enable();
+    setAccess(true);
+    // The announcers' voices are part of Access mode.
+    if (features.tts) useGame.getState().setMuted(false);
+  }, [features.tts]);
+  const toggleRadio = useCallback(() => {
+    setRadio((r) => {
+      try {
+        localStorage.setItem(RADIO_KEY, r ? '0' : '1');
+      } catch {
+        // Private mode: the toggle still works for this visit.
+      }
+      return !r;
+    });
+  }, []);
+  useEffect(() => () => audio.current?.disable(), []);
+  const onBall = useCallback((s: Parameters<AccessAudio['onBall']>[0]) => {
+    audio.current?.onBall(s);
+  }, []);
 
   // Two-voice announcers (P1): speak each presented play's lines once, play-by-play first.
   const announcer = useRef<Announcer | null>(null);
@@ -117,6 +162,22 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     [replaySpeed],
   );
   const lastPresented = presentedPlays[presentedPlays.length - 1];
+
+  // Screen readers: one polite announcement per finished play (after its call arrives) and per
+  // stoppage card.
+  const [srText, setSrText] = useState('');
+  useEffect(() => {
+    if (!lastPresented) return;
+    const t = setTimeout(() => {
+      const s = useGame.getState();
+      setSrText(describePlay(lastPresented, s.commentary[lastPresented.id]?.pbp, teams));
+    }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastPresented?.id]);
+  useEffect(() => {
+    if (g.card) setSrText(`${g.card.title ?? 'Stoppage'}. ${g.card.detail}`);
+  }, [g.card]);
 
   // Chat citations like [Q3 4:12] replay that play on the field.
   const cite = useCallback(
@@ -185,10 +246,12 @@ function LiveGame({ detail }: { detail: GameDetail }) {
       else if (e.key === 'ArrowRight') next();
       else if (e.key === 'b' || e.key === 'B') void nextBig();
       else if (e.key === 'm' || e.key === 'M') s.setMuted(!s.muted);
+      else if (e.key === 'a' || e.key === 'A') void toggleAccess();
+      else if (e.key === 'r' || e.key === 'R') toggleRadio();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [prev, next, nextBig]);
+  }, [prev, next, nextBig, toggleAccess, toggleRadio]);
 
   const clockPulse = g.current?.parsed.type === 'kneel' || g.current?.parsed.type === 'spike';
   const cardLines = g.card ? g.commentary[g.card.id] : undefined;
@@ -218,7 +281,23 @@ function LiveGame({ detail }: { detail: GameDetail }) {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex min-w-0 flex-col gap-3">
-          <div className="relative overflow-hidden rounded-md bg-black">
+          <p className="sr-only" aria-live="polite" aria-atomic="true">
+            {srText}
+          </p>
+          {radio && (
+            <RadioView
+              teams={teams}
+              state={g.state ?? detail.state}
+              play={lastPresented ?? g.current}
+              lines={lastPresented ? g.commentary[lastPresented.id] : undefined}
+              homeWp={g.wp}
+            />
+          )}
+          {/* In radio mode the field still runs (hidden): its animation paces the play queue. */}
+          <div
+            className={radio ? 'hidden' : 'relative overflow-hidden rounded-md bg-black'}
+            aria-hidden={radio || undefined}
+          >
             <div className="aspect-[1212/545] w-full">
               <Field
                 home={detail.home}
@@ -232,6 +311,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
                 paused={g.paused}
                 instant={g.instant}
                 onDone={onDone}
+                onBall={onBall}
               />
             </div>
             <StoppageCard
@@ -241,8 +321,8 @@ function LiveGame({ detail }: { detail: GameDetail }) {
             />
             {features.oddsChart && <SwingCallout play={lastPresented} teams={teams} />}
           </div>
-          {g.current && (
-            <p className="min-h-10 text-sm leading-snug text-muted-foreground" aria-live="polite">
+          {g.current && !radio && (
+            <p className="min-h-10 text-sm leading-snug text-muted-foreground">
               {g.current.raw.text.replace(/^\(\s*\d{0,2}:\d{2}\s*\)\s*/, '')}
             </p>
           )}
@@ -262,6 +342,26 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               onStreamSpeed={changeReplaySpeed}
               {...(features.tts ? { muted: g.muted, onMute: () => g.setMuted(!g.muted) } : {})}
             />
+            <div className="flex items-center gap-1.5">
+              <Button
+                size="sm"
+                variant={access ? 'default' : 'secondary'}
+                onClick={() => void toggleAccess()}
+                aria-pressed={access}
+                title="Hear and feel the field: spatial sound, vibration, announcers (A)"
+              >
+                <Ear /> Access
+              </Button>
+              <Button
+                size="sm"
+                variant={radio ? 'default' : 'secondary'}
+                onClick={toggleRadio}
+                aria-pressed={radio}
+                title="Large high-contrast text (R)"
+              >
+                <Radio /> Radio
+              </Button>
+            </div>
             {isReplay && g.done && !g.queue.length && (
               <span className="text-xs text-muted-foreground">End of game</span>
             )}

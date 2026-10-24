@@ -4,7 +4,8 @@ import { pct } from '@/lib/format';
 
 /**
  * Win probability bar: away share on the left, home on the right, in team colors.
- * Fed by ESPN win probability; Kalshi price shown beside it when available.
+ * Fed by ESPN win probability; the prediction market's win probability (Kalshi) shown beside it
+ * when available. Information only, not betting advice.
  */
 export function WpBar({
   home,
@@ -27,7 +28,7 @@ export function WpBar({
           {pct(h === undefined ? undefined : 1 - h)}
         </span>
         <span className="uppercase tracking-wider">
-          Win probability{homeProb === undefined && kalshiHome !== undefined ? ' (Kalshi)' : ''}
+          Win probability{homeProb === undefined && kalshiHome !== undefined ? ' (market)' : ''}
         </span>
         <span>
           {pct(h)} <span className="text-foreground">{home.abbr}</span>
@@ -47,10 +48,11 @@ export function WpBar({
       {kalshiHome !== undefined && (
         <div className="flex justify-between text-[11px] text-muted-foreground num">
           <span>
-            Kalshi {away.abbr} {Math.round((1 - kalshiHome) * 100)}¢
+            Market {away.abbr} {pct(1 - kalshiHome)}
           </span>
+          <span className="hidden sm:inline">Market win probability · Kalshi</span>
           <span>
-            {home.abbr} {Math.round(kalshiHome * 100)}¢
+            {home.abbr} {pct(kalshiHome)}
           </span>
         </div>
       )}

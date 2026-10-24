@@ -82,7 +82,7 @@ export function GameCard({ g }: { g: Card }) {
         {g.status === 'pre' && g.total !== undefined && <span>O/U {g.total}</span>}
         {g.kalshiHomeProb !== undefined && (
           <span>
-            Kalshi {g.home.abbr} {pct(g.kalshiHomeProb)}
+            Market {g.home.abbr} {pct(g.kalshiHomeProb)}
           </span>
         )}
         {final && g.topPerformer && <span className="truncate">{g.topPerformer}</span>}

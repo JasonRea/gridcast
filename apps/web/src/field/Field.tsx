@@ -8,6 +8,16 @@ import { buildLineup, type FieldPlayer } from './lineup';
 
 gsap.registerPlugin(MotionPathPlugin);
 
+export type BallSample = {
+  phase: 'start' | 'move' | 'end';
+  play: PlayEvent;
+  /** Team on offense for this animation (the frame's offense). */
+  offense: string;
+  homeAbbr: string;
+  x: number;
+  y: number;
+};
+
 export type FieldProps = {
   home: TeamInfo;
   away: TeamInfo;
@@ -24,6 +34,8 @@ export type FieldProps = {
   /** Skip straight to the end of the play (catch-up, jumps). */
   instant: boolean;
   onDone: (playId: string) => void;
+  /** Ball position (SVG units) as the play animates: Access mode turns it into sound. */
+  onBall?: (sample: BallSample) => void;
 };
 
 const YARD_NUMBERS = [10, 20, 30, 40, 50, 40, 30, 20, 10];
@@ -205,6 +217,8 @@ export function Field(props: FieldProps) {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
+  const ballCbRef = useRef(props.onBall);
+  ballCbRef.current = props.onBall;
   const speedRef = useRef(speed);
   speedRef.current = speed;
   const pausedRef = useRef(paused);
@@ -262,7 +276,22 @@ export function Field(props: FieldProps) {
         flash: (team) => flashRefs.current.get(team) ?? null,
       },
     });
-    tl.eventCallback('onComplete', () => doneRef.current(play.id));
+    const ballEl = ballRef.current;
+    const sample = (phase: BallSample['phase']) =>
+      ballCbRef.current?.({
+        phase,
+        play,
+        offense: lineup.frame.offense,
+        homeAbbr: home.abbr,
+        x: Number(gsap.getProperty(ballEl, 'x')) || 0,
+        y: Number(gsap.getProperty(ballEl, 'y')) || 0,
+      });
+    tl.eventCallback('onStart', () => sample('start'));
+    tl.eventCallback('onUpdate', () => sample('move'));
+    tl.eventCallback('onComplete', () => {
+      sample('end');
+      doneRef.current(play.id);
+    });
     tlRef.current = tl;
     tl.timeScale(speedRef.current);
     if (instant) tl.progress(1);
