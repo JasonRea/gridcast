@@ -1,13 +1,1452 @@
 {
- "_synthetic": true,
  "team": {
-  "id": "18",
   "abbreviation": "NO",
-  "displayName": "New Orleans Saints",
-  "shortDisplayName": "Saints",
-  "name": "Saints",
-  "location": "New Orleans",
+  "alternateColor": "000000",
   "color": "d3bc8d",
-  "alternateColor": "000000"
+  "displayName": "New Orleans Saints",
+  "franchise": {
+   "abbreviation": "NO",
+   "color": "d3bc8d",
+   "displayName": "New Orleans Saints",
+   "id": "18",
+   "isActive": true,
+   "location": "New Orleans",
+   "name": "Saints",
+   "nickname": "Saints",
+   "shortDisplayName": "Saints",
+   "slug": "new-orleans-saints",
+   "uid": "s:20~l:28~f:18",
+   "venue": {
+    "address": {
+     "city": "New Orleans",
+     "country": "USA",
+     "state": "LA",
+     "zipCode": "70112"
+    },
+    "fullName": "Caesars Superdome",
+    "grass": false,
+    "guid": "aa9f0642-8b00-34cf-b043-9b3965116455",
+    "id": "3493",
+    "images": [
+     {
+      "alt": "",
+      "height": 1125,
+      "href": "https://a.espncdn.com/i/venues/nfl/day/3493.jpg",
+      "rel": [
+       "full",
+       "day"
+      ],
+      "width": 2000
+     },
+     {
+      "alt": "",
+      "height": 1125,
+      "href": "https://a.espncdn.com/i/venues/nfl/day/interior/3493.jpg",
+      "rel": [
+       "full",
+       "day",
+       "interior"
+      ],
+      "width": 2000
+     }
+    ],
+    "indoor": true
+   }
+  },
+  "groups": {
+   "id": "7",
+   "isConference": true,
+   "parent": {
+    "id": "9"
+   }
+  },
+  "id": "18",
+  "isActive": true,
+  "links": [
+   {
+    "href": "https://www.espn.com/nfl/team/_/name/no/new-orleans-saints",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "clubhouse",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Clubhouse",
+    "text": "Clubhouse"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/roster/_/name/no/new-orleans-saints",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "roster",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Roster",
+    "text": "Roster"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=roster",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "roster",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Roster",
+    "text": "Roster"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/stats/_/name/no/new-orleans-saints",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "stats",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Statistics",
+    "text": "Statistics"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=stats",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "stats",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Statistics",
+    "text": "Statistics"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/schedule/_/name/no",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "schedule",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Schedule",
+    "text": "Schedule"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=scores",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "schedule",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Schedule",
+    "text": "Schedule"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/photos/_/name/no",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "photos",
+     "desktop",
+     "team"
+    ],
+    "shortText": "photos",
+    "text": "photos"
+   },
+   {
+    "href": "https://www.vividseats.com/new-orleans-saints-tickets--sports-nfl-football/performer/597?wsUser=717",
+    "isExternal": true,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "tickets",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Tickets",
+    "text": "Tickets"
+   },
+   {
+    "href": "https://www.espn.com/nfl/draft/teams/_/name/no/new-orleans-saints",
+    "isExternal": false,
+    "isPremium": true,
+    "language": "en-US",
+    "rel": [
+     "draftpicks",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Draft Picks",
+    "text": "Draft Picks"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/transactions/_/name/no",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "transactions",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Transactions",
+    "text": "Transactions"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/injuries/_/name/no",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "injuries",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Injuries",
+    "text": "Injuries"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/depth/_/name/no",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "depthchart",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Depth Chart",
+    "text": "Depth Chart"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=depthchart",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "depthchart",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Depth Chart",
+    "text": "Depth Chart"
+   }
+  ],
+  "location": "New Orleans",
+  "logos": [
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500/no.png",
+    "rel": [
+     "full",
+     "default"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/no.png",
+    "rel": [
+     "full",
+     "dark"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
+    "rel": [
+     "full",
+     "scoreboard"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/no.png",
+    "rel": [
+     "full",
+     "scoreboard",
+     "dark"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/grayscale.png",
+    "rel": [
+     "full",
+     "grayscale"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_white_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_white_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_black_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_black_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_primary_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_primary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_secondary_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_secondary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_black.png",
+    "rel": [
+     "full",
+     "primary_logo_black"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_white.png",
+    "rel": [
+     "full",
+     "primary_logo_white"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_white_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_white_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_black_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_black_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_primary_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_primary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_secondary_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_secondary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_black.png",
+    "rel": [
+     "full",
+     "secondary_logo_black"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_white.png",
+    "rel": [
+     "full",
+     "secondary_logo_white"
+    ],
+    "width": 4096
+   }
+  ],
+  "name": "Saints",
+  "nextEvent": [
+   {
+    "competitions": [
+     {
+      "attendance": 0,
+      "boxscoreAvailable": false,
+      "broadcasts": [
+       {
+        "lang": "en",
+        "market": {
+         "id": "1",
+         "type": "National"
+        },
+        "media": {
+         "darkLogo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default-dark.png",
+         "logo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default.png",
+         "shortName": "NFL Net"
+        },
+        "partnered": false,
+        "region": "us",
+        "type": {
+         "id": "1",
+         "shortName": "TV"
+        }
+       }
+      ],
+      "competitors": [
+       {
+        "curatedRank": {
+         "current": 99
+        },
+        "homeAway": "home",
+        "id": "18",
+        "order": 0,
+        "team": {
+         "abbreviation": "NO",
+         "displayName": "New Orleans Saints",
+         "id": "18",
+         "links": [
+          {
+           "href": "https://www.espn.com/nfl/team/_/name/no/new-orleans-saints",
+           "rel": [
+            "clubhouse",
+            "desktop",
+            "team"
+           ],
+           "text": "Clubhouse"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/roster/_/name/no/new-orleans-saints",
+           "rel": [
+            "roster",
+            "desktop",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=roster",
+           "rel": [
+            "roster",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/stats/_/name/no/new-orleans-saints",
+           "rel": [
+            "stats",
+            "desktop",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=stats",
+           "rel": [
+            "stats",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/schedule/_/name/no",
+           "rel": [
+            "schedule",
+            "desktop",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=scores",
+           "rel": [
+            "schedule",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/photos/_/name/no",
+           "rel": [
+            "photos",
+            "desktop",
+            "team"
+           ],
+           "text": "photos"
+          },
+          {
+           "href": "https://www.vividseats.com/new-orleans-saints-tickets--sports-nfl-football/performer/597?wsUser=717",
+           "rel": [
+            "tickets",
+            "desktop",
+            "team"
+           ],
+           "text": "Tickets"
+          },
+          {
+           "href": "https://www.espn.com/nfl/draft/teams/_/name/no/new-orleans-saints",
+           "rel": [
+            "draftpicks",
+            "desktop",
+            "team"
+           ],
+           "text": "Draft Picks"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/transactions/_/name/no",
+           "rel": [
+            "transactions",
+            "desktop",
+            "team"
+           ],
+           "text": "Transactions"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/injuries/_/name/no",
+           "rel": [
+            "injuries",
+            "desktop",
+            "team"
+           ],
+           "text": "Injuries"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/depth/_/name/no",
+           "rel": [
+            "depthchart",
+            "desktop",
+            "team"
+           ],
+           "text": "Depth Chart"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:18&section=depthchart",
+           "rel": [
+            "depthchart",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Depth Chart"
+          }
+         ],
+         "location": "New Orleans",
+         "logos": [
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/no.png",
+           "rel": [
+            "full",
+            "default"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/no.png",
+           "rel": [
+            "full",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/no.png",
+           "rel": [
+            "full",
+            "scoreboard"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/no.png",
+           "rel": [
+            "full",
+            "scoreboard",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/grayscale.png",
+           "rel": [
+            "full",
+            "grayscale"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_black.png",
+           "rel": [
+            "full",
+            "primary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/primary_logo_white.png",
+           "rel": [
+            "full",
+            "primary_logo_white"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_black.png",
+           "rel": [
+            "full",
+            "secondary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/97d2f6c9-2f22-459c-306a-046941ccab2a/logos/secondary_logo_white.png",
+           "rel": [
+            "full",
+            "secondary_logo_white"
+           ],
+           "width": 4096
+          }
+         ],
+         "nickname": "Saints",
+         "shortDisplayName": "Saints"
+        },
+        "type": "team"
+       },
+       {
+        "curatedRank": {
+         "current": 99
+        },
+        "homeAway": "away",
+        "id": "23",
+        "order": 1,
+        "team": {
+         "abbreviation": "PIT",
+         "displayName": "Pittsburgh Steelers",
+         "id": "23",
+         "links": [
+          {
+           "href": "https://www.espn.com/nfl/team/_/name/pit/pittsburgh-steelers",
+           "rel": [
+            "clubhouse",
+            "desktop",
+            "team"
+           ],
+           "text": "Clubhouse"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/roster/_/name/pit/pittsburgh-steelers",
+           "rel": [
+            "roster",
+            "desktop",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:23&section=roster",
+           "rel": [
+            "roster",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/stats/_/name/pit/pittsburgh-steelers",
+           "rel": [
+            "stats",
+            "desktop",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:23&section=stats",
+           "rel": [
+            "stats",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/schedule/_/name/pit",
+           "rel": [
+            "schedule",
+            "desktop",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:23&section=scores",
+           "rel": [
+            "schedule",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/photos/_/name/pit",
+           "rel": [
+            "photos",
+            "desktop",
+            "team"
+           ],
+           "text": "photos"
+          },
+          {
+           "href": "https://www.vividseats.com/pittsburgh-steelers-tickets--sports-nfl-football/performer/686?wsUser=717",
+           "rel": [
+            "tickets",
+            "desktop",
+            "team"
+           ],
+           "text": "Tickets"
+          },
+          {
+           "href": "https://www.espn.com/nfl/draft/teams/_/name/pit/pittsburgh-steelers",
+           "rel": [
+            "draftpicks",
+            "desktop",
+            "team"
+           ],
+           "text": "Draft Picks"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/transactions/_/name/pit",
+           "rel": [
+            "transactions",
+            "desktop",
+            "team"
+           ],
+           "text": "Transactions"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/injuries/_/name/pit",
+           "rel": [
+            "injuries",
+            "desktop",
+            "team"
+           ],
+           "text": "Injuries"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/depth/_/name/pit",
+           "rel": [
+            "depthchart",
+            "desktop",
+            "team"
+           ],
+           "text": "Depth Chart"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:23&section=depthchart",
+           "rel": [
+            "depthchart",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Depth Chart"
+          }
+         ],
+         "location": "Pittsburgh",
+         "logos": [
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png",
+           "rel": [
+            "full",
+            "default"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/pit.png",
+           "rel": [
+            "full",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/pit.png",
+           "rel": [
+            "full",
+            "scoreboard"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/pit.png",
+           "rel": [
+            "full",
+            "scoreboard",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/grayscale.png",
+           "rel": [
+            "full",
+            "grayscale"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/primary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/primary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/primary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/primary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/primary_logo_black.png",
+           "rel": [
+            "full",
+            "primary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/primary_logo_white.png",
+           "rel": [
+            "full",
+            "primary_logo_white"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/secondary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/secondary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/secondary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/secondary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/secondary_logo_black.png",
+           "rel": [
+            "full",
+            "secondary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/debcd592-8d53-71f1-fc15-5c8b8ef9df6e/logos/secondary_logo_white.png",
+           "rel": [
+            "full",
+            "secondary_logo_white"
+           ],
+           "width": 4096
+          }
+         ],
+         "nickname": "Steelers",
+         "shortDisplayName": "Steelers"
+        },
+        "type": "team"
+       }
+      ],
+      "date": "2026-10-25T13:30Z",
+      "id": "401873011",
+      "neutralSite": true,
+      "notes": [
+       {
+        "headline": "NFL Paris Game",
+        "type": "event"
+       }
+      ],
+      "status": {
+       "clock": 0,
+       "displayClock": "0:00",
+       "isTBDFlex": false,
+       "period": 0,
+       "type": {
+        "completed": false,
+        "description": "Scheduled",
+        "detail": "Sun, October 25th at 9:30 AM EDT",
+        "id": "1",
+        "name": "STATUS_SCHEDULED",
+        "shortDetail": "10/25 - 9:30 AM EDT",
+        "state": "pre"
+       }
+      },
+      "tickets": [
+       {
+        "description": "NFL International Series - Pittsburgh Steelers at New Orleans Saints",
+        "id": "7028012",
+        "links": [
+         {
+          "href": "https://www.vividseats.com/new-orleans-saints-tickets-stade-de-france-10-25-2026--sports-nfl-football/production/7028012?wsUser=717",
+          "rel": [
+           "tickets",
+           "desktop",
+           "event"
+          ]
+         },
+         {
+          "href": "https://www.vividseats.com/venues/stade-de-france-tickets.html?wsUser=717",
+          "rel": [
+           "tickets",
+           "desktop",
+           "venue"
+          ]
+         }
+        ],
+        "maxPrice": 15034,
+        "numberAvailable": 846,
+        "startingPrice": 65,
+        "summary": "Tickets as low as $65",
+        "totalPostings": 337
+       }
+      ],
+      "ticketsAvailable": true,
+      "timeValid": true,
+      "type": {
+       "abbreviation": "STD",
+       "id": "1",
+       "slug": "standard",
+       "text": "Standard",
+       "type": "standard"
+      },
+      "venue": {
+       "address": {
+        "city": "Saint-Denis",
+        "country": "France"
+       },
+       "fullName": "Stade de France"
+      }
+     }
+    ],
+    "date": "2026-10-25T13:30Z",
+    "id": "401873011",
+    "links": [
+     {
+      "href": "https://www.espn.com/nfl/game/_/gameId/401873011/steelers-saints",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "summary",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Summary",
+      "text": "Gamecast"
+     },
+     {
+      "href": "sportscenter://x-callback-url/showGame?sportName=football&leagueAbbrev=nfl&gameId=401873011",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "summary",
+       "sportscenter",
+       "app",
+       "event"
+      ],
+      "shortText": "Summary",
+      "text": "Gamecast"
+     },
+     {
+      "href": "https://www.espn.com/nfl/game/_/gameId/401873011",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "now",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Now",
+      "text": "Now"
+     },
+     {
+      "href": "https://www.espn.com/nfl/preview/_/gameId/401873011",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "preview",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Preview",
+      "text": "Preview"
+     },
+     {
+      "href": "https://fantasy.espn.com/football/welcome?addata=nfl_gamecast_ffl2026",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "fantasy",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Play Fantasy Football",
+      "text": "Play Fantasy Football"
+     },
+     {
+      "href": "https://www.espn.com/nfl/odds/_/gameId/401873011",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "odds",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Odds",
+      "text": "Odds"
+     },
+     {
+      "href": "https://m.espn.com/nfl/odds/_/gameId/401873011",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "odds",
+       "mobile",
+       "event"
+      ],
+      "shortText": "Odds",
+      "text": "Odds"
+     }
+    ],
+    "name": "Pittsburgh Steelers at New Orleans Saints",
+    "season": {
+     "displayName": "2026",
+     "year": 2026
+    },
+    "seasonType": {
+     "abbreviation": "reg",
+     "id": "2",
+     "name": "Regular Season",
+     "type": 2
+    },
+    "shortName": "PIT vs. NO",
+    "timeValid": true,
+    "week": {
+     "number": 7,
+     "text": "Week 7"
+    }
+   }
+  ],
+  "nickname": "Saints",
+  "record": {
+   "items": [
+    {
+     "stats": [
+      {
+       "name": "OTLosses",
+       "value": 1
+      },
+      {
+       "name": "OTWins",
+       "value": 0
+      },
+      {
+       "name": "avgPointsAgainst",
+       "value": 29.666666
+      },
+      {
+       "name": "avgPointsFor",
+       "value": 25.333334
+      },
+      {
+       "name": "differential",
+       "value": -26
+      },
+      {
+       "name": "divisionWinPercent",
+       "value": 0
+      },
+      {
+       "name": "gamesBehind",
+       "value": 0
+      },
+      {
+       "name": "gamesPlayed",
+       "value": 6
+      },
+      {
+       "name": "leagueWinPercent",
+       "value": 0.25
+      },
+      {
+       "name": "losses",
+       "value": 4
+      },
+      {
+       "name": "playoffSeed",
+       "value": 10
+      },
+      {
+       "name": "pointDifferential",
+       "value": -26
+      },
+      {
+       "name": "points",
+       "value": -1
+      },
+      {
+       "name": "pointsAgainst",
+       "value": 178
+      },
+      {
+       "name": "pointsFor",
+       "value": 152
+      },
+      {
+       "name": "streak",
+       "value": 1
+      },
+      {
+       "name": "ties",
+       "value": 0
+      },
+      {
+       "name": "winPercent",
+       "value": 0.33333334
+      },
+      {
+       "name": "wins",
+       "value": 2
+      },
+      {
+       "name": "divisionLosses",
+       "value": 1
+      },
+      {
+       "name": "divisionRecord",
+       "value": 0
+      },
+      {
+       "name": "divisionTies",
+       "value": 0
+      },
+      {
+       "name": "divisionWins",
+       "value": 0
+      },
+      {
+       "name": "lockedDivRank",
+       "value": 0
+      }
+     ],
+     "summary": "2-4",
+     "type": "total"
+    },
+    {
+     "description": "Home Record",
+     "stats": [
+      {
+       "name": "wins",
+       "value": 0
+      },
+      {
+       "name": "losses",
+       "value": 3
+      },
+      {
+       "name": "ties",
+       "value": 0
+      },
+      {
+       "name": "winPercent",
+       "value": 0
+      },
+      {
+       "name": "OTLosses",
+       "value": 0
+      }
+     ],
+     "summary": "0-3",
+     "type": "home"
+    },
+    {
+     "description": "Away Record",
+     "stats": [
+      {
+       "name": "wins",
+       "value": 2
+      },
+      {
+       "name": "losses",
+       "value": 1
+      },
+      {
+       "name": "ties",
+       "value": 0
+      },
+      {
+       "name": "winPercent",
+       "value": 0.6666667
+      },
+      {
+       "name": "OTLosses",
+       "value": 1
+      }
+     ],
+     "summary": "2-1",
+     "type": "road"
+    }
+   ]
+  },
+  "shortDisplayName": "Saints",
+  "slug": "new-orleans-saints",
+  "standingSummary": "9th in National Football Conference",
+  "uid": "s:20~l:28~t:18"
  }
 }
