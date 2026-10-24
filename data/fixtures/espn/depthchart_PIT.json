@@ -1,0 +1,771 @@
+{
+ "_synthetic": true,
+ "_source": "nflverse depth_charts_2026 snapshot 2026-10-24T11:57:56Z, reshaped to the ESPN depth chart schema",
+ "depthchart": [
+  {
+   "name": "Base 3-4 D",
+   "positions": {
+    "lde": {
+     "position": {
+      "abbreviation": "LDE"
+     },
+     "athletes": [
+      {
+       "id": "4430947",
+       "displayName": "Yahya Black",
+       "jersey": "94",
+       "position": {
+        "abbreviation": "LDE"
+       }
+      },
+      {
+       "id": "4431533",
+       "displayName": "Gabriel Rubio",
+       "position": {
+        "abbreviation": "LDE"
+       }
+      },
+      {
+       "id": "4682980",
+       "displayName": "Derrick Harmon",
+       "jersey": "99",
+       "position": {
+        "abbreviation": "LDE"
+       }
+      }
+     ]
+    },
+    "nt": {
+     "position": {
+      "abbreviation": "NT"
+     },
+     "athletes": [
+      {
+       "id": "4426694",
+       "displayName": "Keeanu Benton",
+       "jersey": "95",
+       "position": {
+        "abbreviation": "NT"
+       }
+      },
+      {
+       "id": "3047495",
+       "displayName": "Sebastian Joseph-Day",
+       "jersey": "69",
+       "position": {
+        "abbreviation": "NT"
+       }
+      }
+     ]
+    },
+    "rde": {
+     "position": {
+      "abbreviation": "RDE"
+     },
+     "athletes": [
+      {
+       "id": "13977",
+       "displayName": "Cameron Heyward",
+       "jersey": "97",
+       "position": {
+        "abbreviation": "RDE"
+       }
+      },
+      {
+       "id": "5084849",
+       "displayName": "Kevin Jobity Jr.",
+       "position": {
+        "abbreviation": "RDE"
+       }
+      },
+      {
+       "id": "4569474",
+       "displayName": "Logan Lee",
+       "jersey": "91",
+       "position": {
+        "abbreviation": "RDE"
+       }
+      }
+     ]
+    },
+    "wlb": {
+     "position": {
+      "abbreviation": "WLB"
+     },
+     "athletes": [
+      {
+       "id": "3045282",
+       "displayName": "T.J. Watt",
+       "jersey": "90",
+       "position": {
+        "abbreviation": "WLB"
+       }
+      },
+      {
+       "id": "4429164",
+       "displayName": "Nick Herbig",
+       "jersey": "51",
+       "position": {
+        "abbreviation": "WLB"
+       }
+      }
+     ]
+    },
+    "lilb": {
+     "position": {
+      "abbreviation": "LILB"
+     },
+     "athletes": [
+      {
+       "id": "4361652",
+       "displayName": "Payton Wilson",
+       "jersey": "41",
+       "position": {
+        "abbreviation": "LILB"
+       }
+      },
+      {
+       "id": "3116689",
+       "displayName": "Cole Holcomb",
+       "jersey": "55",
+       "position": {
+        "abbreviation": "LILB"
+       }
+      }
+     ]
+    },
+    "rilb": {
+     "position": {
+      "abbreviation": "RILB"
+     },
+     "athletes": [
+      {
+       "id": "4242207",
+       "displayName": "Patrick Queen",
+       "jersey": "6",
+       "position": {
+        "abbreviation": "RILB"
+       }
+      },
+      {
+       "id": "4429490",
+       "displayName": "Carson Bruener",
+       "jersey": "44",
+       "position": {
+        "abbreviation": "RILB"
+       }
+      }
+     ]
+    },
+    "slb": {
+     "position": {
+      "abbreviation": "SLB"
+     },
+     "athletes": [
+      {
+       "id": "4037333",
+       "displayName": "Alex Highsmith",
+       "jersey": "56",
+       "position": {
+        "abbreviation": "SLB"
+       }
+      },
+      {
+       "id": "4431590",
+       "displayName": "Jack Sawyer",
+       "jersey": "33",
+       "position": {
+        "abbreviation": "SLB"
+       }
+      }
+     ]
+    },
+    "lcb": {
+     "position": {
+      "abbreviation": "LCB"
+     },
+     "athletes": [
+      {
+       "id": "4363034",
+       "displayName": "Asante Samuel Jr.",
+       "jersey": "22",
+       "position": {
+        "abbreviation": "LCB"
+       }
+      },
+      {
+       "id": "3932886",
+       "displayName": "Sean Murphy-Bunting",
+       "jersey": "27",
+       "position": {
+        "abbreviation": "LCB"
+       }
+      },
+      {
+       "id": "4360935",
+       "displayName": "Terell Smith",
+       "jersey": "39",
+       "position": {
+        "abbreviation": "LCB"
+       }
+      }
+     ]
+    },
+    "ss": {
+     "position": {
+      "abbreviation": "SS"
+     },
+     "athletes": [
+      {
+       "id": "4820584",
+       "displayName": "Robert Spears-Jennings",
+       "jersey": "28",
+       "position": {
+        "abbreviation": "SS"
+       }
+      },
+      {
+       "id": "3929846",
+       "displayName": "DeShon Elliott",
+       "jersey": "25",
+       "position": {
+        "abbreviation": "SS"
+       }
+      }
+     ]
+    },
+    "fs": {
+     "position": {
+      "abbreviation": "FS"
+     },
+     "athletes": [
+      {
+       "id": "4570044",
+       "displayName": "Jaquan Brisker",
+       "jersey": "3",
+       "position": {
+        "abbreviation": "FS"
+       }
+      }
+     ]
+    },
+    "rcb": {
+     "position": {
+      "abbreviation": "RCB"
+     },
+     "athletes": [
+      {
+       "id": "3873935",
+       "displayName": "Jamel Dean",
+       "jersey": "35",
+       "position": {
+        "abbreviation": "RCB"
+       }
+      },
+      {
+       "id": "4685327",
+       "displayName": "Daylen Everette",
+       "jersey": "23",
+       "position": {
+        "abbreviation": "RCB"
+       }
+      },
+      {
+       "id": "4692628",
+       "displayName": "Doneiko Slaughter",
+       "jersey": "40",
+       "position": {
+        "abbreviation": "RCB"
+       }
+      },
+      {
+       "id": "4429743",
+       "displayName": "Daequan Hardy",
+       "jersey": "31",
+       "position": {
+        "abbreviation": "RCB"
+       }
+      }
+     ]
+    },
+    "nb": {
+     "position": {
+      "abbreviation": "NB"
+     },
+     "athletes": [
+      {
+       "id": "3045373",
+       "displayName": "Jalen Ramsey",
+       "jersey": "5",
+       "position": {
+        "abbreviation": "NB"
+       }
+      },
+      {
+       "id": "4567979",
+       "displayName": "Brandin Echols",
+       "jersey": "26",
+       "position": {
+        "abbreviation": "NB"
+       }
+      },
+      {
+       "id": "4608004",
+       "displayName": "Donte Kent",
+       "jersey": "34",
+       "position": {
+        "abbreviation": "NB"
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Special Teams",
+   "positions": {
+    "pk": {
+     "position": {
+      "abbreviation": "PK"
+     },
+     "athletes": [
+      {
+       "id": "17372",
+       "displayName": "Chris Boswell",
+       "jersey": "9",
+       "position": {
+        "abbreviation": "PK"
+       }
+      }
+     ]
+    },
+    "p": {
+     "position": {
+      "abbreviation": "P"
+     },
+     "athletes": [
+      {
+       "id": "3051397",
+       "displayName": "Cameron Johnston",
+       "jersey": "19",
+       "position": {
+        "abbreviation": "P"
+       }
+      }
+     ]
+    },
+    "h": {
+     "position": {
+      "abbreviation": "H"
+     },
+     "athletes": [
+      {
+       "id": "3051397",
+       "displayName": "Cameron Johnston",
+       "jersey": "19",
+       "position": {
+        "abbreviation": "H"
+       }
+      }
+     ]
+    },
+    "pr": {
+     "position": {
+      "abbreviation": "PR"
+     },
+     "athletes": [
+      {
+       "id": "5081338",
+       "displayName": "Kaden Wetjen",
+       "jersey": "10",
+       "position": {
+        "abbreviation": "PR"
+       }
+      },
+      {
+       "id": "4431492",
+       "displayName": "Roman Wilson",
+       "jersey": "14",
+       "position": {
+        "abbreviation": "PR"
+       }
+      },
+      {
+       "id": "4608004",
+       "displayName": "Donte Kent",
+       "jersey": "34",
+       "position": {
+        "abbreviation": "PR"
+       }
+      }
+     ]
+    },
+    "kr": {
+     "position": {
+      "abbreviation": "KR"
+     },
+     "athletes": [
+      {
+       "id": "5081338",
+       "displayName": "Kaden Wetjen",
+       "jersey": "10",
+       "position": {
+        "abbreviation": "KR"
+       }
+      },
+      {
+       "id": "5081508",
+       "displayName": "Eli Heidenreich",
+       "jersey": "29",
+       "position": {
+        "abbreviation": "KR"
+       }
+      },
+      {
+       "id": "4608004",
+       "displayName": "Donte Kent",
+       "jersey": "34",
+       "position": {
+        "abbreviation": "KR"
+       }
+      }
+     ]
+    },
+    "ls": {
+     "position": {
+      "abbreviation": "LS"
+     },
+     "athletes": [
+      {
+       "id": "2978524",
+       "displayName": "Christian Kuntz",
+       "jersey": "46",
+       "position": {
+        "abbreviation": "LS"
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "3WR 1TE",
+   "positions": {
+    "wr": {
+     "position": {
+      "abbreviation": "WR"
+     },
+     "athletes": [
+      {
+       "id": "4047650",
+       "displayName": "DK Metcalf",
+       "jersey": "4",
+       "position": {
+        "abbreviation": "WR"
+       }
+      },
+      {
+       "id": "4685261",
+       "displayName": "Germie Bernard",
+       "jersey": "17",
+       "position": {
+        "abbreviation": "WR"
+       }
+      },
+      {
+       "id": "4035656",
+       "displayName": "Ben Skowronek",
+       "jersey": "15",
+       "position": {
+        "abbreviation": "WR"
+       }
+      },
+      {
+       "id": "5081338",
+       "displayName": "Kaden Wetjen",
+       "jersey": "10",
+       "position": {
+        "abbreviation": "WR"
+       }
+      },
+      {
+       "id": "4035687",
+       "displayName": "Michael Pittman Jr.",
+       "jersey": "11",
+       "position": {
+        "abbreviation": "WR"
+       }
+      },
+      {
+       "id": "4431492",
+       "displayName": "Roman Wilson",
+       "jersey": "14",
+       "position": {
+        "abbreviation": "WR"
+       }
+      },
+      {
+       "id": "5192448",
+       "displayName": "Cole Burgess",
+       "jersey": "85",
+       "position": {
+        "abbreviation": "WR"
+       }
+      }
+     ]
+    },
+    "lt": {
+     "position": {
+      "abbreviation": "LT"
+     },
+     "athletes": [
+      {
+       "id": "4427170",
+       "displayName": "Troy Fautanu",
+       "position": {
+        "abbreviation": "LT"
+       }
+      },
+      {
+       "id": "4570898",
+       "displayName": "Dylan Cook",
+       "position": {
+        "abbreviation": "LT"
+       }
+      },
+      {
+       "id": "3932668",
+       "displayName": "Jack Driscoll",
+       "position": {
+        "abbreviation": "LT"
+       }
+      }
+     ]
+    },
+    "lg": {
+     "position": {
+      "abbreviation": "LG"
+     },
+     "athletes": [
+      {
+       "id": "4368304",
+       "displayName": "Mason McCormick",
+       "position": {
+        "abbreviation": "LG"
+       }
+      },
+      {
+       "id": "4241087",
+       "displayName": "Brock Hoffman",
+       "position": {
+        "abbreviation": "LG"
+       }
+      },
+      {
+       "id": "4431258",
+       "displayName": "Gennings Dunker",
+       "position": {
+        "abbreviation": "LG"
+       }
+      }
+     ]
+    },
+    "c": {
+     "position": {
+      "abbreviation": "C"
+     },
+     "athletes": [
+      {
+       "id": "4429775",
+       "displayName": "Zach Frazier",
+       "position": {
+        "abbreviation": "C"
+       }
+      },
+      {
+       "id": "4035253",
+       "displayName": "Ryan McCollum",
+       "position": {
+        "abbreviation": "C"
+       }
+      }
+     ]
+    },
+    "rg": {
+     "position": {
+      "abbreviation": "RG"
+     },
+     "athletes": [
+      {
+       "id": "4241087",
+       "displayName": "Brock Hoffman",
+       "position": {
+        "abbreviation": "RG"
+       }
+      },
+      {
+       "id": "4372056",
+       "displayName": "Spencer Anderson",
+       "position": {
+        "abbreviation": "RG"
+       }
+      }
+     ]
+    },
+    "rt": {
+     "position": {
+      "abbreviation": "RT"
+     },
+     "athletes": [
+      {
+       "id": "5150136",
+       "displayName": "Max Iheanachor",
+       "position": {
+        "abbreviation": "RT"
+       }
+      },
+      {
+       "id": "4570898",
+       "displayName": "Dylan Cook",
+       "position": {
+        "abbreviation": "RT"
+       }
+      }
+     ]
+    },
+    "qb": {
+     "position": {
+      "abbreviation": "QB"
+     },
+     "athletes": [
+      {
+       "id": "8439",
+       "displayName": "Aaron Rodgers",
+       "jersey": "8",
+       "position": {
+        "abbreviation": "QB"
+       }
+      },
+      {
+       "id": "3116407",
+       "displayName": "Mason Rudolph",
+       "jersey": "2",
+       "position": {
+        "abbreviation": "QB"
+       }
+      },
+      {
+       "id": "4429955",
+       "displayName": "Will Howard",
+       "jersey": "18",
+       "position": {
+        "abbreviation": "QB"
+       }
+      },
+      {
+       "id": "4714771",
+       "displayName": "Drew Allar",
+       "jersey": "16",
+       "position": {
+        "abbreviation": "QB"
+       }
+      }
+     ]
+    },
+    "te": {
+     "position": {
+      "abbreviation": "TE"
+     },
+     "athletes": [
+      {
+       "id": "4430802",
+       "displayName": "Darnell Washington",
+       "jersey": "80",
+       "position": {
+        "abbreviation": "TE"
+       }
+      },
+      {
+       "id": "4361411",
+       "displayName": "Pat Freiermuth",
+       "jersey": "88",
+       "position": {
+        "abbreviation": "TE"
+       }
+      },
+      {
+       "id": "2975674",
+       "displayName": "Robert Tonyan",
+       "jersey": "85",
+       "position": {
+        "abbreviation": "TE"
+       }
+      }
+     ]
+    },
+    "rb": {
+     "position": {
+      "abbreviation": "RB"
+     },
+     "athletes": [
+      {
+       "id": "4569987",
+       "displayName": "Jaylen Warren",
+       "jersey": "30",
+       "position": {
+        "abbreviation": "RB"
+       }
+      },
+      {
+       "id": "4038815",
+       "displayName": "Rico Dowdle",
+       "jersey": "13",
+       "position": {
+        "abbreviation": "RB"
+       }
+      },
+      {
+       "id": "4037457",
+       "displayName": "Travis Homer",
+       "jersey": "21",
+       "position": {
+        "abbreviation": "RB"
+       }
+      },
+      {
+       "id": "5081508",
+       "displayName": "Eli Heidenreich",
+       "jersey": "29",
+       "position": {
+        "abbreviation": "RB"
+       }
+      },
+      {
+       "id": "4428119",
+       "displayName": "Lew Nichols",
+       "jersey": "31",
+       "position": {
+        "abbreviation": "RB"
+       }
+      }
+     ]
+    },
+    "fb": {
+     "position": {
+      "abbreviation": "FB"
+     },
+     "athletes": [
+      {
+       "id": "4693370",
+       "displayName": "Riley Nowakowski",
+       "jersey": "37",
+       "position": {
+        "abbreviation": "FB"
+       }
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

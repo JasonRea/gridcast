@@ -1,0 +1,1271 @@
+{
+ "_synthetic": true,
+ "_source": "nflverse roster_2026 week 7, reshaped to the ESPN roster schema",
+ "team": {
+  "id": "18",
+  "abbreviation": "NO",
+  "displayName": "New Orleans Saints"
+ },
+ "athletes": [
+  {
+   "position": "offense",
+   "items": [
+    {
+     "id": "3054850",
+     "displayName": "Alvin Kamara",
+     "fullName": "Alvin Kamara",
+     "firstName": "Alvin",
+     "lastName": "Kamara",
+     "shortName": "A. Kamara",
+     "jersey": "41",
+     "position": {
+      "abbreviation": "RB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0035242",
+     "displayName": "Erik McCoy",
+     "fullName": "Erik McCoy",
+     "firstName": "Erik",
+     "lastName": "McCoy",
+     "shortName": "E. McCoy",
+     "jersey": "78",
+     "position": {
+      "abbreviation": "C"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4036131",
+     "displayName": "Noah Fant",
+     "fullName": "Noah Fant",
+     "firstName": "Noah",
+     "lastName": "Fant",
+     "shortName": "N. Fant",
+     "jersey": "87",
+     "position": {
+      "abbreviation": "TE"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0035668",
+     "displayName": "David Edwards",
+     "fullName": "David Edwards",
+     "firstName": "David",
+     "lastName": "Edwards",
+     "shortName": "D. Edwards",
+     "jersey": "76",
+     "position": {
+      "abbreviation": "G"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "3929645",
+     "displayName": "Juwan Johnson",
+     "fullName": "Juwan Johnson",
+     "firstName": "Juwan",
+     "lastName": "Johnson",
+     "shortName": "J. Johnson",
+     "jersey": "83",
+     "position": {
+      "abbreviation": "TE"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0036408",
+     "displayName": "Cesar Ruiz",
+     "fullName": "Cesar Ruiz",
+     "firstName": "Cesar",
+     "lastName": "Ruiz",
+     "shortName": "C. Ruiz",
+     "jersey": "51",
+     "position": {
+      "abbreviation": "G"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0036535",
+     "displayName": "Will Sherman",
+     "fullName": "Will Sherman",
+     "firstName": "William",
+     "lastName": "Sherman",
+     "shortName": "W. Sherman",
+     "jersey": "66",
+     "position": {
+      "abbreviation": "G"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0036619",
+     "displayName": "Dillon Radunz",
+     "fullName": "Dillon Radunz",
+     "firstName": "Dillon",
+     "lastName": "Radunz",
+     "shortName": "D. Radunz",
+     "jersey": "77",
+     "position": {
+      "abbreviation": "G"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4239996",
+     "displayName": "Travis Etienne",
+     "fullName": "Travis Etienne",
+     "firstName": "Travis",
+     "lastName": "Etienne",
+     "shortName": "T. Etienne",
+     "jersey": "3",
+     "position": {
+      "abbreviation": "RB"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4361259",
+     "displayName": "Zach Wilson",
+     "fullName": "Zach Wilson",
+     "firstName": "Zachary",
+     "lastName": "Wilson",
+     "shortName": "Z. Wilson",
+     "jersey": "11",
+     "position": {
+      "abbreviation": "QB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4372758",
+     "displayName": "Kevin Austin Jr.",
+     "fullName": "Kevin Austin Jr.",
+     "firstName": "Kevin",
+     "lastName": "Austin",
+     "shortName": "K. Austin",
+     "jersey": "81",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4361370",
+     "displayName": "Chris Olave",
+     "fullName": "Chris Olave",
+     "firstName": "Chris",
+     "lastName": "Olave",
+     "shortName": "C. Olave",
+     "jersey": "12",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4242431",
+     "displayName": "Ty Chandler",
+     "fullName": "Ty Chandler",
+     "firstName": "Ty",
+     "lastName": "Chandler",
+     "shortName": "T. Chandler",
+     "jersey": "32",
+     "position": {
+      "abbreviation": "RB"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4250764",
+     "displayName": "Stone Smartt",
+     "fullName": "Stone Smartt",
+     "firstName": "Stone",
+     "lastName": "Smartt",
+     "shortName": "S. Smartt",
+     "jersey": "84",
+     "position": {
+      "abbreviation": "TE"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4361777",
+     "displayName": "Zamir White",
+     "fullName": "Zamir White",
+     "firstName": "Zamir",
+     "lastName": "White",
+     "shortName": "Z. White",
+     "jersey": "26",
+     "position": {
+      "abbreviation": "RB"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4599739",
+     "displayName": "Kendre Miller",
+     "fullName": "Kendre Miller",
+     "firstName": "Kendre",
+     "lastName": "Miller",
+     "shortName": "K. Miller",
+     "jersey": "5",
+     "position": {
+      "abbreviation": "RB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0038566",
+     "displayName": "Nick Saldiveri",
+     "fullName": "Nick Saldiveri",
+     "firstName": "Nick",
+     "lastName": "Saldiveri",
+     "shortName": "N. Saldiveri",
+     "jersey": "64",
+     "position": {
+      "abbreviation": "G"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "00-0038601",
+     "displayName": "Asim Richards",
+     "fullName": "Asim Richards",
+     "firstName": "Asim",
+     "lastName": "Richards",
+     "shortName": "A. Richards",
+     "jersey": "72",
+     "position": {
+      "abbreviation": "T"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4426990",
+     "displayName": "Jalen Cropper",
+     "fullName": "Jalen Cropper",
+     "firstName": "Jalen",
+     "lastName": "Moreno-Cropper",
+     "shortName": "J. Moreno-Cropper",
+     "jersey": "85",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4369863",
+     "displayName": "Cedric Tillman",
+     "fullName": "Cedric Tillman",
+     "firstName": "Cedric",
+     "lastName": "Tillman",
+     "shortName": "C. Tillman",
+     "jersey": "13",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "00-0039339",
+     "displayName": "Taliese Fuaga",
+     "fullName": "Taliese Fuaga",
+     "firstName": "Taliese",
+     "lastName": "Fuaga",
+     "shortName": "T. Fuaga",
+     "jersey": "75",
+     "position": {
+      "abbreviation": "T"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4426339",
+     "displayName": "Spencer Rattler",
+     "fullName": "Spencer Rattler",
+     "firstName": "Spencer",
+     "lastName": "Rattler",
+     "shortName": "S. Rattler",
+     "jersey": "2",
+     "position": {
+      "abbreviation": "QB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4569559",
+     "displayName": "Devaughn Vele",
+     "fullName": "Devaughn Vele",
+     "firstName": "Devaughn",
+     "lastName": "Vele",
+     "shortName": "D. Vele",
+     "jersey": "14",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4430684",
+     "displayName": "Treyton Welch",
+     "fullName": "Treyton Welch",
+     "firstName": "Treyton",
+     "lastName": "Welch",
+     "shortName": "T. Welch",
+     "jersey": "82",
+     "position": {
+      "abbreviation": "TE"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4573697",
+     "displayName": "Mason Tipton",
+     "fullName": "Mason Tipton",
+     "firstName": "Mason",
+     "lastName": "Tipton",
+     "shortName": "M. Tipton",
+     "jersey": "15",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4430637",
+     "displayName": "Ja'Lynn Polk",
+     "fullName": "Ja'Lynn Polk",
+     "firstName": "Ja'Lynn",
+     "lastName": "Polk",
+     "shortName": "J. Polk",
+     "jersey": "13",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "RET"
+     }
+    },
+    {
+     "id": "00-0040125",
+     "displayName": "Kelvin Banks Jr.",
+     "fullName": "Kelvin Banks Jr.",
+     "firstName": "Kelvin",
+     "lastName": "Banks",
+     "shortName": "K. Banks",
+     "jersey": "71",
+     "position": {
+      "abbreviation": "T"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4432731",
+     "displayName": "Moliki Matavao",
+     "fullName": "Moliki Matavao",
+     "firstName": "Moliki",
+     "lastName": "Matavao",
+     "shortName": "M. Matavao",
+     "jersey": "80",
+     "position": {
+      "abbreviation": "TE"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "00-0040539",
+     "displayName": "Easton Kilty",
+     "fullName": "Easton Kilty",
+     "firstName": "Easton",
+     "lastName": "Kilty",
+     "shortName": "E. Kilty",
+     "jersey": "73",
+     "position": {
+      "abbreviation": "T"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "00-0040633",
+     "displayName": "Kyrese Rowan",
+     "fullName": "Kyrese Rowan",
+     "firstName": "Kyrese",
+     "lastName": "Rowan",
+     "shortName": "K. Rowan",
+     "jersey": "86",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4710341",
+     "displayName": "Jarquez Hunter",
+     "fullName": "Jarquez Hunter",
+     "firstName": "Jarquez",
+     "lastName": "Hunter",
+     "shortName": "J. Hunter",
+     "jersey": "24",
+     "position": {
+      "abbreviation": "RB"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4360689",
+     "displayName": "Tyler Shough",
+     "fullName": "Tyler Shough",
+     "firstName": "Tyler",
+     "lastName": "Shough",
+     "shortName": "T. Shough",
+     "jersey": "6",
+     "position": {
+      "abbreviation": "QB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4880281",
+     "displayName": "Jordyn Tyson",
+     "fullName": "Jordyn Tyson",
+     "firstName": "Jordyn",
+     "lastName": "Tyson",
+     "shortName": "J. Tyson",
+     "jersey": "0",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4702559",
+     "displayName": "Oscar Delp",
+     "fullName": "Oscar Delp",
+     "firstName": "Oscar",
+     "lastName": "Delp",
+     "shortName": "O. Delp",
+     "jersey": "4",
+     "position": {
+      "abbreviation": "TE"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0041065",
+     "displayName": "Jeremiah Wright",
+     "fullName": "Jeremiah Wright",
+     "firstName": "Jeremiah",
+     "lastName": "Wright",
+     "shortName": "J. Wright",
+     "jersey": "65",
+     "position": {
+      "abbreviation": "G"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4879276",
+     "displayName": "Bryce Lance",
+     "fullName": "Bryce Lance",
+     "firstName": "Bryce",
+     "lastName": "Lance",
+     "shortName": "B. Lance",
+     "jersey": "18",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4698597",
+     "displayName": "Barion Brown",
+     "fullName": "Barion Brown",
+     "firstName": "Barion",
+     "lastName": "Brown",
+     "shortName": "B. Brown",
+     "jersey": "19",
+     "position": {
+      "abbreviation": "WR"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0041173",
+     "displayName": "Mason Murphy",
+     "fullName": "Mason Murphy",
+     "firstName": "Mason",
+     "lastName": "Murphy",
+     "shortName": "M. Murphy",
+     "jersey": "74",
+     "position": {
+      "abbreviation": "T"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "5081999",
+     "displayName": "CJ Donaldson",
+     "fullName": "CJ Donaldson",
+     "firstName": "De'Carlo",
+     "lastName": "Donaldson",
+     "shortName": "D. Donaldson",
+     "jersey": "43",
+     "position": {
+      "abbreviation": "RB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0041330",
+     "displayName": "Alan Herron",
+     "fullName": "Alan Herron",
+     "firstName": "Alan",
+     "lastName": "Herron",
+     "shortName": "A. Herron",
+     "jersey": "70",
+     "position": {
+      "abbreviation": "T"
+     },
+     "status": {
+      "type": "CUT"
+     }
+    },
+    {
+     "id": "00-0041336",
+     "displayName": "Alex Wollschlaeger",
+     "fullName": "Alex Wollschlaeger",
+     "firstName": "Alex",
+     "lastName": "Wollschlaeger",
+     "shortName": "A. Wollschlaeger",
+     "jersey": "79",
+     "position": {
+      "abbreviation": "T"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    }
+   ]
+  },
+  {
+   "position": "defense",
+   "items": [
+    {
+     "id": "13971",
+     "displayName": "Cameron Jordan",
+     "fullName": "Cameron Jordan",
+     "firstName": "Cameron",
+     "lastName": "Jordan",
+     "shortName": "C. Jordan",
+     "jersey": "94",
+     "position": {
+      "abbreviation": "OLB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "3115383",
+     "displayName": "Davon Godchaux",
+     "fullName": "Davon Godchaux",
+     "firstName": "Davon",
+     "lastName": "Godchaux",
+     "shortName": "D. Godchaux",
+     "jersey": "92",
+     "position": {
+      "abbreviation": "NT"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "3931399",
+     "displayName": "Justin Reid",
+     "fullName": "Justin Reid",
+     "firstName": "Justin",
+     "lastName": "Reid",
+     "shortName": "J. Reid",
+     "jersey": "21",
+     "position": {
+      "abbreviation": "SS"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4076951",
+     "displayName": "Nathan Shepherd",
+     "fullName": "Nathan Shepherd",
+     "firstName": "Nathan",
+     "lastName": "Shepherd",
+     "shortName": "N. Shepherd",
+     "jersey": "93",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "3124890",
+     "displayName": "Kaden Elliss",
+     "fullName": "Kaden Elliss",
+     "firstName": "Kaden",
+     "lastName": "Elliss",
+     "shortName": "K. Elliss",
+     "jersey": "55",
+     "position": {
+      "abbreviation": "ILB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "3918310",
+     "displayName": "Carl Granderson",
+     "fullName": "Carl Granderson",
+     "firstName": "Carl",
+     "lastName": "Granderson",
+     "shortName": "C. Granderson",
+     "jersey": "96",
+     "position": {
+      "abbreviation": "OLB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4046536",
+     "displayName": "David Long",
+     "fullName": "David Long",
+     "firstName": "David",
+     "lastName": "Long",
+     "shortName": "D. Long",
+     "jersey": "45",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4032481",
+     "displayName": "Jonah Williams",
+     "fullName": "Jonah Williams",
+     "firstName": "Jonah",
+     "lastName": "Williams",
+     "shortName": "J. Williams",
+     "jersey": "54",
+     "position": {
+      "abbreviation": "DE"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "3925350",
+     "displayName": "Anfernee Jennings",
+     "fullName": "Anfernee Jennings",
+     "firstName": "Anfernee",
+     "lastName": "Jennings",
+     "shortName": "A. Jennings",
+     "jersey": "33",
+     "position": {
+      "abbreviation": "OLB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4035661",
+     "displayName": "Julian Blackmon",
+     "fullName": "Julian Blackmon",
+     "firstName": "Julian",
+     "lastName": "Blackmon",
+     "shortName": "J. Blackmon",
+     "jersey": "23",
+     "position": {
+      "abbreviation": "FS"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4241986",
+     "displayName": "Chase Young",
+     "fullName": "Chase Young",
+     "firstName": "Chase",
+     "lastName": "Young",
+     "shortName": "C. Young",
+     "jersey": "99",
+     "position": {
+      "abbreviation": "OLB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4240475",
+     "displayName": "Chris Rumph II",
+     "fullName": "Chris Rumph II",
+     "firstName": "Chris",
+     "lastName": "Rumph",
+     "shortName": "C. Rumph",
+     "jersey": "58",
+     "position": {
+      "abbreviation": "OLB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4241993",
+     "displayName": "Pete Werner",
+     "fullName": "Pete Werner",
+     "firstName": "Pete",
+     "lastName": "Werner",
+     "shortName": "P. Werner",
+     "jersey": "20",
+     "position": {
+      "abbreviation": "ILB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4429568",
+     "displayName": "Martin Emerson",
+     "fullName": "Martin Emerson",
+     "firstName": "Martin",
+     "lastName": "Emerson",
+     "shortName": "M. Emerson",
+     "jersey": "22",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4248047",
+     "displayName": "John Ridgeway",
+     "fullName": "John Ridgeway",
+     "firstName": "John",
+     "lastName": "Ridgeway",
+     "shortName": "J. Ridgeway",
+     "jersey": "95",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4426507",
+     "displayName": "David Ojabo",
+     "fullName": "David Ojabo",
+     "firstName": "David",
+     "lastName": "Ojabo",
+     "shortName": "D. Ojabo",
+     "jersey": "56",
+     "position": {
+      "abbreviation": "DE"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4567224",
+     "displayName": "Colby Wooden",
+     "fullName": "Colby Wooden",
+     "firstName": "Colby",
+     "lastName": "Wooden",
+     "shortName": "C. Wooden",
+     "jersey": "50",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4372533",
+     "displayName": "Tyree Wilson",
+     "fullName": "Tyree Wilson",
+     "firstName": "Tyree",
+     "lastName": "Wilson",
+     "shortName": "T. Wilson",
+     "jersey": "98",
+     "position": {
+      "abbreviation": "OLB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4360949",
+     "displayName": "Jordan Howden",
+     "fullName": "Jordan Howden",
+     "firstName": "Jordan",
+     "lastName": "Howden",
+     "shortName": "J. Howden",
+     "jersey": "31",
+     "position": {
+      "abbreviation": "FS"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "00-0038781",
+     "displayName": "Rejzohn Wright",
+     "fullName": "Rejzohn Wright",
+     "firstName": "Rejzohn",
+     "lastName": "Wright",
+     "shortName": "R. Wright",
+     "jersey": "25",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4428988",
+     "displayName": "Bryan Bresee",
+     "fullName": "Bryan Bresee",
+     "firstName": "Bryan",
+     "lastName": "Bresee",
+     "shortName": "B. Bresee",
+     "jersey": "90",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "RES"
+     }
+    },
+    {
+     "id": "4361101",
+     "displayName": "Jackson Sirmon",
+     "fullName": "Jackson Sirmon",
+     "firstName": "Jackson",
+     "lastName": "Sirmon",
+     "shortName": "J. Sirmon",
+     "jersey": "47",
+     "position": {
+      "abbreviation": "ILB"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4605498",
+     "displayName": "Decamerion Richardson",
+     "fullName": "Decamerion Richardson",
+     "firstName": "Decamerion",
+     "lastName": "Richardson",
+     "shortName": "D. Richardson",
+     "jersey": "25",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4566088",
+     "displayName": "Jaylan Ford",
+     "fullName": "Jaylan Ford",
+     "firstName": "Jaylan",
+     "lastName": "Ford",
+     "shortName": "J. Ford",
+     "jersey": "53",
+     "position": {
+      "abbreviation": "ILB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4384595",
+     "displayName": "Khristian Boyd",
+     "fullName": "Khristian Boyd",
+     "firstName": "Khristian",
+     "lastName": "Boyd",
+     "shortName": "K. Boyd",
+     "jersey": "97",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4361194",
+     "displayName": "Isaiah Stalbird",
+     "fullName": "Isaiah Stalbird",
+     "firstName": "Isaiah",
+     "lastName": "Stalbird",
+     "shortName": "I. Stalbird",
+     "jersey": "44",
+     "position": {
+      "abbreviation": "ILB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4383391",
+     "displayName": "Jayden Price",
+     "fullName": "Jayden Price",
+     "firstName": "Jayden",
+     "lastName": "Price",
+     "shortName": "J. Price",
+     "jersey": "38",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4433975",
+     "displayName": "Kool-Aid McKinstry",
+     "fullName": "Kool-Aid McKinstry",
+     "firstName": "Kool-Aid",
+     "lastName": "McKinstry",
+     "shortName": "K. McKinstry",
+     "jersey": "1",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4683215",
+     "displayName": "Danny Stutsman",
+     "fullName": "Danny Stutsman",
+     "firstName": "Danny",
+     "lastName": "Stutsman",
+     "shortName": "D. Stutsman",
+     "jersey": "28",
+     "position": {
+      "abbreviation": "ILB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4428350",
+     "displayName": "Quincy Riley",
+     "fullName": "Quincy Riley",
+     "firstName": "Quincy",
+     "lastName": "Riley",
+     "shortName": "Q. Riley",
+     "jersey": "29",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4429073",
+     "displayName": "Fadil Diggs",
+     "fullName": "Fadil Diggs",
+     "firstName": "Fadil",
+     "lastName": "Diggs",
+     "shortName": "F. Diggs",
+     "jersey": "40",
+     "position": {
+      "abbreviation": "OLB"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4775268",
+     "displayName": "Michael Reid",
+     "fullName": "Michael Reid",
+     "firstName": "Mike",
+     "lastName": "Reid",
+     "shortName": "M. Reid",
+     "jersey": "42",
+     "position": {
+      "abbreviation": "SS"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4429040",
+     "displayName": "Vernon Broughton",
+     "fullName": "Vernon Broughton",
+     "firstName": "Vernon",
+     "lastName": "Broughton",
+     "shortName": "V. Broughton",
+     "jersey": "91",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4683813",
+     "displayName": "Jonas Sanker",
+     "fullName": "Jonas Sanker",
+     "firstName": "Jonas",
+     "lastName": "Sanker",
+     "shortName": "J. Sanker",
+     "jersey": "7",
+     "position": {
+      "abbreviation": "FS"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4432768",
+     "displayName": "Lorenzo Styles Jr.",
+     "fullName": "Lorenzo Styles Jr.",
+     "firstName": "Lorenzo",
+     "lastName": "Styles",
+     "shortName": "L. Styles",
+     "jersey": "36",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4873075",
+     "displayName": "TJ Hall",
+     "fullName": "TJ Hall",
+     "firstName": "Terrence",
+     "lastName": "Hall",
+     "shortName": "T. Hall",
+     "jersey": "34",
+     "position": {
+      "abbreviation": "CB"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "00-0041335",
+     "displayName": "Jay'Viar Suggs",
+     "fullName": "Jay'Viar Suggs",
+     "firstName": "Jay'viar",
+     "lastName": "Suggs",
+     "shortName": "J. Suggs",
+     "jersey": "62",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    },
+    {
+     "id": "4685479",
+     "displayName": "Christen Miller",
+     "fullName": "Christen Miller",
+     "firstName": "Christen",
+     "lastName": "Miller",
+     "shortName": "C. Miller",
+     "jersey": "52",
+     "position": {
+      "abbreviation": "DT"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    }
+   ]
+  },
+  {
+   "position": "specialTeam",
+   "items": [
+    {
+     "id": "00-0033063",
+     "displayName": "Zach Wood",
+     "fullName": "Zach Wood",
+     "firstName": "Zach",
+     "lastName": "Wood",
+     "shortName": "Z. Wood",
+     "jersey": "49",
+     "position": {
+      "abbreviation": "LS"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "3051909",
+     "displayName": "Daniel Carlson",
+     "fullName": "Daniel Carlson",
+     "firstName": "Daniel",
+     "lastName": "Carlson",
+     "shortName": "D. Carlson",
+     "jersey": "10",
+     "position": {
+      "abbreviation": "K"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "4361823",
+     "displayName": "Ryan Wright",
+     "fullName": "Ryan Wright",
+     "firstName": "Ryan",
+     "lastName": "Wright",
+     "shortName": "R. Wright",
+     "jersey": "17",
+     "position": {
+      "abbreviation": "P"
+     },
+     "status": {
+      "type": "ACT"
+     }
+    },
+    {
+     "id": "5208518",
+     "displayName": "Charlie Smyth",
+     "fullName": "Charlie Smyth",
+     "firstName": "Charles",
+     "lastName": "Smyth",
+     "shortName": "C. Smyth",
+     "jersey": "39",
+     "position": {
+      "abbreviation": "K"
+     },
+     "status": {
+      "type": "DEV"
+     }
+    }
+   ]
+  }
+ ]
+}

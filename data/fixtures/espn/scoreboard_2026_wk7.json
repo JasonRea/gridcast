@@ -1,0 +1,1296 @@
+{
+ "_synthetic": true,
+ "_source": "nflverse schedules (games.csv) as of 2026-10-24, reshaped to the ESPN scoreboard schema",
+ "season": {
+  "year": 2026,
+  "type": 2
+ },
+ "week": {
+  "number": 7
+ },
+ "events": [
+  {
+   "id": "401873010",
+   "date": "2026-10-22T20:15:00-04:00",
+   "name": "New England Patriots at Chicago Bears",
+   "shortName": "NE @ CHI",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873010",
+     "date": "2026-10-22T20:15:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Soldier Field"
+     },
+     "competitors": [
+      {
+       "id": "3",
+       "homeAway": "home",
+       "team": {
+        "id": "3",
+        "abbreviation": "CHI",
+        "displayName": "Chicago Bears",
+        "shortDisplayName": "Bears",
+        "name": "Bears",
+        "location": "Chicago",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       },
+       "score": "30"
+      },
+      {
+       "id": "17",
+       "homeAway": "away",
+       "team": {
+        "id": "17",
+        "abbreviation": "NE",
+        "displayName": "New England Patriots",
+        "shortDisplayName": "Patriots",
+        "name": "Patriots",
+        "location": "New England",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       },
+       "score": "24"
+      }
+     ],
+     "status": {
+      "clock": 0,
+      "displayClock": "0:00",
+      "period": 4,
+      "type": {
+       "id": "3",
+       "name": "STATUS_FINAL",
+       "state": "post",
+       "completed": true,
+       "description": "Final",
+       "detail": "Final",
+       "shortDetail": "Final"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "CHI -3",
+       "spread": -3.0,
+       "overUnder": 50.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 0,
+    "displayClock": "0:00",
+    "period": 4,
+    "type": {
+     "id": "3",
+     "name": "STATUS_FINAL",
+     "state": "post",
+     "completed": true,
+     "description": "Final",
+     "detail": "Final",
+     "shortDetail": "Final"
+    }
+   }
+  },
+  {
+   "id": "401873011",
+   "date": "2026-10-25T09:30:00-04:00",
+   "name": "Pittsburgh Steelers at New Orleans Saints",
+   "shortName": "PIT @ NO",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873011",
+     "date": "2026-10-25T09:30:00-04:00",
+     "neutralSite": true,
+     "venue": {
+      "fullName": "Stade de France"
+     },
+     "competitors": [
+      {
+       "id": "18",
+       "homeAway": "home",
+       "team": {
+        "id": "18",
+        "abbreviation": "NO",
+        "displayName": "New Orleans Saints",
+        "shortDisplayName": "Saints",
+        "name": "Saints",
+        "location": "New Orleans",
+        "color": "d3bc8d",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "23",
+       "homeAway": "away",
+       "team": {
+        "id": "23",
+        "abbreviation": "PIT",
+        "displayName": "Pittsburgh Steelers",
+        "shortDisplayName": "Steelers",
+        "name": "Steelers",
+        "location": "Pittsburgh",
+        "color": "000000",
+        "alternateColor": "ffb612"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 09:30 ET",
+       "shortDetail": "2026-10-25 09:30 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "PIT -3",
+       "spread": 3.0,
+       "overUnder": 44.5
+      }
+     ],
+     "broadcasts": [
+      {
+       "names": [
+        "NFL Network"
+       ]
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 09:30 ET",
+     "shortDetail": "2026-10-25 09:30 ET"
+    }
+   }
+  },
+  {
+   "id": "401873017",
+   "date": "2026-10-25T13:00:00-04:00",
+   "name": "San Francisco 49ers at Atlanta Falcons",
+   "shortName": "SF @ ATL",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873017",
+     "date": "2026-10-25T13:00:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Mercedes-Benz Stadium"
+     },
+     "competitors": [
+      {
+       "id": "1",
+       "homeAway": "home",
+       "team": {
+        "id": "1",
+        "abbreviation": "ATL",
+        "displayName": "Atlanta Falcons",
+        "shortDisplayName": "Falcons",
+        "name": "Falcons",
+        "location": "Atlanta",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "25",
+       "homeAway": "away",
+       "team": {
+        "id": "25",
+        "abbreviation": "SF",
+        "displayName": "San Francisco 49ers",
+        "shortDisplayName": "49ers",
+        "name": "49ers",
+        "location": "San Francisco",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 13:00 ET",
+       "shortDetail": "2026-10-25 13:00 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "SF -2.5",
+       "spread": 2.5,
+       "overUnder": 49.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 13:00 ET",
+     "shortDetail": "2026-10-25 13:00 ET"
+    }
+   }
+  },
+  {
+   "id": "401873012",
+   "date": "2026-10-25T13:00:00-04:00",
+   "name": "Cincinnati Bengals at Baltimore Ravens",
+   "shortName": "CIN @ BAL",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873012",
+     "date": "2026-10-25T13:00:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "M&T Bank Stadium"
+     },
+     "competitors": [
+      {
+       "id": "33",
+       "homeAway": "home",
+       "team": {
+        "id": "33",
+        "abbreviation": "BAL",
+        "displayName": "Baltimore Ravens",
+        "shortDisplayName": "Ravens",
+        "name": "Ravens",
+        "location": "Baltimore",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "4",
+       "homeAway": "away",
+       "team": {
+        "id": "4",
+        "abbreviation": "CIN",
+        "displayName": "Cincinnati Bengals",
+        "shortDisplayName": "Bengals",
+        "name": "Bengals",
+        "location": "Cincinnati",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 13:00 ET",
+       "shortDetail": "2026-10-25 13:00 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "CIN -1.5",
+       "spread": 1.5,
+       "overUnder": 47.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 13:00 ET",
+     "shortDetail": "2026-10-25 13:00 ET"
+    }
+   }
+  },
+  {
+   "id": "401873018",
+   "date": "2026-10-25T13:00:00-04:00",
+   "name": "Tampa Bay Buccaneers at Carolina Panthers",
+   "shortName": "TB @ CAR",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873018",
+     "date": "2026-10-25T13:00:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Bank of America Stadium"
+     },
+     "competitors": [
+      {
+       "id": "29",
+       "homeAway": "home",
+       "team": {
+        "id": "29",
+        "abbreviation": "CAR",
+        "displayName": "Carolina Panthers",
+        "shortDisplayName": "Panthers",
+        "name": "Panthers",
+        "location": "Carolina",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "27",
+       "homeAway": "away",
+       "team": {
+        "id": "27",
+        "abbreviation": "TB",
+        "displayName": "Tampa Bay Buccaneers",
+        "shortDisplayName": "Buccaneers",
+        "name": "Buccaneers",
+        "location": "Tampa Bay",
+        "color": "bd1c36",
+        "alternateColor": "3e3a35"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 13:00 ET",
+       "shortDetail": "2026-10-25 13:00 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "CAR -3",
+       "spread": -3.0,
+       "overUnder": 44.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 13:00 ET",
+     "shortDetail": "2026-10-25 13:00 ET"
+    }
+   }
+  },
+  {
+   "id": "401873016",
+   "date": "2026-10-25T13:00:00-04:00",
+   "name": "New York Giants at Houston Texans",
+   "shortName": "NYG @ HOU",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873016",
+     "date": "2026-10-25T13:00:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Reliant Stadium"
+     },
+     "competitors": [
+      {
+       "id": "34",
+       "homeAway": "home",
+       "team": {
+        "id": "34",
+        "abbreviation": "HOU",
+        "displayName": "Houston Texans",
+        "shortDisplayName": "Texans",
+        "name": "Texans",
+        "location": "Houston",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "19",
+       "homeAway": "away",
+       "team": {
+        "id": "19",
+        "abbreviation": "NYG",
+        "displayName": "New York Giants",
+        "shortDisplayName": "Giants",
+        "name": "Giants",
+        "location": "New York",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 13:00 ET",
+       "shortDetail": "2026-10-25 13:00 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "HOU -10",
+       "spread": -10.0,
+       "overUnder": 42.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 13:00 ET",
+     "shortDetail": "2026-10-25 13:00 ET"
+    }
+   }
+  },
+  {
+   "id": "401873014",
+   "date": "2026-10-25T13:00:00-04:00",
+   "name": "Indianapolis Colts at Minnesota Vikings",
+   "shortName": "IND @ MIN",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873014",
+     "date": "2026-10-25T13:00:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "U.S. Bank Stadium"
+     },
+     "competitors": [
+      {
+       "id": "16",
+       "homeAway": "home",
+       "team": {
+        "id": "16",
+        "abbreviation": "MIN",
+        "displayName": "Minnesota Vikings",
+        "shortDisplayName": "Vikings",
+        "name": "Vikings",
+        "location": "Minnesota",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "11",
+       "homeAway": "away",
+       "team": {
+        "id": "11",
+        "abbreviation": "IND",
+        "displayName": "Indianapolis Colts",
+        "shortDisplayName": "Colts",
+        "name": "Colts",
+        "location": "Indianapolis",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 13:00 ET",
+       "shortDetail": "2026-10-25 13:00 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "MIN -6.5",
+       "spread": -6.5,
+       "overUnder": 41.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 13:00 ET",
+     "shortDetail": "2026-10-25 13:00 ET"
+    }
+   }
+  },
+  {
+   "id": "401873015",
+   "date": "2026-10-25T13:00:00-04:00",
+   "name": "Miami Dolphins at New York Jets",
+   "shortName": "MIA @ NYJ",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873015",
+     "date": "2026-10-25T13:00:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "MetLife Stadium"
+     },
+     "competitors": [
+      {
+       "id": "20",
+       "homeAway": "home",
+       "team": {
+        "id": "20",
+        "abbreviation": "NYJ",
+        "displayName": "New York Jets",
+        "shortDisplayName": "Jets",
+        "name": "Jets",
+        "location": "New York",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "15",
+       "homeAway": "away",
+       "team": {
+        "id": "15",
+        "abbreviation": "MIA",
+        "displayName": "Miami Dolphins",
+        "shortDisplayName": "Dolphins",
+        "name": "Dolphins",
+        "location": "Miami",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 13:00 ET",
+       "shortDetail": "2026-10-25 13:00 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "NYJ -4.5",
+       "spread": -4.5,
+       "overUnder": 39.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 13:00 ET",
+     "shortDetail": "2026-10-25 13:00 ET"
+    }
+   }
+  },
+  {
+   "id": "401873013",
+   "date": "2026-10-25T13:00:00-04:00",
+   "name": "Cleveland Browns at Tennessee Titans",
+   "shortName": "CLE @ TEN",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873013",
+     "date": "2026-10-25T13:00:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Nissan Stadium"
+     },
+     "competitors": [
+      {
+       "id": "10",
+       "homeAway": "home",
+       "team": {
+        "id": "10",
+        "abbreviation": "TEN",
+        "displayName": "Tennessee Titans",
+        "shortDisplayName": "Titans",
+        "name": "Titans",
+        "location": "Tennessee",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "5",
+       "homeAway": "away",
+       "team": {
+        "id": "5",
+        "abbreviation": "CLE",
+        "displayName": "Cleveland Browns",
+        "shortDisplayName": "Browns",
+        "name": "Browns",
+        "location": "Cleveland",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 13:00 ET",
+       "shortDetail": "2026-10-25 13:00 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "CLE -2.5",
+       "spread": 2.5,
+       "overUnder": 36.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 13:00 ET",
+     "shortDetail": "2026-10-25 13:00 ET"
+    }
+   }
+  },
+  {
+   "id": "401873019",
+   "date": "2026-10-25T16:05:00-04:00",
+   "name": "Denver Broncos at Arizona Cardinals",
+   "shortName": "DEN @ ARI",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873019",
+     "date": "2026-10-25T16:05:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "State Farm Stadium"
+     },
+     "competitors": [
+      {
+       "id": "22",
+       "homeAway": "home",
+       "team": {
+        "id": "22",
+        "abbreviation": "ARI",
+        "displayName": "Arizona Cardinals",
+        "shortDisplayName": "Cardinals",
+        "name": "Cardinals",
+        "location": "Arizona",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "7",
+       "homeAway": "away",
+       "team": {
+        "id": "7",
+        "abbreviation": "DEN",
+        "displayName": "Denver Broncos",
+        "shortDisplayName": "Broncos",
+        "name": "Broncos",
+        "location": "Denver",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 16:05 ET",
+       "shortDetail": "2026-10-25 16:05 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "DEN -4.5",
+       "spread": 4.5,
+       "overUnder": 43.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 16:05 ET",
+     "shortDetail": "2026-10-25 16:05 ET"
+    }
+   }
+  },
+  {
+   "id": "401873020",
+   "date": "2026-10-25T16:25:00-04:00",
+   "name": "Green Bay Packers at Detroit Lions",
+   "shortName": "GB @ DET",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873020",
+     "date": "2026-10-25T16:25:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Ford Field"
+     },
+     "competitors": [
+      {
+       "id": "8",
+       "homeAway": "home",
+       "team": {
+        "id": "8",
+        "abbreviation": "DET",
+        "displayName": "Detroit Lions",
+        "shortDisplayName": "Lions",
+        "name": "Lions",
+        "location": "Detroit",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "9",
+       "homeAway": "away",
+       "team": {
+        "id": "9",
+        "abbreviation": "GB",
+        "displayName": "Green Bay Packers",
+        "shortDisplayName": "Packers",
+        "name": "Packers",
+        "location": "Green Bay",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 16:25 ET",
+       "shortDetail": "2026-10-25 16:25 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "DET -3",
+       "spread": -3.0,
+       "overUnder": 53.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 16:25 ET",
+     "shortDetail": "2026-10-25 16:25 ET"
+    }
+   }
+  },
+  {
+   "id": "401873021",
+   "date": "2026-10-25T16:25:00-04:00",
+   "name": "Los Angeles Rams at Las Vegas Raiders",
+   "shortName": "LAR @ LV",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873021",
+     "date": "2026-10-25T16:25:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Allegiant Stadium"
+     },
+     "competitors": [
+      {
+       "id": "13",
+       "homeAway": "home",
+       "team": {
+        "id": "13",
+        "abbreviation": "LV",
+        "displayName": "Las Vegas Raiders",
+        "shortDisplayName": "Raiders",
+        "name": "Raiders",
+        "location": "Las Vegas",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "14",
+       "homeAway": "away",
+       "team": {
+        "id": "14",
+        "abbreviation": "LAR",
+        "displayName": "Los Angeles Rams",
+        "shortDisplayName": "Rams",
+        "name": "Rams",
+        "location": "Los Angeles",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 16:25 ET",
+       "shortDetail": "2026-10-25 16:25 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "LAR -3",
+       "spread": 3.0,
+       "overUnder": 48.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 16:25 ET",
+     "shortDetail": "2026-10-25 16:25 ET"
+    }
+   }
+  },
+  {
+   "id": "401873022",
+   "date": "2026-10-25T20:20:00-04:00",
+   "name": "Kansas City Chiefs at Seattle Seahawks",
+   "shortName": "KC @ SEA",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873022",
+     "date": "2026-10-25T20:20:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Lumen Field"
+     },
+     "competitors": [
+      {
+       "id": "26",
+       "homeAway": "home",
+       "team": {
+        "id": "26",
+        "abbreviation": "SEA",
+        "displayName": "Seattle Seahawks",
+        "shortDisplayName": "Seahawks",
+        "name": "Seahawks",
+        "location": "Seattle",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "12",
+       "homeAway": "away",
+       "team": {
+        "id": "12",
+        "abbreviation": "KC",
+        "displayName": "Kansas City Chiefs",
+        "shortDisplayName": "Chiefs",
+        "name": "Chiefs",
+        "location": "Kansas City",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Sunday 20:20 ET",
+       "shortDetail": "2026-10-25 20:20 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "SEA -3",
+       "spread": -3.0,
+       "overUnder": 42.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Sunday 20:20 ET",
+     "shortDetail": "2026-10-25 20:20 ET"
+    }
+   }
+  },
+  {
+   "id": "401873009",
+   "date": "2026-10-26T20:15:00-04:00",
+   "name": "Dallas Cowboys at Philadelphia Eagles",
+   "shortName": "DAL @ PHI",
+   "week": {
+    "number": 7
+   },
+   "season": {
+    "year": 2026,
+    "type": 2
+   },
+   "competitions": [
+    {
+     "id": "401873009",
+     "date": "2026-10-26T20:15:00-04:00",
+     "neutralSite": false,
+     "venue": {
+      "fullName": "Lincoln Financial Field"
+     },
+     "competitors": [
+      {
+       "id": "21",
+       "homeAway": "home",
+       "team": {
+        "id": "21",
+        "abbreviation": "PHI",
+        "displayName": "Philadelphia Eagles",
+        "shortDisplayName": "Eagles",
+        "name": "Eagles",
+        "location": "Philadelphia",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      },
+      {
+       "id": "6",
+       "homeAway": "away",
+       "team": {
+        "id": "6",
+        "abbreviation": "DAL",
+        "displayName": "Dallas Cowboys",
+        "shortDisplayName": "Cowboys",
+        "name": "Cowboys",
+        "location": "Dallas",
+        "color": "ffffff",
+        "alternateColor": "000000"
+       }
+      }
+     ],
+     "status": {
+      "clock": 3600,
+      "displayClock": "15:00",
+      "period": 0,
+      "type": {
+       "id": "1",
+       "name": "STATUS_SCHEDULED",
+       "state": "pre",
+       "completed": false,
+       "description": "Scheduled",
+       "detail": "Monday 20:15 ET",
+       "shortDetail": "2026-10-26 20:15 ET"
+      }
+     },
+     "odds": [
+      {
+       "provider": {
+        "name": "nflverse closing line"
+       },
+       "details": "DAL -4.5",
+       "spread": 4.5,
+       "overUnder": 44.5
+      }
+     ]
+    }
+   ],
+   "status": {
+    "clock": 3600,
+    "displayClock": "15:00",
+    "period": 0,
+    "type": {
+     "id": "1",
+     "name": "STATUS_SCHEDULED",
+     "state": "pre",
+     "completed": false,
+     "description": "Scheduled",
+     "detail": "Monday 20:15 ET",
+     "shortDetail": "2026-10-26 20:15 ET"
+    }
+   }
+  }
+ ]
+}
