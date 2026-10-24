@@ -75,7 +75,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       fourthDown: bool(env.FLAG_FOURTH_DOWN, true),
       chat: bool(env.FLAG_CHAT, true) && !!anthropicKey,
       clips: bool(env.FLAG_CLIPS, true) && !!xBearer,
-      sound: bool(env.FLAG_SOUND, false),
     },
   };
 }
