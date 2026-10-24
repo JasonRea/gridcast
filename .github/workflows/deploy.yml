@@ -33,5 +33,5 @@ jobs:
       - name: Smoke check production
         if: ${{ env.FLY_API_TOKEN != '' }}
         run: |
-          for i in $(seq 1 20); do curl -sf https://gridcast.fly.dev/api/health && exit 0; sleep 5; done
+          for i in $(seq 1 20); do curl -sf https://gridcast-028f.fly.dev/api/health && exit 0; sleep 5; done
           exit 1

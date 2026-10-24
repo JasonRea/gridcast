@@ -1,5 +1,5 @@
 # fly launch --no-deploy --copy-config  (first time), then: fly deploy
-app = "gridcast"
+app = "gridcast-028f"
 primary_region = "iad"
 
 [build]
