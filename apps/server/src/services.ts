@@ -9,6 +9,7 @@ import { createEspnClient, type EspnClient } from './espn/client.ts';
 import { GameRegistry } from './games/registry.ts';
 import { ScoreboardService } from './games/scoreboard.ts';
 import { createKalshiClient } from './kalshi/client.ts';
+import { kalshiHistory } from './kalshi/history.ts';
 import { OddsService } from './kalshi/poller.ts';
 import { LivePoller } from './live/poller.ts';
 import { ClipPoller, manualClips } from './clips/poller.ts';
@@ -57,6 +58,8 @@ export function createServices(
   );
   registry.addRebuildEnricher(commentary.enrichRebuild);
   registry.addRebuildEnricher(manualClips(config.assetsDir));
+  // Finished games replay with the market's real price history next to the model.
+  registry.addRebuildEnricher(kalshiHistory(join(config.fixturesDir, 'kalshi')));
   registry.onSession((s) => commentary.attach(s));
   const kalshi = createKalshiClient({
     fixturesDir: config.fixturesDir,

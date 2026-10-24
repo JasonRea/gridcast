@@ -13,6 +13,8 @@ const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl';
 const KALSHI = 'https://external-api.kalshi.com/trade-api/v2';
 
 const DEMO_EVENT = process.env.DEMO_GAME_ID ?? '401873002';
+/** Kalshi event for the demo game (PIT @ TB, Oct 18 2026); its price history is saved below. */
+const DEMO_KALSHI_EVENT = process.env.DEMO_KALSHI_EVENT ?? 'KXNFLGAME-26OCT18PITTB';
 const TEAMS: Record<string, string> = { PIT: '23', NO: '18', TB: '27' };
 
 async function save(rel: string, url: string): Promise<void> {
@@ -40,3 +42,28 @@ await save(
   'kalshi/events_KXNFLGAME.json',
   `${KALSHI}/events?series_ticker=KXNFLGAME&status=open&with_nested_markets=true&limit=100`,
 );
+
+// Demo game market price history: one candlestick per minute from an hour before kickoff to the
+// market close, for each team's market. The replay weaves these in as odds events.
+{
+  const res = await fetch(`${KALSHI}/events/${DEMO_KALSHI_EVENT}?with_nested_markets=true`, {
+    headers: { 'user-agent': 'gridcast-fixtures' },
+  });
+  if (!res.ok) {
+    console.error(`FAIL ${res.status} Kalshi event ${DEMO_KALSHI_EVENT}`);
+  } else {
+    const body = (await res.json()) as {
+      event?: { markets?: { ticker: string; occurrence_datetime?: string; close_time?: string }[] };
+    };
+    for (const m of body.event?.markets ?? []) {
+      // occurrence_datetime is the expected game end (kickoff + 3 h): start an hour before kickoff.
+      const start = Math.floor(Date.parse(m.occurrence_datetime ?? '') / 1000 - 4 * 3600);
+      const close = Date.parse(m.close_time ?? '') / 1000;
+      if (!Number.isFinite(start) || !Number.isFinite(close)) continue;
+      await save(
+        `kalshi/candles_${m.ticker}.json`,
+        `${KALSHI}/series/KXNFLGAME/markets/${m.ticker}/candlesticks?start_ts=${start}&end_ts=${Math.ceil(close)}&period_interval=1`,
+      );
+    }
+  }
+}

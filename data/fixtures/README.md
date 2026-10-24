@@ -17,6 +17,7 @@ the real data. The nflverse files are still used for the parser accuracy harness
 | `espn/roster_{PIT,NO,TB}.json` | Rosters |
 | `espn/depthchart_{PIT,NO,TB}.json` | Depth charts by formation group (`site.api.espn.com/.../teams/{id}/depthcharts`) |
 | `kalshi/events_KXNFLGAME.json` | Kalshi `/events` snapshot of open NFL game markets (includes `KXNFLGAME-26OCT25PITNO`) |
+| `kalshi/candles_KXNFLGAME-26OCT18PITTB-{PIT,TB}.json` | Demo game market price history: Kalshi 1-minute candlesticks from an hour before kickoff to the market close |
 | `nflverse/pbp_2026_06_PIT_TB.csv` | Demo game play-by-play, all nflverse columns |
 | `nflverse/parser_eval_{2024,2025,2026}.csv.gz` | Labeled plays from 3 seasons for the parser accuracy harness |
 
