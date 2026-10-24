@@ -70,11 +70,10 @@ export function PlaybackControls({
           {!muted && 'On air'}
         </Button>
       )}
-      <div
-        className="ml-1 flex rounded-md bg-secondary p-0.5"
-        role="group"
-        aria-label="Animation speed"
-      >
+      <span className="ml-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        Animation
+      </span>
+      <div className="flex rounded-md bg-secondary p-0.5" role="group" aria-label="Animation speed">
         {ANIM_SPEEDS.map((s) => (
           <button
             key={s}
@@ -92,6 +91,9 @@ export function PlaybackControls({
       </div>
       {replay && (
         <>
+          <span className="ml-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Game speed
+          </span>
           <div
             className="flex rounded-md bg-secondary p-0.5"
             role="group"
@@ -107,7 +109,7 @@ export function PlaybackControls({
                     ? 'bg-white text-black'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
-                title="Game replay speed"
+                title="How fast the game's plays arrive"
               >
                 {s}x
               </button>
