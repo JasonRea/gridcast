@@ -18,6 +18,7 @@ import { Scorebug } from '@/components/game/Scorebug';
 import { StoppageCard } from '@/components/game/StoppageCard';
 import { api } from '@/lib/api';
 import { Announcer } from '@/lib/announcer';
+import { Crowd } from '@/lib/sound';
 import { playLabel } from '@/lib/plays';
 import { GameStream } from '@/lib/stream';
 import { useGame } from '@/store/game';
@@ -108,6 +109,21 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     [replaySpeed],
   );
   const lastPresented = presentedPlays[presentedPlays.length - 1];
+
+  // Sound design (P1): crowd swell on big win-probability swings, whistle on stoppages.
+  const crowd = useRef<Crowd | null>(null);
+  if (!crowd.current && features.sound) crowd.current = new Crowd();
+  useEffect(() => {
+    crowd.current?.setOn(!g.muted);
+  }, [g.muted]);
+  useEffect(() => {
+    if (lastPresented?.wpBefore !== undefined && lastPresented.wpAfter !== undefined) {
+      crowd.current?.swell((lastPresented.wpAfter - lastPresented.wpBefore) * 100);
+    }
+  }, [lastPresented]);
+  useEffect(() => {
+    if (g.card) crowd.current?.whistle();
+  }, [g.card]);
 
   // Chat citations like [Q3 4:12] replay that play on the field.
   const cite = useCallback(
