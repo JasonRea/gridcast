@@ -129,6 +129,21 @@ export class CommentaryService {
     return out;
   };
 
+  /** Generates every missing Claude line for a game now (pnpm pregen). Returns the cache. */
+  async pregenerate(session: GameSession): Promise<Record<string, LinePair>> {
+    const events = session.log
+      .all()
+      .map((e) => e.event)
+      .filter((e) => e.kind !== 'commentary');
+    const history: GameEvent[] = [];
+    for (const e of events) {
+      history.push(e);
+      if (needsLines(e) && !this.cache.get(session.gameId, e.id))
+        await this.lines(session, e, history);
+    }
+    return this.cache.all(session.gameId);
+  }
+
   private async fill(session: GameSession, events: GameEvent[]) {
     if (this.filling.has(session.gameId)) return;
     this.filling.add(session.gameId);
