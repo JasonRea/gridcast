@@ -139,6 +139,8 @@ export class GameSession extends EventEmitter<{
   meta: GameMeta;
   rosters: Record<string, RosterPlayer[]> = {};
   depth: Record<string, DepthChart> = {};
+  /** Latest raw summary (used for preview data on upcoming games). */
+  summary: EspnSummary;
   /** ms epoch of the last successful upstream update. */
   lastUpdate: number | undefined;
   /** ms epoch of the last time a client looked at this game. */
@@ -155,6 +157,7 @@ export class GameSession extends EventEmitter<{
   ) {
     super();
     this.setMaxListeners(0);
+    this.summary = summary;
     const card = cardFromSummary(summary);
     const meta = metaFromSummary(summary);
     if (!card || !meta) throw new Error(`summary ${gameId} has no competition`);
@@ -208,6 +211,7 @@ export class GameSession extends EventEmitter<{
 
   /** Feeds a summary through the normalizer (live polling and the first live load). */
   ingestSummary(summary: EspnSummary): GameEvent[] {
+    this.summary = summary;
     const card = cardFromSummary(summary);
     if (card) {
       this.card = { ...this.card, ...card };

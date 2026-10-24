@@ -10,6 +10,7 @@ import { currentWeek, type ScoreboardService } from './games/scoreboard.ts';
 import type { OddsService } from './kalshi/poller.ts';
 import { adminRoutes } from './routes/admin.ts';
 import { streamGame } from './routes/stream.ts';
+import { extractPreview, StorylineWriter, templateStorylines } from './games/preview.ts';
 
 export type AppDeps = {
   config: Config;
@@ -35,6 +36,10 @@ const MIME: Record<string, string> = {
 export function createApp(deps: AppDeps): Hono {
   const { config, registry, scoreboard } = deps;
   const app = new Hono();
+  const storylines = new StorylineWriter(
+    config.flags.preview ? config.anthropicKey : undefined,
+    config.chatModel,
+  );
   app.use('/api/*', cors());
 
   app.get('/api/health', (c) => c.json({ ok: true, offline: config.offline }));
@@ -58,15 +63,22 @@ export function createApp(deps: AppDeps): Hono {
     if (!s) return c.json({ error: 'game not found' }, 404);
     s.lastViewed = Date.now();
     const state = s.state;
+    const kalshi = deps.odds?.homeProb(s.gameId);
+    let preview: GameDetail['preview'];
+    if (config.flags.preview && s.status === 'pre') {
+      const p = extractPreview(s.summary, s.card);
+      const fallback = templateStorylines(s.card, p, kalshi);
+      const facts = { game: s.card, preview: p, kalshiHomeWinProb: kalshi };
+      preview = { ...p, storylines: storylines.get(s.gameId, facts, fallback) };
+    }
     const detail: GameDetail = {
       ...s.card,
       ...(s.gameId === config.featuredGameId ? { featured: true } : {}),
       ...(s.gameId === config.demoGameId ? { demo: true } : {}),
       source: s.source,
       ...(state ? { state } : {}),
-      ...(deps.odds?.homeProb(s.gameId) !== undefined
-        ? { kalshiHomeProb: deps.odds.homeProb(s.gameId)! }
-        : {}),
+      ...(kalshi !== undefined ? { kalshiHomeProb: kalshi } : {}),
+      ...(preview ? { preview } : {}),
       rosters: s.rosters,
       depth: s.depth,
       eventCount: s.log.length,
