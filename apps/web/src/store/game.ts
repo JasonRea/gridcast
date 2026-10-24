@@ -46,6 +46,8 @@ export type GameStore = {
   connected: boolean;
   paused: boolean;
   animSpeed: number;
+  /** Announcers and sound start muted (loud judging room). */
+  muted: boolean;
 
   reset: (gameId: string) => void;
   applyInstant: (entries: LoggedEvent[]) => void;
@@ -57,6 +59,7 @@ export type GameStore = {
   setAnimSpeed: (s: number) => void;
   setConnected: (c: boolean) => void;
   setStreamSpeed: (s: number) => void;
+  setMuted: (m: boolean) => void;
 };
 
 const STOPPAGE_HOLD_MS = 2200;
@@ -165,6 +168,7 @@ export const useGame = create<GameStore>((set, get) => {
     connected: false,
     paused: false,
     animSpeed: 1,
+    muted: true,
 
     reset: (gameId) => {
       clearTimeout(stoppageTimer);
@@ -296,5 +300,6 @@ export const useGame = create<GameStore>((set, get) => {
     setAnimSpeed: (animSpeed) => set({ animSpeed }),
     setConnected: (connected) => set({ connected }),
     setStreamSpeed: (streamSpeed) => set({ streamSpeed }),
+    setMuted: (muted) => set({ muted }),
   };
 });

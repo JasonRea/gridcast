@@ -9,6 +9,7 @@ import type { GameRegistry } from './games/registry.ts';
 import { currentWeek, type ScoreboardService } from './games/scoreboard.ts';
 import type { OddsService } from './kalshi/poller.ts';
 import { adminRoutes } from './routes/admin.ts';
+import { ttsRoutes } from './routes/tts.ts';
 import { streamGame } from './routes/stream.ts';
 import { extractPreview, StorylineWriter, templateStorylines } from './games/preview.ts';
 
@@ -82,7 +83,7 @@ export function createApp(deps: AppDeps): Hono {
       rosters: s.rosters,
       depth: s.depth,
       eventCount: s.log.length,
-      features: config.flags,
+      features: { ...config.flags, ttsServer: !!config.elevenLabsKey && config.flags.tts === true },
     };
     return c.json(detail);
   });
@@ -103,6 +104,7 @@ export function createApp(deps: AppDeps): Hono {
   });
 
   adminRoutes(app, deps);
+  ttsRoutes(app, config);
   deps.extend?.(app);
 
   // Serve the built web app (single deploy) with SPA fallback.

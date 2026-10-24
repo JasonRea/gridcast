@@ -16,6 +16,7 @@ import { Preview } from '@/components/game/Preview';
 import { Scorebug } from '@/components/game/Scorebug';
 import { StoppageCard } from '@/components/game/StoppageCard';
 import { api } from '@/lib/api';
+import { Announcer } from '@/lib/announcer';
 import { GameStream } from '@/lib/stream';
 import { useGame } from '@/store/game';
 
@@ -57,6 +58,38 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     g.animSpeed * (isReplay ? Math.max(1, g.streamSpeed / 2) : 1) * (queuedPlays > 2 ? 2 : 1);
 
   const onDone = useCallback((id: string) => useGame.getState().finishPlay(id), []);
+
+  // Two-voice announcers (P1): speak each presented play's lines once, play-by-play first.
+  const announcer = useRef<Announcer | null>(null);
+  const spoken = useRef(new Set<string>());
+  if (!announcer.current && features.tts) announcer.current = new Announcer(!!features.ttsServer);
+  useEffect(() => {
+    announcer.current?.setMuted(g.muted);
+  }, [g.muted]);
+  useEffect(() => () => announcer.current?.stop(), []);
+  useEffect(() => {
+    const a = announcer.current;
+    if (!a || g.muted) return;
+    a.setLatest(g.presented - 1);
+    for (let i = Math.max(0, g.presented - 2); i < g.presented; i++) {
+      const p = g.plays[i];
+      if (!p) continue;
+      for (const voice of ['pbp', 'color'] as const) {
+        const text = g.commentary[p.id]?.[voice];
+        const key = `${p.id}:${voice}`;
+        if (text && !spoken.current.has(key)) {
+          spoken.current.add(key);
+          a.say({ text, voice, playIndex: i });
+        }
+      }
+    }
+    const card = g.card;
+    const cardLine = card ? g.commentary[card.id]?.color : undefined;
+    if (card && cardLine && !spoken.current.has(`${card.id}:color`)) {
+      spoken.current.add(`${card.id}:color`);
+      a.say({ text: cardLine, voice: 'color', playIndex: g.presented - 1 });
+    }
+  }, [g.presented, g.commentary, g.card, g.plays, g.muted]);
 
   const timelineEntries: LoggedEvent[] = isReplay
     ? fullLog
@@ -118,6 +151,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
       } else if (e.key === 'ArrowLeft') prev();
       else if (e.key === 'ArrowRight') next();
       else if (e.key === 'b' || e.key === 'B') void nextBig();
+      else if (e.key === 'm' || e.key === 'M') s.setMuted(!s.muted);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -192,6 +226,9 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               replay={isReplay}
               streamSpeed={replaySpeed}
               onStreamSpeed={changeReplaySpeed}
+              {...(features.tts || features.sound
+                ? { muted: g.muted, onMute: () => g.setMuted(!g.muted) }
+                : {})}
             />
             {isReplay && g.done && !g.queue.length && (
               <span className="text-xs text-muted-foreground">End of game</span>

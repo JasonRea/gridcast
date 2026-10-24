@@ -1,4 +1,4 @@
-import { Pause, Play, RotateCcw, SkipBack, SkipForward, Zap } from 'lucide-react';
+import { Pause, Play, RotateCcw, SkipBack, SkipForward, Volume2, VolumeX, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -17,6 +17,8 @@ export function PlaybackControls({
   replay,
   streamSpeed,
   onStreamSpeed,
+  muted,
+  onMute,
 }: {
   paused: boolean;
   onPause: () => void;
@@ -29,6 +31,9 @@ export function PlaybackControls({
   replay: boolean;
   streamSpeed: number;
   onStreamSpeed: (s: number) => void;
+  /** Undefined when there is nothing to hear (TTS and sound flags off). */
+  muted?: boolean;
+  onMute?: () => void;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
@@ -54,6 +59,17 @@ export function PlaybackControls({
       <Button size="icon" variant="secondary" onClick={onReplay} aria-label="Replay this play">
         <RotateCcw />
       </Button>
+      {muted !== undefined && onMute && (
+        <Button
+          size={muted ? 'icon' : 'sm'}
+          variant={muted ? 'secondary' : 'default'}
+          onClick={onMute}
+          aria-label={muted ? 'Unmute announcers (M)' : 'Mute (M)'}
+        >
+          {muted ? <VolumeX /> : <Volume2 />}
+          {!muted && 'On air'}
+        </Button>
+      )}
       <div
         className="ml-1 flex rounded-md bg-secondary p-0.5"
         role="group"
