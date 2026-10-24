@@ -17,7 +17,10 @@ const errors = [];
 async function visit(path, name, viewport, wait) {
   const page = await browser.newPage({ viewport });
   page.on('console', (m) => {
-    if (m.type() === 'error' && !IGNORE.some((r) => r.test(m.text()) || r.test(m.location().url ?? ''))) {
+    if (
+      m.type() === 'error' &&
+      !IGNORE.some((r) => r.test(m.text()) || r.test(m.location().url ?? ''))
+    ) {
       errors.push(`${name}: ${m.text()}`);
     }
   });

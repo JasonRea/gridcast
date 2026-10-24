@@ -6,7 +6,7 @@
 import type { Commentary, GameEvent, PlayEvent, StoppageEvent } from '@gridcast/types';
 import type { GameSession } from '../games/session.ts';
 import { log } from '../util/logger.ts';
-import { CommentaryCache } from './cache.ts';
+import type { CommentaryCache } from './cache.ts';
 import type { Writer } from './claude.ts';
 import {
   allowedVocabulary,

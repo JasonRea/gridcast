@@ -6,6 +6,8 @@ import {
   type Commentary,
   type EspnSummary,
   type GameEvent,
+  type PlayEvent,
+  type StoppageEvent,
 } from '@gridcast/types';
 import { CommentaryCache } from '../src/commentary/cache.ts';
 import type { Writer } from '../src/commentary/claude.ts';
@@ -50,8 +52,10 @@ describe('commentary on the fixture game', () => {
     const s = (await registry.get(DEMO))!;
     const events = s.log.all().map((e) => e.event);
     const c = lines(events);
-    const plays = events.filter((e) => e.kind === 'play' && e.parsed.type !== 'other');
-    const stops = events.filter((e) => e.kind === 'stoppage');
+    const plays = events.filter(
+      (e): e is PlayEvent => e.kind === 'play' && e.parsed.type !== 'other',
+    );
+    const stops = events.filter((e): e is StoppageEvent => e.kind === 'stoppage');
     for (const p of plays) expect(c.some((x) => x.playId === p.id && x.voice === 'pbp')).toBe(true);
     for (const st of stops)
       expect(c.some((x) => x.playId === st.id && x.voice === 'color')).toBe(true);

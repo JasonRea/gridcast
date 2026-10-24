@@ -20,7 +20,8 @@
     "parser:eval": "pnpm --filter @gridcast/parser eval",
     "pregen": "pnpm --filter @gridcast/server pregen",
     "fixtures:fetch": "pnpm --filter @gridcast/server fixtures:fetch",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
