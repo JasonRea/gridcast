@@ -19,7 +19,9 @@
     "replay": "pnpm --filter @gridcast/server replay",
     "parser:eval": "pnpm --filter @gridcast/parser eval",
     "pregen": "pnpm --filter @gridcast/server pregen",
-    "fixtures:fetch": "pnpm --filter @gridcast/server fixtures:fetch"
+    "fixtures:fetch": "pnpm --filter @gridcast/server fixtures:fetch",
+    "smoke": "node scripts/smoke.mjs",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -28,6 +30,7 @@
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
+    "playwright": "1.63.0",
     "prettier": "^3.9.10",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",

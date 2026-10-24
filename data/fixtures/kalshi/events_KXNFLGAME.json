@@ -1,0 +1,475 @@
+{
+ "_synthetic": true,
+ "_source": "Shape per docs.kalshi.com GET /events?series_ticker=KXNFLGAME&with_nested_markets=true. Prices are de-vigged nflverse closing moneylines, NOT Kalshi trades.",
+ "events": [
+  {
+   "event_ticker": "KXNFLGAME-26OCT25PITNO",
+   "series_ticker": "KXNFLGAME",
+   "title": "Steelers at Saints",
+   "sub_title": "PIT at NO (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25PITNO-PIT",
+     "event_ticker": "KXNFLGAME-26OCT25PITNO",
+     "title": "Pittsburgh at New Orleans Winner?",
+     "yes_sub_title": "Pittsburgh",
+     "status": "active",
+     "yes_bid": 59,
+     "yes_ask": 61,
+     "last_price": 60,
+     "yes_bid_dollars": "0.5900",
+     "yes_ask_dollars": "0.6100",
+     "last_price_dollars": "0.6000",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25PITNO-NO",
+     "event_ticker": "KXNFLGAME-26OCT25PITNO",
+     "title": "Pittsburgh at New Orleans Winner?",
+     "yes_sub_title": "New Orleans",
+     "status": "active",
+     "yes_bid": 39,
+     "yes_ask": 41,
+     "last_price": 40,
+     "yes_bid_dollars": "0.3900",
+     "yes_ask_dollars": "0.4100",
+     "last_price_dollars": "0.4000",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25SFATL",
+   "series_ticker": "KXNFLGAME",
+   "title": "49ers at Falcons",
+   "sub_title": "SF at ATL (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25SFATL-SF",
+     "event_ticker": "KXNFLGAME-26OCT25SFATL",
+     "title": "San Francisco at Atlanta Winner?",
+     "yes_sub_title": "San Francisco",
+     "status": "active",
+     "yes_bid": 56,
+     "yes_ask": 58,
+     "last_price": 57,
+     "yes_bid_dollars": "0.5600",
+     "yes_ask_dollars": "0.5800",
+     "last_price_dollars": "0.5700",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25SFATL-ATL",
+     "event_ticker": "KXNFLGAME-26OCT25SFATL",
+     "title": "San Francisco at Atlanta Winner?",
+     "yes_sub_title": "Atlanta",
+     "status": "active",
+     "yes_bid": 42,
+     "yes_ask": 44,
+     "last_price": 43,
+     "yes_bid_dollars": "0.4200",
+     "yes_ask_dollars": "0.4400",
+     "last_price_dollars": "0.4300",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25CINBAL",
+   "series_ticker": "KXNFLGAME",
+   "title": "Bengals at Ravens",
+   "sub_title": "CIN at BAL (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25CINBAL-CIN",
+     "event_ticker": "KXNFLGAME-26OCT25CINBAL",
+     "title": "Cincinnati at Baltimore Winner?",
+     "yes_sub_title": "Cincinnati",
+     "status": "active",
+     "yes_bid": 51,
+     "yes_ask": 53,
+     "last_price": 52,
+     "yes_bid_dollars": "0.5100",
+     "yes_ask_dollars": "0.5300",
+     "last_price_dollars": "0.5200",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25CINBAL-BAL",
+     "event_ticker": "KXNFLGAME-26OCT25CINBAL",
+     "title": "Cincinnati at Baltimore Winner?",
+     "yes_sub_title": "Baltimore",
+     "status": "active",
+     "yes_bid": 47,
+     "yes_ask": 49,
+     "last_price": 48,
+     "yes_bid_dollars": "0.4700",
+     "yes_ask_dollars": "0.4900",
+     "last_price_dollars": "0.4800",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25TBCAR",
+   "series_ticker": "KXNFLGAME",
+   "title": "Buccaneers at Panthers",
+   "sub_title": "TB at CAR (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25TBCAR-TB",
+     "event_ticker": "KXNFLGAME-26OCT25TBCAR",
+     "title": "Tampa Bay at Carolina Winner?",
+     "yes_sub_title": "Tampa Bay",
+     "status": "active",
+     "yes_bid": 41,
+     "yes_ask": 43,
+     "last_price": 42,
+     "yes_bid_dollars": "0.4100",
+     "yes_ask_dollars": "0.4300",
+     "last_price_dollars": "0.4200",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25TBCAR-CAR",
+     "event_ticker": "KXNFLGAME-26OCT25TBCAR",
+     "title": "Tampa Bay at Carolina Winner?",
+     "yes_sub_title": "Carolina",
+     "status": "active",
+     "yes_bid": 57,
+     "yes_ask": 59,
+     "last_price": 58,
+     "yes_bid_dollars": "0.5700",
+     "yes_ask_dollars": "0.5900",
+     "last_price_dollars": "0.5800",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25NYGHOU",
+   "series_ticker": "KXNFLGAME",
+   "title": "Giants at Texans",
+   "sub_title": "NYG at HOU (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25NYGHOU-NYG",
+     "event_ticker": "KXNFLGAME-26OCT25NYGHOU",
+     "title": "New York at Houston Winner?",
+     "yes_sub_title": "New York",
+     "status": "active",
+     "yes_bid": 19,
+     "yes_ask": 21,
+     "last_price": 20,
+     "yes_bid_dollars": "0.1900",
+     "yes_ask_dollars": "0.2100",
+     "last_price_dollars": "0.2000",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25NYGHOU-HOU",
+     "event_ticker": "KXNFLGAME-26OCT25NYGHOU",
+     "title": "New York at Houston Winner?",
+     "yes_sub_title": "Houston",
+     "status": "active",
+     "yes_bid": 79,
+     "yes_ask": 81,
+     "last_price": 80,
+     "yes_bid_dollars": "0.7900",
+     "yes_ask_dollars": "0.8100",
+     "last_price_dollars": "0.8000",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25INDMIN",
+   "series_ticker": "KXNFLGAME",
+   "title": "Colts at Vikings",
+   "sub_title": "IND at MIN (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25INDMIN-IND",
+     "event_ticker": "KXNFLGAME-26OCT25INDMIN",
+     "title": "Indianapolis at Minnesota Winner?",
+     "yes_sub_title": "Indianapolis",
+     "status": "active",
+     "yes_bid": 28,
+     "yes_ask": 30,
+     "last_price": 29,
+     "yes_bid_dollars": "0.2800",
+     "yes_ask_dollars": "0.3000",
+     "last_price_dollars": "0.2900",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25INDMIN-MIN",
+     "event_ticker": "KXNFLGAME-26OCT25INDMIN",
+     "title": "Indianapolis at Minnesota Winner?",
+     "yes_sub_title": "Minnesota",
+     "status": "active",
+     "yes_bid": 70,
+     "yes_ask": 72,
+     "last_price": 71,
+     "yes_bid_dollars": "0.7000",
+     "yes_ask_dollars": "0.7200",
+     "last_price_dollars": "0.7100",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25MIANYJ",
+   "series_ticker": "KXNFLGAME",
+   "title": "Dolphins at Jets",
+   "sub_title": "MIA at NYJ (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25MIANYJ-MIA",
+     "event_ticker": "KXNFLGAME-26OCT25MIANYJ",
+     "title": "Miami at New York Winner?",
+     "yes_sub_title": "Miami",
+     "status": "active",
+     "yes_bid": 33,
+     "yes_ask": 35,
+     "last_price": 34,
+     "yes_bid_dollars": "0.3300",
+     "yes_ask_dollars": "0.3500",
+     "last_price_dollars": "0.3400",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25MIANYJ-NYJ",
+     "event_ticker": "KXNFLGAME-26OCT25MIANYJ",
+     "title": "Miami at New York Winner?",
+     "yes_sub_title": "New York",
+     "status": "active",
+     "yes_bid": 65,
+     "yes_ask": 67,
+     "last_price": 66,
+     "yes_bid_dollars": "0.6500",
+     "yes_ask_dollars": "0.6700",
+     "last_price_dollars": "0.6600",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25CLETEN",
+   "series_ticker": "KXNFLGAME",
+   "title": "Browns at Titans",
+   "sub_title": "CLE at TEN (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25CLETEN-CLE",
+     "event_ticker": "KXNFLGAME-26OCT25CLETEN",
+     "title": "Cleveland at Tennessee Winner?",
+     "yes_sub_title": "Cleveland",
+     "status": "active",
+     "yes_bid": 53,
+     "yes_ask": 55,
+     "last_price": 54,
+     "yes_bid_dollars": "0.5300",
+     "yes_ask_dollars": "0.5500",
+     "last_price_dollars": "0.5400",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25CLETEN-TEN",
+     "event_ticker": "KXNFLGAME-26OCT25CLETEN",
+     "title": "Cleveland at Tennessee Winner?",
+     "yes_sub_title": "Tennessee",
+     "status": "active",
+     "yes_bid": 45,
+     "yes_ask": 47,
+     "last_price": 46,
+     "yes_bid_dollars": "0.4500",
+     "yes_ask_dollars": "0.4700",
+     "last_price_dollars": "0.4600",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25DENARI",
+   "series_ticker": "KXNFLGAME",
+   "title": "Broncos at Cardinals",
+   "sub_title": "DEN at ARI (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25DENARI-DEN",
+     "event_ticker": "KXNFLGAME-26OCT25DENARI",
+     "title": "Denver at Arizona Winner?",
+     "yes_sub_title": "Denver",
+     "status": "active",
+     "yes_bid": 66,
+     "yes_ask": 68,
+     "last_price": 67,
+     "yes_bid_dollars": "0.6600",
+     "yes_ask_dollars": "0.6800",
+     "last_price_dollars": "0.6700",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25DENARI-ARI",
+     "event_ticker": "KXNFLGAME-26OCT25DENARI",
+     "title": "Denver at Arizona Winner?",
+     "yes_sub_title": "Arizona",
+     "status": "active",
+     "yes_bid": 32,
+     "yes_ask": 34,
+     "last_price": 33,
+     "yes_bid_dollars": "0.3200",
+     "yes_ask_dollars": "0.3400",
+     "last_price_dollars": "0.3300",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25GBDET",
+   "series_ticker": "KXNFLGAME",
+   "title": "Packers at Lions",
+   "sub_title": "GB at DET (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25GBDET-GB",
+     "event_ticker": "KXNFLGAME-26OCT25GBDET",
+     "title": "Green Bay at Detroit Winner?",
+     "yes_sub_title": "Green Bay",
+     "status": "active",
+     "yes_bid": 37,
+     "yes_ask": 39,
+     "last_price": 38,
+     "yes_bid_dollars": "0.3700",
+     "yes_ask_dollars": "0.3900",
+     "last_price_dollars": "0.3800",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25GBDET-DET",
+     "event_ticker": "KXNFLGAME-26OCT25GBDET",
+     "title": "Green Bay at Detroit Winner?",
+     "yes_sub_title": "Detroit",
+     "status": "active",
+     "yes_bid": 61,
+     "yes_ask": 63,
+     "last_price": 62,
+     "yes_bid_dollars": "0.6100",
+     "yes_ask_dollars": "0.6300",
+     "last_price_dollars": "0.6200",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25LARLV",
+   "series_ticker": "KXNFLGAME",
+   "title": "Rams at Raiders",
+   "sub_title": "LAR at LV (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25LARLV-LAR",
+     "event_ticker": "KXNFLGAME-26OCT25LARLV",
+     "title": "Los Angeles at Las Vegas Winner?",
+     "yes_sub_title": "Los Angeles",
+     "status": "active",
+     "yes_bid": 60,
+     "yes_ask": 62,
+     "last_price": 61,
+     "yes_bid_dollars": "0.6000",
+     "yes_ask_dollars": "0.6200",
+     "last_price_dollars": "0.6100",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25LARLV-LV",
+     "event_ticker": "KXNFLGAME-26OCT25LARLV",
+     "title": "Los Angeles at Las Vegas Winner?",
+     "yes_sub_title": "Las Vegas",
+     "status": "active",
+     "yes_bid": 38,
+     "yes_ask": 40,
+     "last_price": 39,
+     "yes_bid_dollars": "0.3800",
+     "yes_ask_dollars": "0.4000",
+     "last_price_dollars": "0.3900",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT25KCSEA",
+   "series_ticker": "KXNFLGAME",
+   "title": "Chiefs at Seahawks",
+   "sub_title": "KC at SEA (Oct 25)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT25KCSEA-KC",
+     "event_ticker": "KXNFLGAME-26OCT25KCSEA",
+     "title": "Kansas City at Seattle Winner?",
+     "yes_sub_title": "Kansas City",
+     "status": "active",
+     "yes_bid": 43,
+     "yes_ask": 45,
+     "last_price": 44,
+     "yes_bid_dollars": "0.4300",
+     "yes_ask_dollars": "0.4500",
+     "last_price_dollars": "0.4400",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT25KCSEA-SEA",
+     "event_ticker": "KXNFLGAME-26OCT25KCSEA",
+     "title": "Kansas City at Seattle Winner?",
+     "yes_sub_title": "Seattle",
+     "status": "active",
+     "yes_bid": 55,
+     "yes_ask": 57,
+     "last_price": 56,
+     "yes_bid_dollars": "0.5500",
+     "yes_ask_dollars": "0.5700",
+     "last_price_dollars": "0.5600",
+     "volume": 0
+    }
+   ]
+  },
+  {
+   "event_ticker": "KXNFLGAME-26OCT26DALPHI",
+   "series_ticker": "KXNFLGAME",
+   "title": "Cowboys at Eagles",
+   "sub_title": "DAL at PHI (Oct 26)",
+   "markets": [
+    {
+     "ticker": "KXNFLGAME-26OCT26DALPHI-DAL",
+     "event_ticker": "KXNFLGAME-26OCT26DALPHI",
+     "title": "Dallas at Philadelphia Winner?",
+     "yes_sub_title": "Dallas",
+     "status": "active",
+     "yes_bid": 65,
+     "yes_ask": 67,
+     "last_price": 66,
+     "yes_bid_dollars": "0.6500",
+     "yes_ask_dollars": "0.6700",
+     "last_price_dollars": "0.6600",
+     "volume": 0
+    },
+    {
+     "ticker": "KXNFLGAME-26OCT26DALPHI-PHI",
+     "event_ticker": "KXNFLGAME-26OCT26DALPHI",
+     "title": "Dallas at Philadelphia Winner?",
+     "yes_sub_title": "Philadelphia",
+     "status": "active",
+     "yes_bid": 33,
+     "yes_ask": 35,
+     "last_price": 34,
+     "yes_bid_dollars": "0.3300",
+     "yes_ask_dollars": "0.3500",
+     "last_price_dollars": "0.3400",
+     "volume": 0
+    }
+   ]
+  }
+ ],
+ "cursor": ""
+}

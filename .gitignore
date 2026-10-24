@@ -13,3 +13,5 @@ data/logs/*
 !data/logs/.gitkeep
 data/cache/
 data/raw/
+smoke-out/
+data/recordings/

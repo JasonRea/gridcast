@@ -1,8 +1,28 @@
 import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
+import { createApp } from './app.ts';
+import { loadConfig } from './config.ts';
+import { createServices } from './services.ts';
+import { log } from './util/logger.ts';
 
-const app = new Hono();
-app.get('/api/health', (c) => c.json({ ok: true }));
+const config = loadConfig();
+const services = createServices(config);
+const app = createApp(services);
 
-const port = Number(process.env.PORT ?? 8787);
-serve({ fetch: app.fetch, port }, () => console.log(`gridcast server on :${port}`));
+// Warm the demo and featured games so the first page load is instant.
+void services.registry.get(config.demoGameId);
+void services.registry.get(config.featuredGameId);
+
+services.odds.start();
+if (!config.offline) {
+  services.live.start();
+  services.clips?.start();
+}
+
+serve({ fetch: app.fetch, port: config.port }, () => {
+  log.info(`gridcast server on :${config.port}`, {
+    offline: config.offline,
+    featured: config.featuredGameId,
+    demo: config.demoGameId,
+    commentary: services.commentary.usesClaude ? config.commentaryModel : 'templates',
+  });
+});

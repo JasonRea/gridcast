@@ -2,3 +2,4 @@ data/
 pnpm-lock.yaml
 **/dist/
 *.gen.ts
+*.md
