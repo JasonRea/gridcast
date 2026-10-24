@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { GameDetail } from '@gridcast/types';
 import { TeamMark } from '@/components/TeamMark';
+import { WpBar } from '@/components/WpBar';
 import { kickoffLabel } from '@/lib/format';
 
 function countdown(ms: number): string {
@@ -36,6 +37,11 @@ export function Preview({ detail }: { detail: GameDetail }) {
         {detail.spread && <span>Line {detail.spread}</span>}
         {detail.total !== undefined && <span>O/U {detail.total}</span>}
       </div>
+      {detail.kalshiHomeProb !== undefined && (
+        <div className="w-full max-w-md">
+          <WpBar home={detail.home} away={detail.away} kalshiHome={detail.kalshiHomeProb} />
+        </div>
+      )}
       <div className="flex gap-8 text-sm text-muted-foreground">
         {detail.away.record && (
           <span>

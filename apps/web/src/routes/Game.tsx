@@ -108,7 +108,11 @@ function LiveGame({ detail }: { detail: GameDetail }) {
           home={detail.home}
           away={detail.away}
           {...(g.wp !== undefined ? { homeProb: g.wp } : {})}
-          {...(g.kalshi ? { kalshiHome: g.kalshi.homeProb } : {})}
+          {...(g.kalshi
+            ? { kalshiHome: g.kalshi.homeProb }
+            : detail.kalshiHomeProb !== undefined
+              ? { kalshiHome: detail.kalshiHomeProb }
+              : {})}
         />
       </section>
 
@@ -203,7 +207,7 @@ export function GamePage() {
       {isLoading && <p className="text-sm text-muted-foreground">Loading game...</p>}
       {isError && <p className="text-sm text-negative">Game not found.</p>}
       {detail &&
-        (detail.status === 'pre' && detail.eventCount === 0 ? (
+        (detail.status === 'pre' && !detail.state ? (
           <Preview detail={detail} />
         ) : (
           <LiveGame key={detail.id} detail={detail} />
