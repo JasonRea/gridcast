@@ -1,4 +1,4 @@
-import type { PlayEvent } from '@gridcast/types';
+import type { LoggedEvent, PlayEvent } from '@gridcast/types';
 import { clockLabel, periodLabel } from './format';
 
 export function playLabel(p: PlayEvent): string {
@@ -44,4 +44,27 @@ export function headline(p: PlayEvent): string {
     default:
       return pp.type;
   }
+}
+
+/**
+ * Where a replay starts, from the page's `?from=` value: a play index ("120", 0-based) or a
+ * period ("q4", "ot"). Returns the log seq to start the stream at, or undefined to start at the
+ * top. Lets the demo open straight on a dramatic drive.
+ */
+export function startSeq(log: readonly LoggedEvent[], from: string | null): number | undefined {
+  if (!from) return undefined;
+  const plays = log.filter((e) => e.event.kind === 'play');
+  const v = from.trim().toLowerCase();
+  if (/^\d+$/.test(v)) return plays[Math.min(Number(v), plays.length - 1)]?.seq;
+  const q = v === 'ot' ? 5 : /^q([1-5])$/.exec(v)?.[1];
+  if (q === undefined) return undefined;
+  return firstPlayOfQuarter(log, Number(q));
+}
+
+/** Log seq of the first play in a quarter (5 = overtime), if the game got there. */
+export function firstPlayOfQuarter(
+  log: readonly LoggedEvent[],
+  quarter: number,
+): number | undefined {
+  return log.find((e) => e.event.kind === 'play' && e.event.pre.quarter >= quarter)?.seq;
 }
