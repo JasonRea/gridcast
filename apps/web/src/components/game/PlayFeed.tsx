@@ -16,6 +16,7 @@ export function PlayFeed({
   teams,
   currentId,
   onSelect,
+  showEpa = false,
 }: {
   plays: PlayEvent[];
   commentary: Record<string, Lines>;
@@ -23,6 +24,7 @@ export function PlayFeed({
   teams: { home: TeamInfo; away: TeamInfo };
   currentId?: string;
   onSelect: (index: number) => void;
+  showEpa?: boolean;
 }) {
   const rows = plays.map((p, i) => ({ p, i })).reverse();
   return (
@@ -56,6 +58,32 @@ export function PlayFeed({
                   <span>
                     {periodLabel(p.pre.quarter)} {clockLabel(p.pre.clock)}
                   </span>
+                  {showEpa && p.epa !== undefined && (
+                    <span
+                      className={cn(
+                        'rounded-sm px-1 font-semibold',
+                        p.epa >= 0
+                          ? 'bg-positive/15 text-positive'
+                          : 'bg-negative/15 text-negative',
+                      )}
+                      title="Expected points added"
+                    >
+                      EPA {p.epa > 0 ? '+' : ''}
+                      {p.epa.toFixed(1)}
+                    </span>
+                  )}
+                  {p.fourthDown?.call && (
+                    <span
+                      className={cn(
+                        'rounded-sm px-1 font-semibold',
+                        (p.fourthDown.delta ?? 0) < 0.1 ? 'text-positive' : 'text-negative',
+                      )}
+                    >
+                      {(p.fourthDown.delta ?? 0) < 0.1
+                        ? 'Bot agrees'
+                        : `Bot: -${p.fourthDown.delta?.toFixed(1)} EP`}
+                    </span>
+                  )}
                   {p.big && (
                     <span className="font-semibold uppercase tracking-wide text-foreground">
                       Big play

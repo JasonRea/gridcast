@@ -2,7 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
 import { ArrowLeft } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { GameDetail } from '@gridcast/types';
+import type { GameDetail, LoggedEvent } from '@gridcast/types';
+import { AnalyticsPanel } from '@/components/analytics/AnalyticsPanel';
+import { SwingCallout } from '@/components/analytics/SwingCallout';
+import { Timeline } from '@/components/analytics/Timeline';
 import { Field } from '@/field/Field';
 import { OddsFooter } from '@/components/OddsFooter';
 import { WpBar } from '@/components/WpBar';
@@ -34,6 +37,18 @@ function LiveGame({ detail }: { detail: GameDetail }) {
 
   const teams = { home: detail.home, away: detail.away };
   const isReplay = g.source === 'replay';
+  const features = detail.features;
+
+  // Whole-game log for the replay timeline (live games scrub what has already been shown).
+  const [fullLog, setFullLog] = useState<LoggedEvent[]>([]);
+  useEffect(() => {
+    if (!isReplay || !features.timeline) return;
+    let alive = true;
+    void streamRef.current?.events().then((e) => alive && setFullLog(e));
+    return () => {
+      alive = false;
+    };
+  }, [isReplay, features.timeline, g.gameId]);
   const presentedPlays = useMemo(() => g.plays.slice(0, g.presented), [g.plays, g.presented]);
   const currentIndex = g.current ? g.plays.findIndex((p) => p.id === g.current?.id) : -1;
   const queuedPlays = g.queue.filter((q) => q.event.kind === 'play').length;
@@ -42,6 +57,22 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     g.animSpeed * (isReplay ? Math.max(1, g.streamSpeed / 2) : 1) * (queuedPlays > 2 ? 2 : 1);
 
   const onDone = useCallback((id: string) => useGame.getState().finishPlay(id), []);
+
+  const timelineEntries: LoggedEvent[] = isReplay
+    ? fullLog
+    : presentedPlays.map((p, i) => ({ seq: i, event: p }));
+  const currentSeq = isReplay
+    ? (fullLog.find((e) => e.event.kind === 'play' && e.event.id === g.current?.id)?.seq ?? -1)
+    : currentIndex;
+  const jump = useCallback(
+    (seq: number) => {
+      if (useGame.getState().source === 'replay')
+        void streamRef.current?.start({ from: seq, speed: replaySpeed, source: 'replay' });
+      else useGame.getState().showPlay(seq);
+    },
+    [replaySpeed],
+  );
+  const lastPresented = presentedPlays[presentedPlays.length - 1];
 
   const prev = useCallback(() => {
     const s = useGame.getState();
@@ -56,12 +87,12 @@ function LiveGame({ detail }: { detail: GameDetail }) {
   }, []);
   const nextBig = useCallback(async () => {
     const s = useGame.getState();
-    const curSeq = s.lastSeq;
     if (s.source === 'replay' && streamRef.current) {
       const all = await streamRef.current.events();
+      // From the play on screen, not the last event received (the stream runs ahead).
+      const curSeq = all.find((e) => e.event.kind === 'play' && e.event.id === s.current?.id)?.seq ?? -1;
       const target = all.find((e) => e.seq > curSeq && e.event.kind === 'play' && e.event.big);
-      if (target)
-        await streamRef.current.start({ from: target.seq, speed: replaySpeed, source: 'replay' });
+      if (target) await streamRef.current.start({ from: target.seq, speed: replaySpeed, source: 'replay' });
       return;
     }
     const i = s.current ? s.plays.findIndex((p) => p.id === s.current?.id) : -1;
@@ -139,6 +170,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               teams={teams}
               {...(cardLines ? { lines: cardLines } : {})}
             />
+            {features.oddsChart && <SwingCallout play={lastPresented} teams={teams} />}
           </div>
           {g.current && (
             <p className="min-h-10 text-sm leading-snug text-muted-foreground" aria-live="polite">
@@ -163,9 +195,24 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               <span className="text-xs text-muted-foreground">End of game</span>
             )}
           </div>
-          <div className="rounded-md bg-card p-4">
+          <div className="flex flex-col gap-4 rounded-md bg-card p-4">
             <DriveTracker plays={presentedPlays} teams={teams} />
+            {features.timeline && (
+              <Timeline
+                entries={timelineEntries}
+                currentSeq={currentSeq}
+                teams={teams}
+                onJump={jump}
+              />
+            )}
           </div>
+          <AnalyticsPanel
+            plays={presentedPlays}
+            odds={g.odds}
+            teams={teams}
+            features={features}
+            onSelect={(i) => g.showPlay(i)}
+          />
         </div>
         <aside className="min-w-0 lg:max-h-[calc(100dvh-220px)] lg:overflow-y-auto lg:pr-1">
           <PlayFeed
@@ -175,6 +222,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
             teams={teams}
             {...(g.current ? { currentId: g.current.id } : {})}
             onSelect={(i) => g.showPlay(i)}
+            showEpa={!!features.epa}
           />
         </aside>
       </div>
