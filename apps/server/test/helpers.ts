@@ -2,10 +2,9 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createApp } from '../src/app.ts';
+import type { Writer } from '../src/commentary/claude.ts';
 import { loadConfig, type Config } from '../src/config.ts';
-import { createEspnClient } from '../src/espn/client.ts';
-import { GameRegistry } from '../src/games/registry.ts';
-import { ScoreboardService } from '../src/games/scoreboard.ts';
+import { createServices } from '../src/services.ts';
 
 export const DEMO = '401873002';
 export const FEATURED = '401873011';
@@ -17,11 +16,9 @@ export function testConfig(over: Partial<Config> = {}): Config {
   return { ...base, ...over };
 }
 
-export function testServer(over: Partial<Config> = {}) {
+export function testServer(over: Partial<Config> = {}, opts: { writer?: Writer | null } = {}) {
   const config = testConfig(over);
-  const espn = createEspnClient({ fixturesDir: config.fixturesDir, offline: true });
-  const registry = new GameRegistry(config, espn);
-  const scoreboard = new ScoreboardService(espn, config);
-  const app = createApp({ config, registry, scoreboard });
-  return { config, espn, registry, scoreboard, app };
+  const services = createServices(config, { writer: opts.writer ?? null });
+  const app = createApp(services);
+  return { ...services, app };
 }

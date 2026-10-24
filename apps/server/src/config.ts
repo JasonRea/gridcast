@@ -27,6 +27,9 @@ export type Config = {
   espnPollMs: number;
   kalshiPollMs: number;
   season: number;
+  /** Fast model for per-play commentary, stronger model for chat. */
+  commentaryModel: string;
+  chatModel: string;
   /** Feature flags (P1). Each is documented in README.md. */
   flags: Record<string, boolean>;
 };
@@ -59,6 +62,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     espnPollMs: Number(env.ESPN_POLL_MS ?? 10_000),
     kalshiPollMs: Number(env.KALSHI_POLL_MS ?? 5_000),
     season: Number(env.SEASON ?? 2026),
+    commentaryModel: env.COMMENTARY_MODEL ?? 'claude-haiku-5-5',
+    chatModel: env.CHAT_MODEL ?? 'claude-opus-5-5',
     flags: {
       timeline: bool(env.FLAG_TIMELINE, true),
       epa: bool(env.FLAG_EPA, true),

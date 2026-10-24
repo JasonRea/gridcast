@@ -4,9 +4,8 @@
  */
 import type { GameEvent } from '@gridcast/types';
 import { loadConfig } from '../config.ts';
-import { createEspnClient } from '../espn/client.ts';
-import { GameRegistry } from '../games/registry.ts';
 import { replayClock } from '../replay/clock.ts';
+import { createServices } from '../services.ts';
 
 const args = process.argv.slice(2);
 const gameId = args.find((a) => !a.startsWith('--')) ?? loadConfig().demoGameId;
@@ -33,10 +32,7 @@ function line(e: GameEvent): string {
 }
 
 const config = loadConfig();
-const registry = new GameRegistry(
-  config,
-  createEspnClient({ fixturesDir: config.fixturesDir, offline: config.offline }),
-);
+const { registry } = createServices(config);
 const session = await registry.get(gameId);
 if (!session) {
   console.error(`No game ${gameId} (no ESPN response and no fixture).`);

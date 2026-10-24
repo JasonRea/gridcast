@@ -53,6 +53,18 @@ export class GameRegistry {
     return p;
   }
 
+  /** Rebuilds a finished game's log (after background commentary generation, for example). */
+  async refresh(gameId: string): Promise<void> {
+    const session = this.sessionsResolved.get(gameId);
+    if (!session || session.status !== 'final' || session.readMeta().recordedLive) return;
+    const res = await this.espn.summary(gameId);
+    if (!res) return;
+    session.rebuild(res.data, (events) =>
+      this.enrichers.reduce((acc, fn) => fn(session, acc), events),
+    );
+    log.info('rebuilt replay log', { gameId, events: session.log.length });
+  }
+
   private async load(gameId: string): Promise<GameSession | undefined> {
     const res = await this.espn.summary(gameId);
     if (!res) {
