@@ -1,0 +1,37 @@
+{
+  "name": "gridcast",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c yellow,cyan \"pnpm --filter @gridcast/server dev\" \"pnpm --filter @gridcast/web dev\"",
+    "build": "pnpm -r --if-present build",
+    "start": "pnpm --filter @gridcast/server start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "replay": "pnpm --filter @gridcast/server replay",
+    "parser:eval": "pnpm --filter @gridcast/parser eval",
+    "pregen": "pnpm --filter @gridcast/server pregen",
+    "fixtures:fetch": "pnpm --filter @gridcast/server fixtures:fetch"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.0.0",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
+  }
+}
