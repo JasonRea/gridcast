@@ -21,7 +21,7 @@ import {
   type TeamInfo,
 } from '@gridcast/types';
 import type { EventLog } from '../log/eventLog.ts';
-import { matchupTeams } from '../espn/teams.ts';
+import { broadcastName, matchupTeams } from '../espn/teams.ts';
 import {
   GameNormalizer,
   metaFromSummary,
@@ -31,7 +31,7 @@ import {
 } from '../pipeline/normalize.ts';
 
 /** Bump when the normalizer or parser output changes, so finished games rebuild their logs. */
-export const PIPELINE_VERSION = 6;
+export const PIPELINE_VERSION = 7;
 
 export type Source = 'live' | 'replay';
 
@@ -53,9 +53,10 @@ export function cardFromSummary(summary: EspnSummary): GameCard | undefined {
   const status = statusOf(summary);
   const pick = summary.pickcenter?.[0];
   const venue = summary.gameInfo?.venue?.fullName ?? comp.venue?.fullName;
-  const tv = comp.broadcasts?.flatMap(
+  const rawTv = comp.broadcasts?.flatMap(
     (b) => b.names ?? (b.media?.shortName ? [b.media.shortName] : []),
   )[0];
+  const tv = rawTv ? broadcastName(rawTv) : undefined;
   return {
     id: summary.header.id,
     status,

@@ -48,3 +48,15 @@ export function matchupTeams(
   );
   return { home, away: { ...away, color: m.away.display, numberColor: m.away.number } };
 }
+
+/** ESPN's short broadcast labels, spelled out for display. Unknown names pass through. */
+const BROADCAST_NAMES: Record<string, string> = {
+  'NFL Net': 'NFL Network',
+  'NFL NET': 'NFL Network',
+  NFLN: 'NFL Network',
+  Prime: 'Prime Video',
+};
+
+export function broadcastName(name: string): string {
+  return BROADCAST_NAMES[name.trim()] ?? name.trim();
+}

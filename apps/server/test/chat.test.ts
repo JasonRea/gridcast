@@ -19,7 +19,7 @@ describe('Ask-the-game tools on the fixture game', () => {
     }[];
     expect(plays.length).toBe(3);
     expect(plays.every((p) => p.when.startsWith('Q4 '))).toBe(true);
-    expect(plays.map((p) => p.when)).toContain('Q4 2:00');
+    expect(plays.map((p) => p.when)).toEqual(['Q4 8:08', 'Q4 1:55', 'Q4 1:21']);
   });
 
   it('player stats by last name', async () => {

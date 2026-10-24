@@ -40,7 +40,7 @@ describe('network-style play-by-play', () => {
     expect(lineFor('left guard to TB 33').pbp).toBe(
       'Irving around the left side, picks up 3 yards.',
     );
-    expect(lineFor('8-A.Rodgers pass short right to 17-G.Bernard to').pbp).toMatch(
+    expect(lineFor('A.Rodgers pass short right to G.Bernard to TB 42').pbp).toMatch(
       /^Third and 7\. Rodgers to Bernard/,
     );
     expect(lineFor('G.Bernard for 6 yards, TOUCHDOWN').pbp).toBe('Rodgers to Bernard. Touchdown.');

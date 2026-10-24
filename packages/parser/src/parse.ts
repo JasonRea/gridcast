@@ -130,6 +130,50 @@ function detectType(body: string, penalties: ParsedPenalty[]): PlayType {
   return 'other';
 }
 
+const TD_RE = /\bTOUCHDOWN\b(?!\s+NULLIFIED)/i;
+
+type Conversion = { kind: 'xp' | '2pt'; good: boolean; kicker?: { name: string; jersey?: number } };
+
+/**
+ * ESPN writes the touchdown and its try in one play: "... for 6 yards, TOUCHDOWN. C.Boswell extra
+ * point is GOOD, ..." or "... TOUCHDOWN. TWO-POINT CONVERSION ATTEMPT. ... ATTEMPT SUCCEEDS."
+ * Splits the scrimmage play from the try. nflverse writes them as separate rows, so its text has
+ * no try after the TOUCHDOWN and is returned unchanged.
+ */
+function splitConversion(body: string): { play: string; conv: Conversion } | undefined {
+  const td = TD_RE.exec(body);
+  if (!td) return undefined;
+  const rest = body.slice(td.index + td[0].length);
+  const two = /\bTWO-POINT CONVERSION ATTEMPT\b/i.exec(rest);
+  if (two) {
+    const conv = rest.slice(two.index);
+    return {
+      play: body.slice(0, td.index + td[0].length + two.index).trim(),
+      conv: { kind: '2pt', good: /\battempt succeeds\b/i.test(conv) },
+    };
+  }
+  const xp = /\bextra point\b/i.exec(rest);
+  if (!xp) return undefined;
+  const kickerMatch = re(`${NAME}\\s+$`).exec(rest.slice(0, xp.index));
+  const start = kickerMatch ? kickerMatch.index : xp.index;
+  const conv = rest.slice(start);
+  return {
+    play: body.slice(0, td.index + td[0].length + start).trim(),
+    conv: {
+      kind: 'xp',
+      good: /\bextra point is good\b/i.test(conv),
+      ...(kickerMatch?.[2]
+        ? {
+            kicker: {
+              name: kickerMatch[2].trim(),
+              ...(kickerMatch[1] ? { jersey: Number(kickerMatch[1]) } : {}),
+            },
+          }
+        : {}),
+    },
+  };
+}
+
 function passDetail(main: string): { depth?: Depth; direction?: Direction } {
   const m = /\bpass(?: incomplete)? (short|deep)(?: (left|middle|right))?/i.exec(main);
   if (m) {
@@ -194,8 +238,12 @@ export function parsePlay(input: ParserInput): ParsedPlay {
   }
 
   const t = tags(text);
-  const body = mainBody(text);
-  const twoPoint = /two-point conversion attempt/i.test(body);
+  const fullBody = mainBody(text);
+  // A touchdown with its try in the same text: parse the scrimmage play, score the try apart.
+  const split = splitConversion(fullBody);
+  const body = split ? split.play : fullBody;
+  const conversion = split?.conv;
+  const twoPoint = !conversion && /two-point conversion attempt/i.test(body);
   const work = twoPoint ? body.replace(/^.*?two-point conversion attempt\.\s*/i, '') : body;
   const penalties = parsePenalties(work);
   const penalty = mainPenalty(penalties);
@@ -248,7 +296,7 @@ export function parsePlay(input: ParserInput): ParsedPlay {
   let airYards: number | undefined;
   let formation: Formation | undefined;
 
-  const td = /\bTOUCHDOWN\b(?! NULLIFIED)/i.test(main) && !/touchdown nullified/i.test(main);
+  const td = TD_RE.test(main) && !/touchdown nullified/i.test(main);
   const lostFumble = fumbleLost(main, ctx);
 
   switch (type) {
@@ -430,14 +478,24 @@ export function parsePlay(input: ParserInput): ParsedPlay {
     yards = 0;
   }
 
-  if (
-    td &&
-    !twoPoint &&
-    (type === 'pass' || type === 'run') &&
-    result !== 'interception' &&
-    result !== 'fumble'
-  ) {
-    extras.points = 6;
+  // Touchdowns: 6 plus the try when ESPN wrote it in the same play. Return and defensive
+  // touchdowns (pick-six, fumble return, punt return) score for the team without the ball.
+  if (td && !twoPoint && type !== 'penalty' && type !== 'other') {
+    const tryPoints = conversion?.good ? (conversion.kind === 'xp' ? 1 : 2) : 0;
+    extras.points = 6 + tryPoints;
+    if (type === 'pass' || type === 'run' || type === 'sack') {
+      if (result !== 'interception' && result !== 'fumble') result = 'td';
+    } else if (type === 'kickoff' || type === 'punt') {
+      result = 'td';
+    }
+    if (conversion?.kicker) {
+      const defensiveScore =
+        result === 'interception' ||
+        result === 'fumble' ||
+        type === 'punt' ||
+        (type === 'kickoff' && extras.possessionChange === true);
+      add('kicker', conversion.kicker, defensiveScore ? defense : offense);
+    }
   }
   if (/\bSAFETY\b/.test(main)) {
     extras.points = 2;
