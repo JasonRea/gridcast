@@ -53,3 +53,19 @@ jobs:
           path: |
             smoke-out/
             server.log
+
+  docker:
+    name: Container builds and serves the demo replay
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t gridcast .
+      - name: Run offline and hit the API
+        run: |
+          docker run -d --name gc -p 8080:8080 -e GRIDCAST_OFFLINE=1 -e ADMIN_TOKEN=ci gridcast
+          for i in $(seq 1 40); do curl -sf localhost:8080/api/health && break; sleep 2; done
+          curl -sf localhost:8080/api/games/401873002 | head -c 300
+          curl -sf localhost:8080/ | grep -q '<div id="root">'
+      - if: failure()
+        run: docker logs gc

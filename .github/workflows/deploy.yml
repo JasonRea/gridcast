@@ -1,0 +1,37 @@
+name: Deploy
+
+# Deploys main to Fly.io after CI passes. Needs the FLY_API_TOKEN repository secret;
+# without it the job is skipped. Secrets (ADMIN_TOKEN, ANTHROPIC_API_KEY, ...) are set once with
+# `fly secrets set` and never live in the repo.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skip when no Fly token is configured
+        if: ${{ env.FLY_API_TOKEN == '' }}
+        run: echo "FLY_API_TOKEN not set; skipping deploy." >> "$GITHUB_STEP_SUMMARY"
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: ${{ env.FLY_API_TOKEN != '' }}
+      - name: Deploy
+        if: ${{ env.FLY_API_TOKEN != '' }}
+        run: flyctl deploy --remote-only
+      - name: Smoke check production
+        if: ${{ env.FLY_API_TOKEN != '' }}
+        run: |
+          for i in $(seq 1 20); do curl -sf https://gridcast.fly.dev/api/health && exit 0; sleep 5; done
+          exit 1
