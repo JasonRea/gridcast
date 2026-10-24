@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { FourthDownCallSchema } from './analytics.ts';
 import { ClipSchema } from './clip.ts';
 import { CommentarySchema } from './commentary.ts';
 import { EspnPlaySchema } from './espn.ts';
@@ -26,6 +27,10 @@ export const PlayEventSchema = z.object({
   wpBefore: z.number().optional(),
   wpAfter: z.number().optional(),
   trackingMatchId: z.string().optional(),
+  /** 4th-down bot grade, on a 4th-down snap. */
+  fourthDown: FourthDownCallSchema.optional(),
+  /** 4th-down bot recommendation for the next snap, when this play leaves a 4th down. */
+  nextFourthDown: FourthDownCallSchema.optional(),
 });
 export type PlayEvent = z.infer<typeof PlayEventSchema>;
 

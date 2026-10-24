@@ -1,6 +1,7 @@
 /** Shapes returned by the Gridcast server API. The web app only talks to these. */
 import { z } from 'zod';
 import { GameStateSchema } from './state.ts';
+import { PreviewSchema } from './analytics.ts';
 import { LoggedEventSchema } from './events.ts';
 
 export const GameStatusSchema = z.enum(['pre', 'live', 'final']);
@@ -81,6 +82,7 @@ export const GameDetailSchema = GameCardSchema.extend({
   depth: z.record(z.string(), DepthChartSchema).optional(),
   eventCount: z.number(),
   features: z.record(z.string(), z.boolean()),
+  preview: PreviewSchema.optional(),
 });
 export type GameDetail = z.infer<typeof GameDetailSchema>;
 

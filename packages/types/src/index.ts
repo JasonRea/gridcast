@@ -1,3 +1,4 @@
+export * from './analytics.ts';
 export * from './api.ts';
 export * from './clip.ts';
 export * from './commentary.ts';
