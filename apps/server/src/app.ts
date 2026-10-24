@@ -8,6 +8,7 @@ import type { Config } from './config.ts';
 import type { GameRegistry } from './games/registry.ts';
 import { currentWeek, type ScoreboardService } from './games/scoreboard.ts';
 import type { OddsService } from './kalshi/poller.ts';
+import { adminRoutes } from './routes/admin.ts';
 import { streamGame } from './routes/stream.ts';
 
 export type AppDeps = {
@@ -89,6 +90,7 @@ export function createApp(deps: AppDeps): Hono {
     return streamGame(c, s);
   });
 
+  adminRoutes(app, deps);
   deps.extend?.(app);
 
   // Serve the built web app (single deploy) with SPA fallback.
