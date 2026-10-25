@@ -130,3 +130,19 @@ export const StreamControlSchema = z.discriminatedUnion('type', [
   }),
 ]);
 export type StreamControl = z.infer<typeof StreamControlSchema>;
+
+/** Phones in the room (A5): the projector shares its replay position so phones join in step. */
+export const RoomRequestSchema = z.object({
+  from: z.number().int().nonnegative(),
+  speed: z.number().min(0.25).max(16),
+});
+export type RoomRequest = z.infer<typeof RoomRequestSchema>;
+
+export const RoomResponseSchema = z.object({
+  gameId: z.string(),
+  source: z.enum(['live', 'replay']),
+  /** Log seq to start at (the play the room is on now). Absent for live: join at the end. */
+  seq: z.number().int().nonnegative().optional(),
+  speed: z.number(),
+});
+export type RoomResponse = z.infer<typeof RoomResponseSchema>;

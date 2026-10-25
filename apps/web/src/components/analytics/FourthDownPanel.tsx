@@ -31,6 +31,35 @@ function Options({ call }: { call: FourthDownCall }) {
   );
 }
 
+/** Historical twins: what NFL teams did in this exact spot, 2016-2025. */
+function History({ call }: { call: FourthDownCall }) {
+  const h = call.history;
+  if (!h) return null;
+  const pct = (v: number) => `${Math.round(v * 100)}%`;
+  return (
+    <div className="mt-2 rounded-md bg-secondary p-3 text-sm">
+      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+        Historical twins · {h.seasons}
+      </div>
+      <p className="mt-1 leading-snug">
+        In this spot ({h.situation}), teams went for it{' '}
+        <span className="font-semibold num">{pct(h.goRate)}</span> of the time
+        {h.convRate !== undefined && (
+          <>
+            {' '}
+            and converted <span className="font-semibold num">{pct(h.convRate)}</span>
+          </>
+        )}
+        .
+      </p>
+      <p className="mt-0.5 text-xs text-muted-foreground num">
+        Field goal {pct(h.fgRate)} · punt {pct(h.puntRate)} · n = {h.n.toLocaleString('en-US')}{' '}
+        fourth downs
+      </p>
+    </div>
+  );
+}
+
 /** 4th-down bot: the recommendation before the snap and the grade after it. */
 export function FourthDownPanel({
   plays,
@@ -57,6 +86,7 @@ export function FourthDownPanel({
             Bot says <span className="font-semibold">{NAME[upcoming.recommend]}</span>
           </p>
           <Options call={upcoming} />
+          <History call={upcoming} />
         </div>
       )}
       {graded?.fourthDown && (
@@ -76,10 +106,12 @@ export function FourthDownPanel({
             )}
           </p>
           <Options call={graded.fourthDown} />
+          <History call={graded.fourthDown} />
         </div>
       )}
       <p className="text-[11px] text-muted-foreground">
-        Values are expected points for the offense, from an nflverse model.
+        Values are expected points for the offense, from an nflverse model. Historical twins: every
+        4th down in nflverse play-by-play since 2016.
       </p>
     </div>
   );

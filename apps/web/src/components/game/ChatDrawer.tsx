@@ -1,9 +1,11 @@
-import { MessageCircle, Send, X } from 'lucide-react';
+import { MessageCircle, Mic, MicOff, Send, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { ChatMessageSchema } from '@gridcast/types';
 import { Button } from '@/components/ui/button';
+import { Announcer } from '@/lib/announcer';
 import { API_BASE } from '@/lib/api';
+import { createRecognition, firstCitation, speakableAnswer, type Recognition } from '@/lib/booth';
 
 type Turn = { role: 'user' | 'assistant'; text: string; status?: string };
 
@@ -37,21 +39,81 @@ function Answer({ text, onCite }: { text: string; onCite: (label: string) => voi
   );
 }
 
-/** Ask the game: chat drawer. Claude answers from the game's event log through server tools. */
+/**
+ * Ask the game, and Talk to the booth. The analyst (Gemini or Claude on the server) answers from
+ * the game's event log. Asked by voice, the answer is read aloud by the color voice and the field
+ * replays the first play it cites.
+ */
 export function ChatDrawer({
   gameId,
   onCite,
+  ttsServer = false,
 }: {
   gameId: string;
   onCite: (label: string) => void;
+  /** Server has ElevenLabs voices; otherwise the browser speaks. */
+  ttsServer?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [canListen] = useState(() => !!createRecognition());
   const bottom = useRef<HTMLDivElement>(null);
+  const recognition = useRef<Recognition | null>(null);
+  const voice = useRef<Announcer | null>(null);
 
-  async function ask(question: string) {
+  useEffect(
+    () => () => {
+      recognition.current?.stop();
+      voice.current?.stop();
+    },
+    [],
+  );
+
+  function speak(answer: string) {
+    if (!voice.current) voice.current = new Announcer(ttsServer);
+    voice.current.stop();
+    voice.current.setMuted(false);
+    // The answer is one or a few sentences; TTS takes 400 characters per line.
+    const sentences = speakableAnswer(answer).match(/[^.!?]+[.!?]*/g) ?? [];
+    for (const s of sentences) {
+      const t = s.trim().slice(0, 400);
+      if (t) voice.current.say({ text: t, voice: 'color', playIndex: Number.MAX_SAFE_INTEGER });
+    }
+  }
+
+  function listen() {
+    if (listening) {
+      recognition.current?.stop();
+      return;
+    }
+    voice.current?.stop();
+    const r = createRecognition();
+    if (!r) return;
+    recognition.current = r;
+    let finalText = '';
+    r.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const res = e.results[i]!;
+        if (res.isFinal) finalText += res[0].transcript;
+        else interim += res[0].transcript;
+      }
+      setInput((finalText + interim).trim());
+    };
+    r.onerror = () => setListening(false);
+    r.onend = () => {
+      setListening(false);
+      const q = finalText.trim();
+      if (q) void ask(q, true);
+    };
+    setListening(true);
+    r.start();
+  }
+
+  async function ask(question: string, byVoice = false) {
     if (!question.trim() || busy) return;
     setBusy(true);
     setInput('');
@@ -61,6 +123,7 @@ export function ChatDrawer({
       { role: 'user', text: question },
       { role: 'assistant', text: '', status: 'Thinking...' },
     ]);
+    let answer = '';
     const update = (fn: (t: Turn) => Turn) =>
       setTurns((all) => [...all.slice(0, -1), fn(all[all.length - 1]!)]);
     try {
@@ -89,8 +152,10 @@ export function ChatDrawer({
           const m = ChatMessageSchema.safeParse(JSON.parse(data));
           if (!m.success) continue;
           const msg = m.data;
-          if (msg.type === 'delta') update((t) => ({ ...t, text: t.text + msg.text, status: '' }));
-          else if (msg.type === 'tool')
+          if (msg.type === 'delta') {
+            answer += msg.text;
+            update((t) => ({ ...t, text: t.text + msg.text, status: '' }));
+          } else if (msg.type === 'tool')
             update((t) => ({
               ...t,
               status: `Checking ${msg.name.replace(/^get_/, '').replace(/_/g, ' ')}...`,
@@ -106,18 +171,33 @@ export function ChatDrawer({
       update((t) => ({ ...t, status: '' }));
       setBusy(false);
     }
+    if (byVoice && answer) {
+      speak(answer);
+      const cited = firstCitation(answer);
+      if (cited) onCite(cited);
+    }
   }
 
   return (
     <>
-      <Button
-        className="fixed right-4 bottom-4 z-30 shadow-none"
-        size="lg"
-        onClick={() => setOpen(true)}
-        aria-label="Ask the game"
-      >
-        <MessageCircle /> Ask the game
-      </Button>
+      <div className="fixed right-4 bottom-4 z-30 flex gap-2">
+        {canListen && (
+          <Button
+            size="lg"
+            variant="secondary"
+            onClick={() => {
+              setOpen(true);
+              listen();
+            }}
+            aria-label="Talk to the booth: ask out loud"
+          >
+            <Mic /> Talk to the booth
+          </Button>
+        )}
+        <Button size="lg" onClick={() => setOpen(true)} aria-label="Ask the game">
+          <MessageCircle /> Ask the game
+        </Button>
+      </div>
       <AnimatePresence>
         {open && (
           <motion.aside
@@ -181,10 +261,23 @@ export function ChatDrawer({
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Why did they punt there?"
+                placeholder={listening ? 'Listening...' : 'Why did they punt there?'}
                 maxLength={500}
+                aria-label="Question"
                 className="h-10 flex-1 rounded-md bg-secondary px-3 text-sm outline-none placeholder:text-muted-foreground"
               />
+              {canListen && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant={listening ? 'default' : 'secondary'}
+                  onClick={listen}
+                  aria-pressed={listening}
+                  aria-label={listening ? 'Stop listening' : 'Ask out loud'}
+                >
+                  {listening ? <MicOff /> : <Mic />}
+                </Button>
+              )}
               <Button type="submit" size="icon" disabled={busy || !input.trim()} aria-label="Send">
                 <Send />
               </Button>

@@ -1,9 +1,10 @@
 # Gridcast
 
 Every NFL play, animated and explained from nothing but the live data feed. Gridcast turns ESPN
-play-by-play into an animated 2D field with 22 players, AI announcers, stoppage cards, live Kalshi
-odds and win probability. Live games and recorded replays run through one pipeline; only the
-playback clock differs.
+play-by-play into an animated 2D field with 22 players, AI announcers, stoppage cards, the
+prediction market's win probability next to the model, and an Access mode that lets blind and
+low-vision fans hear and feel the field. Live games and recorded replays run through one pipeline;
+only the playback clock differs.
 
 - `PRD.md`: what to build. `AGENTS.md`: how. `PLAN.md`: build plan. `DECISIONS.md`: every judgment call.
 - `packages/parser/REPORT.md`: parser accuracy against nflverse labels (99.8% type, 99.3% yards, 99.99% direction).
@@ -17,6 +18,11 @@ playback clock differs.
 | P1 | Sound design (crowd noise) | Removed by owner decision |
 | P1 | Tracking-play retrieval (Big Data Bowl) | Not built: needs Kaggle data (see `DECISIONS.md`) |
 | P2 | Self-recorded clips, The Odds API lines, postgame recap | Not started |
+| Review | Access mode (spatial sound, haptics, screen reader, radio mode) | Done |
+| Review | Talk to the booth (voice questions, Gemini or Claude, spoken answer, play replay) | Done (needs `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`) |
+| Review | Commentary in FR/ES/DE/PT (Gemini translation, ElevenLabs voices) | Done (needs a key) |
+| Review | Historical twins for every 4th down (nflverse 2016-2025, Tiger Data path) | Done |
+| Review | Phones in the room (QR code, radio mode in step with the projector) | Done |
 
 Review checkpoints from `AGENTS.md`: step 0 is commit `data: step 0 fixtures...`, P0-3 is `test(web): browser smoke test...`.
 
@@ -56,6 +62,9 @@ GRIDCAST_OFFLINE=1 pnpm dev
 | `pnpm smoke [baseUrl] [outDir] [seconds]` | Chromium smoke test: home page and demo replay, screenshots, fails on console errors |
 | `pnpm fixtures:fetch` | Replaces the saved fixtures with real ESPN and Kalshi responses (needs network) |
 | `python scripts/fetch_nflverse.py && python scripts/build_fixtures.py` | Rebuilds fixtures from nflverse (needs pandas) |
+| `python scripts/fetch_nflverse.py --twins && python scripts/build_twins.py` | Rebuilds `data/assets/twins.json`, the 4th-down historical twins, from 10 seasons of nflverse |
+| `TIGER_DATABASE_URL=... python scripts/build_twins.py --tiger-load` then `--tiger` | Same twins computed in Tiger Data (TimescaleDB): loads every play 2016-2025 into a hypertable with a weekly continuous aggregate, then builds the table in SQL (uses the `psql` CLI) |
+| `npx qrcode@1.5.4 -t svg -e M -q 2 -o apps/web/public/qr-room.svg https://<host>/r` | Regenerates the phones QR code after a domain change (also update `QR_ORIGIN` in `PhonesPanel.tsx`) |
 
 ## Environment variables
 
@@ -68,6 +77,11 @@ Missing keys disable features, never the app.
 | `DEMO_GAME_ID` | `401873002` | Finished game used for the polished replay (PIT @ TB, OT comeback) |
 | `ADMIN_TOKEN` | none | Protects `/api/admin/source` (kill switch). Unset means the kill switch refuses every request |
 | `ANTHROPIC_API_KEY` | none | Claude commentary. Unset means deterministic template commentary |
+| `GEMINI_API_KEY` | none | Gemini answers Ask the game / Talk to the booth and translates commentary. Without it, Claude does both when its key is set |
+| `CHAT_PROVIDER` | Gemini when its key is set | `gemini` or `claude`, when both keys are set |
+| `GEMINI_MODEL` / `GEMINI_TRANSLATE_MODEL` | `gemini-3.6-flash` / `gemini-3.5-flash-lite` | Booth model and translation model |
+| `GEMINI_FALLBACK_MODELS` | `gemini-3.5-flash-lite,gemini-3.6-flash` | Tried in order when a model is overloaded (429/5xx) or slow (15 s per attempt in the booth) |
+| `GEMINI_BASE` | Google endpoint | Override for a local mock |
 | `COMMENTARY_MODEL` | `claude-haiku-5-5` | Fast model for per-play lines |
 | `CHAT_MODEL` | `claude-opus-5-5` | Stronger model for Ask the game (P1) |
 | `ELEVENLABS_API_KEY` | none | Announcer voices (P1). Unset means browser speech synthesis |
@@ -96,7 +110,8 @@ Server-side flags, returned to the web app in `GET /api/games/:id` (`features`).
 | `FLAG_ODDS_CHART` | on | Odds vs model chart and swing callouts |
 | `FLAG_TTS` | on | Two-voice announcers (muted by default) |
 | `FLAG_FOURTH_DOWN` | on | 4th-down decision bot |
-| `FLAG_CHAT` | on (needs `ANTHROPIC_API_KEY`) | Ask the game |
+| `FLAG_CHAT` | on (needs `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`) | Ask the game and Talk to the booth |
+| `FLAG_TRANSLATE` | on (needs `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`) | Commentary language picker (FR, ES, DE, PT) |
 | `FLAG_CLIPS` | on (needs `X_BEARER_TOKEN`) | X clips |
 
 ## Architecture
@@ -135,7 +150,20 @@ curl -X POST https://gridcast-028f.fly.dev/api/admin/source \
   -d '{"source":"replay","speed":4,"from":0}'
 ```
 
-Keyboard on the game page: space pause/play, left/right previous/next play, B next big play.
+Keyboard on the game page: space pause/play, left/right previous/next play, B next big play,
+M announcers, A Access mode, R radio mode.
+
+Access mode (**Access** button or A): the ball's position becomes sound. Stereo pan follows the
+ball, pitch rises toward the goal the offense attacks, a quiet tone marks the first-down line and a
+tick every 5 yards gained; each outcome has its own sound and, on Android, its own vibration
+(iPhone Safari has no vibration API, so sound covers it). Touchdowns get a crowd roar (ElevenLabs
+sound effect when `ELEVENLABS_API_KEY` is set, synthesized otherwise). Screen readers hear every
+play's call, the score and the next down. Radio mode (R, or `?mode=radio`) is a large
+high-contrast text view.
+
+Phones in the room: **Phones** shows a QR code for `/r`. Each phone opens the game in radio mode,
+joins on the play the projector is showing and follows it, with its own language
+(`?lang=fr`) and announcers.
 
 Open a replay mid-game with `?from=`: a play index (`/game/401873002?from=150`) or a period
 (`?from=q4`, `?from=ot`). The **Q4** button next to **Big play** jumps to the 4th quarter.

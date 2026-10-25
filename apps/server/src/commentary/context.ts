@@ -32,6 +32,8 @@ export type PlayContext = {
   winProbability?: { team: string; before?: number; after: number };
   odds?: { team: string; cents: number };
   epa?: number;
+  /** 4th downs: what NFL teams did in this spot, 2016-2025 (historical twins). */
+  history?: { situation: string; goPct: number; convPct?: number; n: number };
   notable: boolean;
 };
 
@@ -98,6 +100,7 @@ export function buildPlayContext(
   const toTeam = (homeP: number) =>
     Math.round((wpTeam === teams.home.abbr ? homeP : 1 - homeP) * 100);
   const pp = play.parsed;
+  const twins = play.pre.down === 4 ? play.fourthDown?.history : undefined;
   return {
     kind: 'play',
     play: {
@@ -157,6 +160,16 @@ export function buildPlayContext(
       ? { odds: { team: teams.home.abbr, cents: Math.round(lastOdds.homeProb * 100) } }
       : {}),
     ...(play.epa !== undefined ? { epa: Math.round(play.epa * 10) / 10 } : {}),
+    ...(twins
+      ? {
+          history: {
+            situation: twins.situation,
+            goPct: Math.round(twins.goRate * 100),
+            ...(twins.convRate !== undefined ? { convPct: Math.round(twins.convRate * 100) } : {}),
+            n: twins.n,
+          },
+        }
+      : {}),
     notable: isNotable(play),
   };
 }

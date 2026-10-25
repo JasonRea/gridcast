@@ -20,7 +20,7 @@ type Point = {
   swing: number;
 };
 
-/** Odds vs model: Kalshi price and ESPN win probability for the home team, one point per play. */
+/** Market vs model: the market's win probability (Kalshi) and ESPN's model, one point per play. */
 export function OddsChart({
   plays,
   odds,
@@ -60,7 +60,8 @@ export function OddsChart({
         </span>
         {hasMarket && (
           <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-4 rounded border-t border-dashed border-white" /> Kalshi price
+            <span className="h-0.5 w-4 rounded border-t border-dashed border-white" /> Market win
+            probability (Kalshi)
           </span>
         )}
         <span className="flex items-center gap-1.5">
@@ -101,7 +102,7 @@ export function OddsChart({
               }}
               formatter={(v, name) => [
                 `${v}%`,
-                name === 'model' ? `${teams.home.abbr} WP` : 'Kalshi',
+                name === 'model' ? `${teams.home.abbr} WP` : 'Market',
               ]}
             />
             <Line

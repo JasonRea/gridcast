@@ -13,13 +13,69 @@ describe('Ask-the-game tools on the fixture game', () => {
 
   it('filters plays and labels them by quarter and clock', async () => {
     const s = (await testServer().registry.get(DEMO))!;
-    const plays = runTool(s, 'get_plays', { quarter: 4, team: 'pit', type: 'fg' }) as {
-      when: string;
-      text: string;
-    }[];
+    const { matching, plays } = runTool(s, 'get_plays', {
+      quarter: 4,
+      team: 'pit',
+      type: 'fg',
+    }) as { matching: number; plays: { when: string; text: string }[] };
+    expect(matching).toBe(3);
     expect(plays.length).toBe(3);
     expect(plays.every((p) => p.when.startsWith('Q4 '))).toBe(true);
     expect(plays.map((p) => p.when)).toEqual(['Q4 8:08', 'Q4 1:55', 'Q4 1:21']);
+  });
+
+  it('counts are exact even when the list is cut short, and team totals add up', async () => {
+    const s = (await testServer().registry.get(DEMO))!;
+    const ints = runTool(s, 'get_plays', { result: 'interception', limit: 1 }) as {
+      matching: number;
+      plays: unknown[];
+    };
+    expect(ints.matching).toBe(3);
+    expect(ints.plays).toHaveLength(1);
+    const t = runTool(s, 'get_team_stats', {}) as Record<
+      string,
+      { interceptionsThrown: number; touchdowns: number; fieldGoals: number }
+    >;
+    expect(t.PIT!.interceptionsThrown + t.TB!.interceptionsThrown).toBe(3);
+    // PIT 26 = 2 TD + 4 FG; TB 19 = 1 TD + 4 FG.
+    expect(t.PIT!.touchdowns * 7 + t.PIT!.fieldGoals * 3).toBe(26);
+    expect(t.TB!.touchdowns * 7 + t.TB!.fieldGoals * 3).toBe(19);
+  });
+
+  it('4th-down plays carry the bot verdict in words', async () => {
+    const s = (await testServer().registry.get(DEMO))!;
+    const { plays } = runTool(s, 'get_plays', {
+      quarter: 1,
+      team: 'PIT',
+      big_only: true,
+      limit: 40,
+    }) as {
+      plays: { when: string; fourthDownBot?: { verdict: string; recommend: string } }[];
+    };
+    const q1 = plays.find((p) => p.when === 'Q1 3:46')!;
+    const v = q1.fourthDownBot!.verdict;
+    expect(v).toMatch(/^The bot recommended /);
+    expect(v).toContain(
+      `recommended ${q1.fourthDownBot!.recommend === 'fg' ? 'a field goal' : q1.fourthDownBot!.recommend === 'go' ? 'going for it' : 'a punt'}`,
+    );
+    expect(v).toMatch(/The coach chose going for it/);
+  });
+
+  it("leaders: each team's top performers and the biggest swings, in one call", async () => {
+    const s = (await testServer().registry.get(DEMO))!;
+    const l = runTool(s, 'get_leaders', {}) as Record<
+      string,
+      {
+        passing?: { name: string; passing: { yds: number; td: number } };
+        receiving?: { name: string };
+        kicking?: { name: string; made: number; long: number };
+      }
+    > & { biggestWinProbabilitySwings: { when: string }[] };
+    expect(l.PIT!.passing).toMatchObject({ name: 'A.Rodgers', passing: { td: 2 } });
+    expect(l.PIT!.passing!.passing.yds).toBeGreaterThan(200);
+    expect(l.PIT!.kicking).toMatchObject({ name: 'C.Boswell', made: 4, long: 58 });
+    expect(l.TB!.passing!.name).toBe('J.Daniels');
+    expect(l.biggestWinProbabilitySwings).toHaveLength(5);
   });
 
   it('player stats by last name', async () => {

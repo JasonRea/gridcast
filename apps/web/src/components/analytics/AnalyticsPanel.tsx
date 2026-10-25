@@ -23,7 +23,7 @@ export function AnalyticsPanel({
 }) {
   const tabs = (
     [
-      ['odds', 'Odds vs model', features.oddsChart],
+      ['odds', 'Market vs model', features.oddsChart],
       ['fourth', '4th-down bot', features.fourthDown],
       ['epa', 'Team EPA', features.epa],
     ] as [Tab, string, boolean | undefined][]

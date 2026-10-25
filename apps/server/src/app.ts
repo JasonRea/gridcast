@@ -9,6 +9,9 @@ import type { GameRegistry } from './games/registry.ts';
 import { currentWeek, type ScoreboardService } from './games/scoreboard.ts';
 import type { OddsService } from './kalshi/poller.ts';
 import { adminRoutes } from './routes/admin.ts';
+import { sfxRoutes } from './routes/sfx.ts';
+import { roomRoutes } from './routes/room.ts';
+import { translateRoutes } from './routes/translate.ts';
 import { ttsRoutes } from './routes/tts.ts';
 import { chatRoutes } from './routes/chat.ts';
 import { streamGame } from './routes/stream.ts';
@@ -106,6 +109,9 @@ export function createApp(deps: AppDeps): Hono {
 
   adminRoutes(app, deps);
   ttsRoutes(app, config);
+  sfxRoutes(app, config);
+  translateRoutes(app, config);
+  roomRoutes(app, deps);
   chatRoutes(app, deps);
   deps.extend?.(app);
 
