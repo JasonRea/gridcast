@@ -81,6 +81,7 @@ export function createServices(
       ? new ClipPoller(registry, {
           bearer: config.xBearer,
           ...(opts.persist === false ? {} : { cacheDir: config.cacheDir }),
+          assetsDir: config.assetsDir,
           ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
         })
       : undefined;

@@ -60,6 +60,7 @@ GRIDCAST_OFFLINE=1 pnpm dev
 | `pnpm parser:eval` | Scores the parser on 3 seasons of nflverse plays and rewrites `packages/parser/REPORT.md` |
 | `pnpm pregen <gameId>` | Pre-generates a finished game: Claude commentary (with `ANTHROPIC_API_KEY`) and announcer audio with the higher-quality model (with `ELEVENLABS_API_KEY`) |
 | `pnpm smoke [baseUrl] [outDir] [seconds]` | Chromium smoke test: home page and demo replay, screenshots, fails on console errors |
+| `pnpm clips:backfill <gameId> [--write]` | Official X highlight clips for a finished game's big plays (verified league, broadcaster and team accounts only); `--write` saves `data/assets/clips/<gameId>.json` so they outlive X's 7-day search. Uses X credits |
 | `pnpm fixtures:fetch` | Replaces the saved fixtures with real ESPN and Kalshi responses (needs network) |
 | `python scripts/fetch_nflverse.py && python scripts/build_fixtures.py` | Rebuilds fixtures from nflverse (needs pandas) |
 | `python scripts/fetch_nflverse.py --twins && python scripts/build_twins.py` | Rebuilds `data/assets/twins.json`, the 4th-down historical twins, from 10 seasons of nflverse |
@@ -112,7 +113,7 @@ Server-side flags, returned to the web app in `GET /api/games/:id` (`features`).
 | `FLAG_FOURTH_DOWN` | on | 4th-down decision bot |
 | `FLAG_CHAT` | on (needs `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`) | Ask the game and Talk to the booth |
 | `FLAG_TRANSLATE` | on (needs `GEMINI_API_KEY` or `ANTHROPIC_API_KEY`) | Commentary language picker (FR, ES, DE, PT) |
-| `FLAG_CLIPS` | on (needs `X_BEARER_TOKEN`) | X clips |
+| `FLAG_CLIPS` | on (needs `X_BEARER_TOKEN`) | X clips: live games every minute; finished games get one backfill search (big plays only, cached). Only posts from allowlisted accounts that X verifies as organizations |
 
 ## Architecture
 

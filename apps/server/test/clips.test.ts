@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { Clip, PlayEvent } from '@gridcast/types';
-import { matchPost } from '../src/clips/match.ts';
+import { matchPost, score } from '../src/clips/match.ts';
 import { existsSync, readFileSync } from 'node:fs';
 import { ClipPoller, trustedHandles, trustedPosts } from '../src/clips/poller.ts';
 import { DEMO, testConfig, testServer } from './helpers.ts';
@@ -172,7 +172,12 @@ describe('finished games: clip backfill', () => {
       url: string;
     }[];
     // The verified team post on the TD; not the look-alike, not the routine run.
-    expect(saved).toEqual([{ playId: td.id, url: 'https://x.com/i/status/10' }]);
+    expect(saved).toHaveLength(1);
+    expect(saved[0]).toMatchObject({
+      playId: td.id,
+      url: 'https://x.com/i/status/10',
+      text: 'Rodgers to Bernard. TOUCHDOWN',
+    });
     expect(saved.some((c) => c.playId === small.id)).toBe(false);
     const clip = (await registry.get(DEMO))!.log
       .all()
@@ -189,5 +194,49 @@ describe('finished games: clip backfill', () => {
     await poller.backfill((await registry.get(DEMO))!);
     expect(urls).toHaveLength(0);
     expect(existsSync(join(cfg.cacheDir, 'clips', `${DEMO}.json`))).toBe(false);
+  });
+});
+
+describe('matching mistakes seen on real posts (PIT @ TB)', () => {
+  async function plays() {
+    const s = (await testServer().registry.get(DEMO))!;
+    return s.log.all().flatMap((e) => (e.event.kind === 'play' ? [e.event as PlayEvent] : []));
+  }
+  const after = (p: PlayEvent, min = 2) => p.ts + min * 60_000;
+
+  it('a different player with the same surname is not a match ("Kendal Daniels" vs J.Daniels)', async () => {
+    const all = await plays();
+    const daniels = all.find((p) => p.parsed.players.some((x) => x.name === 'J.Daniels'))!;
+    const post = { id: 'a', text: 'Kendal Daniels makes the stop', createdAt: after(daniels) };
+    expect(score(post, daniels)).toBe(0);
+    expect(score({ ...post, text: 'Jalon Daniels keeps it' }, daniels)).toBeGreaterThan(0);
+    expect(score({ ...post, text: 'Daniels keeps it' }, daniels)).toBeGreaterThan(0);
+  });
+
+  it('injury posts are never clips', async () => {
+    const all = await plays();
+    const td = all.find((p) => p.raw.text.includes('G.Bernard for 6 yards, TOUCHDOWN'))!;
+    const post = {
+      id: 'b',
+      text: 'Prayers up for Germie Bernard 🙏 touchdown',
+      createdAt: after(td),
+    };
+    expect(matchPost(post, all, 10 * 60_000)).toBeUndefined();
+  });
+
+  it('"ties it up" goes to the field goal, not the kickoff right after it', async () => {
+    const all = await plays();
+    const fg = all.find((p) => p.raw.text.includes('C.Boswell 58 yard field goal is GOOD'))!;
+    const kick = all[all.indexOf(fg) + 1]!;
+    expect(kick.parsed.type).toBe('kickoff');
+    const post = { id: 'c', text: 'Chris Boswell ties it up!', createdAt: after(kick, 1) };
+    expect(matchPost(post, all, 10 * 60_000)?.id).toBe(fg.id);
+    const lead = {
+      id: 'd',
+      text: 'Chris Boswell gives the Steelers the lead!',
+      createdAt: after(kick, 1),
+    };
+    const fg2 = all.find((p) => p.raw.text.includes('C.Boswell 20 yard field goal is GOOD'))!;
+    expect(matchPost({ ...lead, createdAt: after(fg2, 1) }, all, 10 * 60_000)?.id).toBe(fg2.id);
   });
 });

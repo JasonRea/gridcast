@@ -123,7 +123,15 @@ export function trustedPosts(res: Search, allow: string[]): (Post & { author: st
 const SEARCH_FIELDS =
   'tweet.fields=created_at,author_id&expansions=author_id&user.fields=username,verified_type';
 
-const ManualSchema = z.array(z.object({ playId: z.string(), url: z.string().url() }));
+const ManualSchema = z.array(
+  z.object({
+    playId: z.string(),
+    url: z.string().url(),
+    /** The post's text and time, kept so matches can be re-checked without a new search. */
+    text: z.string().optional(),
+    postedAt: z.string().optional(),
+  }),
+);
 export type SavedClip = z.infer<typeof ManualSchema>[number];
 
 function readClips(path: string, gameId: string): SavedClip[] {
@@ -145,10 +153,13 @@ function readClips(path: string, gameId: string): SavedClip[] {
 export function manualClips(assetsDir: string, cacheDir?: string) {
   return (session: GameSession, events: GameEvent[]): GameEvent[] => {
     const file = `${session.gameId}.json`;
-    const saved = [
-      ...(cacheDir ? readClips(join(cacheDir, 'clips', file), session.gameId) : []),
-      ...readClips(join(assetsDir, 'clips', file), session.gameId),
-    ];
+    // A committed (reviewed) file replaces the automatic backfill entirely.
+    const committed = join(assetsDir, 'clips', file);
+    const saved = existsSync(committed)
+      ? readClips(committed, session.gameId)
+      : cacheDir
+        ? readClips(join(cacheDir, 'clips', file), session.gameId)
+        : [];
     if (!saved.length) return events;
     const byPlay = new Map(saved.map((c) => [c.playId, c.url]));
     return events.flatMap((e) => {
@@ -179,9 +190,15 @@ export class ClipPoller {
       fetcher?: Fetcher;
       /** Where automatic backfills are cached (one search per finished game, ever). */
       cacheDir?: string;
+      /** Committed clips (data/assets/clips): a game that has them is never searched. */
+      assetsDir?: string;
       now?: () => number;
     },
   ) {}
+
+  private get assetsDir(): string | undefined {
+    return this.opts.assetsDir;
+  }
 
   private now(): number {
     return this.opts.now?.() ?? Date.now();
@@ -264,7 +281,8 @@ export class ClipPoller {
     const dir = this.opts.cacheDir;
     if (!dir || s.status !== 'final' || this.backfilling.has(s.gameId)) return;
     const path = join(dir, 'clips', `${s.gameId}.json`);
-    if (existsSync(path)) return;
+    if (existsSync(path) || existsSync(join(this.assetsDir ?? '', 'clips', `${s.gameId}.json`)))
+      return;
     this.backfilling.add(s.gameId);
     try {
       const clips = await this.findClips(s);
@@ -301,16 +319,25 @@ export class ClipPoller {
 /** Big plays only, and the best-scoring post for each play. */
 export function bestPerPlay(posts: Post[], plays: PlayEvent[]): SavedClip[] {
   const big = plays.filter((p) => p.big);
-  const best = new Map<string, { url: string; s: number }>();
+  const best = new Map<string, { post: Post; s: number }>();
   for (const post of posts) {
     const play = matchPost(post, big, BACKFILL_WINDOW_MS);
     if (!play) continue;
     const s = score(post, play);
     const cur = best.get(play.id);
-    if (!cur || s > cur.s) best.set(play.id, { url: `https://x.com/i/status/${post.id}`, s });
+    if (!cur || s > cur.s) best.set(play.id, { post, s });
   }
   return plays.flatMap((p) => {
     const b = best.get(p.id);
-    return b ? [{ playId: p.id, url: b.url }] : [];
+    return b
+      ? [
+          {
+            playId: p.id,
+            url: `https://x.com/i/status/${b.post.id}`,
+            text: b.post.text,
+            postedAt: new Date(b.post.createdAt).toISOString(),
+          },
+        ]
+      : [];
   });
 }

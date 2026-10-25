@@ -6,14 +6,38 @@ export type Post = { id: string; text: string; createdAt: number; author?: strin
 export const WINDOW_MS = 5 * 60_000;
 
 const surname = (n: string) => (n.split('.').pop() ?? n).trim().toLowerCase();
+const initial = (n: string) => (n.includes('.') ? n[0]!.toLowerCase() : undefined);
+
+/** Posts about injuries are never shown as highlights (no injury speculation, PRD). */
+export const INJURY =
+  /\b(?:injur\w*|hurt|carted|prayers?|pray\w*|get well|ambulance|medical)\b|🙏/i;
+
+/**
+ * Whether the post names this player: the surname appears, and when the post writes a first
+ * name before it ("Kendal Daniels"), its initial matches the play's ("J.Daniels" is not him).
+ */
+function names(text: string, player: string): boolean {
+  const last = surname(player);
+  if (last.length <= 2) return false;
+  const re = new RegExp(`(?:([A-Za-z][\\w'.-]*)\\s+)?\\b${last.replace(/[^a-z'-]/g, '')}\\b`, 'gi');
+  const ini = initial(player);
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const first = m[1];
+    if (!first || !ini || !/^[A-Z]/.test(first) || first[0]!.toLowerCase() === ini) return true;
+  }
+  return false;
+}
 
 export function score(post: Post, p: PlayEvent): number {
   const t = post.text.toLowerCase();
   let s = 0;
   for (const pl of p.parsed.players) {
-    const last = surname(pl.name);
-    if (last.length > 2 && t.includes(last)) s += pl.role === 'tackler' ? 1 : 2;
+    if (names(post.text, pl.name)) s += pl.role === 'tackler' ? 1 : 2;
   }
+  // "ties it up", "gives them the lead", "go-ahead": the scoring play, not the kickoff after it.
+  if (p.parsed.points && /\bties?\b|tied|\blead\b|go-ahead|\bscores?\b|\bgood\b/.test(t)) s += 2;
+  if (p.parsed.type === 'kickoff' && !/return|kick ?off|house/.test(t)) s -= 3;
   const r = p.parsed.result;
   if (r === 'td' && /touchdown|\btd\b/.test(t)) s += 2;
   if (r === 'interception' && /intercept|\bpick(ed)?\b|\bint\b/.test(t)) s += 2;
@@ -29,6 +53,7 @@ export function matchPost(
   plays: PlayEvent[],
   windowMs = WINDOW_MS,
 ): PlayEvent | undefined {
+  if (INJURY.test(post.text)) return undefined;
   const candidates = plays.filter(
     (p) => post.createdAt >= p.ts && post.createdAt - p.ts <= windowMs,
   );
