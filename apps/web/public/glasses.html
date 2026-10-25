@@ -1,0 +1,1283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <title>Gridcast Glasses</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!--
+      Gridcast on Meta Ray-Ban Display glasses, through the PianoEye iOS app (a WKWebView shell
+      that exposes window.webkit.messageHandlers.eye). See docs/glasses/. The page renders a
+      600x600 card on a canvas for every play and commentary line, and sends it to the glasses
+      one image at a time. Black pixels are transparent on the glasses, so everything is bright
+      on black. In a normal browser it is a preview: nothing is sent.
+    -->
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #000;
+        --fg: #fff;
+        --muted: #a1a1a1;
+        --line: #2a2a2a;
+        --card: #0d0d0d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          15px/1.4 -apple-system,
+          BlinkMacSystemFont,
+          'Helvetica Neue',
+          Arial,
+          sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+      main {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: max(16px, env(safe-area-inset-top)) 16px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      h1 {
+        margin: 0;
+        font:
+          700 28px/1 'Barlow Condensed',
+          'Arial Narrow',
+          sans-serif;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button,
+      select {
+        font: inherit;
+        color: var(--fg);
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 14px;
+        min-height: 44px;
+      }
+      button.primary {
+        background: var(--fg);
+        color: var(--bg);
+        font-weight: 600;
+      }
+      button:active {
+        opacity: 0.7;
+      }
+      select {
+        flex: 1;
+        min-width: 0;
+      }
+      label.toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+      }
+      label.toggle input {
+        width: 22px;
+        height: 22px;
+        accent-color: #fff;
+      }
+      canvas {
+        width: 100%;
+        aspect-ratio: 1;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #000;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      #status {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      #status b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      #log {
+        margin: 0;
+        font:
+          11px/1.4 ui-monospace,
+          Menlo,
+          monospace;
+        color: var(--muted);
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 140px;
+        overflow: auto;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0;
+      }
+      a {
+        color: var(--fg);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Gridcast · Glasses</h1>
+      <div class="row">
+        <button id="register" type="button">Register</button>
+        <button id="start" type="button" class="primary">Start glasses</button>
+        <button id="resend" type="button">Resend</button>
+      </div>
+      <div class="row">
+        <select id="game" aria-label="Game">
+          <option value="401873011">Live: PIT vs NO (Paris)</option>
+          <option value="401873002">Demo replay: PIT @ TB (OT)</option>
+        </select>
+        <select id="lang" aria-label="Language" style="flex: 0 0 auto">
+          <option value="en">EN</option>
+          <option value="fr">FR</option>
+          <option value="es">ES</option>
+          <option value="de">DE</option>
+          <option value="pt">PT</option>
+        </select>
+      </div>
+      <label class="toggle"
+        ><input id="follow" type="checkbox" checked /> Follow director screen</label
+      >
+      <div id="status" aria-live="polite">Starting…</div>
+      <canvas id="card" width="600" height="600" aria-label="Glasses card preview"></canvas>
+      <p class="hint">
+        Tap the glasses (or this preview) to cycle: play card, scoreboard, win probability. Keep
+        PianoEye in the foreground with auto-lock off.
+      </p>
+      <pre id="log"></pre>
+      <p class="hint"><a href="/">Back to Gridcast</a></p>
+    </main>
+
+    <script>
+      (() => {
+        'use strict';
+
+        // ---------- settings ----------
+        const GAMES = { live: '401873011', demo: '401873002' };
+        const DEFAULT_SPEED = 2;
+        const BANNER_MS = 7000;
+        const SEND_TIMEOUT_MS = 10000;
+        const STALE_MS = 45000;
+        const FONT = "'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif";
+        const SANS = "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif";
+
+        const $ = (id) => document.getElementById(id);
+        const store = {
+          get(k) {
+            try {
+              return localStorage.getItem('gridcast.glasses.' + k);
+            } catch {
+              return null;
+            }
+          },
+          set(k, v) {
+            try {
+              localStorage.setItem('gridcast.glasses.' + k, v);
+            } catch {
+              /* private mode: settings just don't stick */
+            }
+          },
+        };
+        const params = new URLSearchParams(location.search);
+        const settings = {
+          game: params.get('game') || store.get('game') || GAMES.live,
+          lang: params.get('lang') || store.get('lang') || 'en',
+          follow: (params.get('follow') ?? store.get('follow') ?? '1') !== '0',
+        };
+        if (settings.game === 'live') settings.game = GAMES.live;
+        if (settings.game === 'demo') settings.game = GAMES.demo;
+        if (!['en', 'fr', 'es', 'de', 'pt'].includes(settings.lang)) settings.lang = 'en';
+
+        // ---------- small log ----------
+        const logLines = [];
+        function log(msg) {
+          const t = new Date().toLocaleTimeString([], { hour12: false });
+          logLines.push(`${t} ${msg}`);
+          if (logLines.length > 30) logLines.shift();
+          $('log').textContent = logLines.slice().reverse().join('\n');
+        }
+
+        // ---------- fixed labels ----------
+        const L = {
+          en: {
+            td: 'TOUCHDOWN',
+            int: 'INTERCEPTION',
+            fum: 'FUMBLE',
+            wp: 'WIN PROBABILITY',
+            market: 'Market',
+            model: 'Model',
+            final: 'FINAL',
+            waiting: 'Waiting for kickoff',
+            disclaimer: 'Odds shown for information only. Not betting advice.',
+          },
+          fr: {
+            td: 'TOUCHDOWN',
+            int: 'INTERCEPTION',
+            fum: 'FUMBLE',
+            wp: 'PROBABILITÉ DE VICTOIRE',
+            market: 'Marché',
+            model: 'Modèle',
+            final: 'FIN',
+            waiting: "En attente du coup d'envoi",
+            disclaimer: 'Cotes à titre informatif uniquement. Pas un conseil de pari.',
+          },
+          es: {
+            td: 'TOUCHDOWN',
+            int: 'INTERCEPCIÓN',
+            fum: 'FUMBLE',
+            wp: 'PROBABILIDAD DE VICTORIA',
+            market: 'Mercado',
+            model: 'Modelo',
+            final: 'FINAL',
+            waiting: 'Esperando la patada inicial',
+            disclaimer: 'Probabilidades solo informativas. No es asesoramiento de apuestas.',
+          },
+          de: {
+            td: 'TOUCHDOWN',
+            int: 'INTERCEPTION',
+            fum: 'FUMBLE',
+            wp: 'SIEGWAHRSCHEINLICHKEIT',
+            market: 'Markt',
+            model: 'Modell',
+            final: 'ENDE',
+            waiting: 'Warten auf den Kickoff',
+            disclaimer: 'Quoten nur zur Information. Keine Wettberatung.',
+          },
+          pt: {
+            td: 'TOUCHDOWN',
+            int: 'INTERCEPTAÇÃO',
+            fum: 'FUMBLE',
+            wp: 'PROBABILIDADE DE VITÓRIA',
+            market: 'Mercado',
+            model: 'Modelo',
+            final: 'FINAL',
+            waiting: 'Aguardando o kickoff',
+            disclaimer: 'Probabilidades apenas informativas. Não é conselho de apostas.',
+          },
+        };
+        const t = (k) => (L[settings.lang] || L.en)[k] || L.en[k];
+        const STOPPAGE_TITLES = {
+          timeout: 'Timeout',
+          injury: 'Injury',
+          review: 'Under review',
+          penalty: 'Flag',
+          quarter_end: 'End of quarter',
+          two_minute: 'Two-minute warning',
+          halftime: 'Halftime',
+        };
+
+        // ---------- game state ----------
+        let g = freshState();
+        function freshState() {
+          return {
+            gs: undefined, // latest GameState (play or stoppage)
+            lastPlay: undefined,
+            focus: undefined, // { kind: 'play'|'stoppage', ev }
+            comm: {}, // playId -> { pbp, color }
+            wp: undefined, // ESPN model home win prob
+            market: undefined, // Kalshi home win prob
+            banner: undefined, // { title, sub, color, until }
+            lastSeq: -1,
+            done: false,
+          };
+        }
+        let detail; // GameDetail
+        let source = 'live';
+        let speed;
+        let connected = false;
+        let view = 0; // 0 play card, 1 scoreboard, 2 win probability
+
+        // ---------- network ----------
+        async function getJson(path, init) {
+          const ctl = new AbortController();
+          const timer = setTimeout(() => ctl.abort(), 10000);
+          try {
+            const res = await fetch(path, { ...init, signal: ctl.signal });
+            if (!res.ok) throw new Error(`${res.status} ${path}`);
+            return await res.json();
+          } finally {
+            clearTimeout(timer);
+          }
+        }
+        const api = {
+          game: (id) => getJson(`/api/games/${id}`),
+          events: (id) => getJson(`/api/games/${id}/events?from=0`),
+          room: (id) => getJson(`/api/games/${id}/room`),
+          translate: (lang, texts) =>
+            getJson('/api/translate', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ lang, texts }),
+            }),
+        };
+
+        // ---------- translation (cached per language; English on failure) ----------
+        const tr = { fr: {}, es: {}, de: {}, pt: {} };
+        const trPending = new Set();
+        // Off on the server (no AI key) means English only; don't keep asking.
+        const canTranslate = () =>
+          !detail || !detail.features || detail.features.translate !== false;
+        function translated(text) {
+          if (!text || settings.lang === 'en' || !canTranslate()) return text;
+          const hit = tr[settings.lang][text];
+          if (hit !== undefined) return hit;
+          requestTranslation([text]);
+          return text;
+        }
+        let trQueue = [];
+        let trTimer;
+        function requestTranslation(texts) {
+          const lang = settings.lang;
+          if (lang === 'en' || !tr[lang] || !canTranslate()) return;
+          for (const s of texts) {
+            const key = lang + '\u0001' + s;
+            if (s.length > 400 || trPending.has(key) || tr[lang][s] !== undefined) continue;
+            trPending.add(key);
+            trQueue.push(s);
+          }
+          clearTimeout(trTimer);
+          trTimer = setTimeout(() => {
+            const batch = trQueue.slice(0, 20);
+            trQueue = trQueue.slice(20);
+            if (!batch.length) return;
+            const done = (out) => {
+              batch.forEach((s, i) => {
+                tr[lang][s] = (out && out[i]) || s;
+                trPending.delete(lang + '\u0001' + s);
+              });
+              scheduleRender();
+              if (trQueue.length) requestTranslation([]);
+            };
+            api
+              .translate(lang, batch)
+              .then((r) => done(Array.isArray(r.texts) ? r.texts : undefined))
+              .catch((e) => {
+                log('translate failed, showing English: ' + e.message);
+                done(undefined);
+              });
+          }, 30);
+        }
+
+        // ---------- events ----------
+        function apply(entry, instant) {
+          if (!entry || typeof entry.seq !== 'number' || !entry.event) return;
+          if (entry.seq <= g.lastSeq) return;
+          g.lastSeq = entry.seq;
+          const ev = entry.event;
+          switch (ev.kind) {
+            case 'play':
+              if (!ev.state || !ev.parsed) return;
+              g.lastPlay = ev;
+              g.gs = ev.state;
+              g.focus = { kind: 'play', ev };
+              if (typeof ev.wpAfter === 'number') g.wp = ev.wpAfter;
+              if (!instant) playBanner(ev);
+              break;
+            case 'stoppage':
+              if (ev.state) g.gs = ev.state;
+              g.focus = { kind: 'stoppage', ev };
+              if (!instant) {
+                const team = teamByAbbr(ev.team);
+                setBanner(
+                  ev.title || STOPPAGE_TITLES[ev.reason] || 'Stoppage',
+                  '',
+                  ev.reason === 'penalty' ? '#FFD400' : team ? bright(team.color) : '#FFFFFF',
+                );
+              }
+              break;
+            case 'commentary':
+              if (typeof ev.text !== 'string') return;
+              (g.comm[ev.playId] ||= {})[ev.voice === 'color' ? 'color' : 'pbp'] = ev.text;
+              break;
+            case 'odds':
+              if (ev.market === 'moneyline' && typeof ev.homeProb === 'number')
+                g.market = ev.homeProb;
+              break;
+            default:
+              return;
+          }
+          if (!instant) scheduleRender();
+        }
+
+        function playBanner(p) {
+          const pre = p.pre || p.state;
+          const dh = p.state.home - pre.home;
+          const da = p.state.away - pre.away;
+          if (dh >= 6 || da >= 6) {
+            const team = dh >= 6 ? detail.home : detail.away;
+            setBanner(t('td'), team.shortName || team.abbr, bright(team.color));
+            return;
+          }
+          const r = p.parsed.result;
+          if (r === 'interception' || (r === 'fumble' && p.parsed.possessionChange)) {
+            const team = teamByAbbr(p.state.possession);
+            setBanner(
+              r === 'interception' ? t('int') : t('fum'),
+              team ? team.shortName || team.abbr : '',
+              team ? bright(team.color) : '#FFFFFF',
+            );
+          }
+        }
+
+        function setBanner(title, sub, color) {
+          g.banner = { title, sub, color, until: Date.now() + BANNER_MS };
+          setTimeout(scheduleRender, BANNER_MS + 50);
+        }
+
+        function teamByAbbr(abbr) {
+          if (!detail || !abbr) return undefined;
+          if (detail.home.abbr === abbr) return detail.home;
+          if (detail.away.abbr === abbr) return detail.away;
+          return undefined;
+        }
+
+        // ---------- stream ----------
+        let es;
+        let gen = 0;
+        let playSeqs = []; // replay log plays, for the follow-the-director check
+        let lastMsgAt = 0;
+        let reconnectTimer;
+
+        async function start(opts = {}) {
+          const my = ++gen;
+          closeStream();
+          try {
+            detail = await api.game(settings.game);
+            const log0 = await api.events(settings.game);
+            if (my !== gen) return;
+            const entries = Array.isArray(log0.events) ? log0.events : [];
+            source = opts.source || detail.source;
+            let from = opts.from;
+            speed = opts.speed || speed || DEFAULT_SPEED;
+            if (from === undefined) {
+              if (source === 'live') from = typeof log0.next === 'number' ? log0.next : 0;
+              else if (settings.follow) {
+                const r = await api.room(settings.game).catch(() => undefined);
+                if (my !== gen) return;
+                if (r && typeof r.seq === 'number') {
+                  from = r.seq;
+                  speed = r.speed || speed;
+                  log(`following director: play seq ${r.seq} at ${speed}x`);
+                }
+              }
+            }
+            if (from === undefined) from = 0;
+            g = freshState();
+            playSeqs = entries
+              .filter((e) => e.event && e.event.kind === 'play')
+              .map((e) => ({ seq: e.seq, id: e.event.id }));
+            for (const e of entries) if (e.seq < from) apply(e, true);
+            g.lastSeq = from - 1;
+            log(`${detail.away.abbr} @ ${detail.home.abbr}: ${source}, from ${from}`);
+            requestTranslation(visibleTexts());
+            render();
+            open(from);
+          } catch (e) {
+            if (my !== gen) return;
+            connected = false;
+            log('load failed: ' + e.message + ' (retrying in 5s)');
+            updateStatus();
+            clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(() => start(opts), 5000);
+          }
+        }
+
+        function open(from) {
+          closeStream();
+          const q = new URLSearchParams({ from: String(from) });
+          if (source === 'replay' && speed) q.set('speed', String(speed));
+          const my = gen;
+          const s = new EventSource(`/api/games/${settings.game}/stream?${q}`);
+          es = s;
+          lastMsgAt = Date.now();
+          s.onopen = () => {
+            connected = true;
+            updateStatus();
+          };
+          // Reconnect ourselves from the next unseen event, so the browser's own retry never
+          // restarts a replay from the old position.
+          s.onerror = () => {
+            if (es !== s) return;
+            connected = false;
+            updateStatus();
+            reconnect(my, 3000);
+          };
+          s.addEventListener('game', (msg) => {
+            lastMsgAt = Date.now();
+            try {
+              apply(JSON.parse(msg.data), false);
+            } catch (e) {
+              log('bad game event: ' + e.message);
+            }
+          });
+          s.addEventListener('control', (msg) => {
+            lastMsgAt = Date.now();
+            let c;
+            try {
+              c = JSON.parse(msg.data);
+            } catch {
+              return;
+            }
+            if (!c || typeof c !== 'object') return;
+            if (c.type === 'status') {
+              connected = true;
+              if (c.done && !g.done) {
+                g.done = true;
+                scheduleRender();
+              }
+              updateStatus();
+            } else if (c.type === 'reset') {
+              log(`source changed: ${c.source}`);
+              void start(c.source === 'replay' ? { source: 'replay', from: c.from } : {});
+            }
+          });
+        }
+
+        function reconnect(my, delay) {
+          closeStream();
+          clearTimeout(reconnectTimer);
+          reconnectTimer = setTimeout(() => {
+            if (my === gen) open(g.lastSeq + 1);
+          }, delay);
+        }
+
+        function closeStream() {
+          if (es) es.close();
+          es = undefined;
+        }
+
+        // Watchdog: the server sends a heartbeat; silence means a dead connection.
+        setInterval(() => {
+          if (es && Date.now() - lastMsgAt > STALE_MS) {
+            log('feed quiet, reconnecting');
+            connected = false;
+            updateStatus();
+            reconnect(gen, 0);
+          }
+        }, 5000);
+
+        // Follow the director screen (same rule as the /r phone page): re-join when the room is
+        // more than 2 plays away.
+        setInterval(async () => {
+          if (!settings.follow || source !== 'replay' || !detail) return;
+          const my = gen;
+          try {
+            const r = await api.room(settings.game);
+            if (my !== gen || !r || typeof r.seq !== 'number') return;
+            const curId = g.lastPlay && g.lastPlay.id;
+            const mine = playSeqs.findIndex((e) => e.id === curId);
+            const theirs = playSeqs.findIndex((e) => e.seq === r.seq);
+            if (my === gen && theirs >= 0 && Math.abs(theirs - mine) > 2) {
+              log(`re-joining director at play ${theirs + 1}`);
+              void start({ source: 'replay', from: r.seq, speed: r.speed });
+            }
+          } catch {
+            /* room is best effort */
+          }
+        }, 10000);
+
+        // Keep the header (status, kickoff text, final) fresh.
+        setInterval(async () => {
+          if (!detail) return;
+          try {
+            const d = await api.game(settings.game);
+            if (d.id !== settings.game) return;
+            const changed = d.status !== detail.status || d.detail !== detail.detail;
+            detail = d;
+            if (changed) scheduleRender();
+          } catch {
+            /* next time */
+          }
+        }, 60000);
+
+        // ---------- colors ----------
+        function hexRgb(hex) {
+          const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '').trim());
+          if (!m) return [255, 255, 255];
+          const n = parseInt(m[1], 16);
+          return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+        }
+        function lum([r, g2, b]) {
+          const f = (v) => {
+            v /= 255;
+            return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+          };
+          return 0.2126 * f(r) + 0.7152 * f(g2) + 0.0722 * f(b);
+        }
+        /** Dark team colors vanish on the glasses (black is transparent): lift them toward white. */
+        function bright(hex) {
+          let c = hexRgb(hex);
+          for (let i = 0; i < 10 && lum(c) < 0.3; i++)
+            c = c.map((v) => Math.round(v + (255 - v) * 0.2));
+          return `rgb(${c[0]},${c[1]},${c[2]})`;
+        }
+
+        // ---------- formatting ----------
+        const ORD = ['', '1st', '2nd', '3rd', '4th'];
+        const periodLabel = (q) => (q <= 4 ? `Q${q}` : q === 5 ? 'OT' : `${q - 4}OT`);
+        function clockLabel(clock) {
+          const [m, s] = String(clock || '0:00').split(':');
+          return `${Number(m || 0)}:${(s || '00').padStart(2, '0')}`;
+        }
+        function downDistance(s) {
+          if (!s || !s.down) return '';
+          const goal = s.distance !== undefined && s.yardLine + s.distance >= 100;
+          return `${ORD[s.down] || s.down + 'th'} & ${goal ? 'Goal' : (s.distance ?? '')}`;
+        }
+        function ballOn(s) {
+          if (!s || !detail) return '';
+          const other = s.possession === detail.home.abbr ? detail.away.abbr : detail.home.abbr;
+          if (s.yardLine === 50) return '50';
+          return s.yardLine < 50 ? `${s.possession} ${s.yardLine}` : `${other} ${100 - s.yardLine}`;
+        }
+        const pct = (p) => (typeof p === 'number' ? `${Math.round(p * 100)}%` : '--');
+        const isFinal = () => g.done || (detail && detail.status === 'final' && source === 'live');
+        function timeLine() {
+          if (isFinal())
+            return detail.detail && /final/i.test(detail.detail)
+              ? detail.detail.toUpperCase()
+              : t('final');
+          if (!g.gs) return detail ? detail.detail : '';
+          return `${periodLabel(g.gs.quarter)}  ${clockLabel(g.gs.clock)}`;
+        }
+
+        // Commentary lines for the card: play-by-play then color, translated.
+        function cardLines() {
+          const f = g.focus;
+          if (!f)
+            return [{ text: detail && detail.status === 'pre' ? t('waiting') : '', voice: 'pbp' }];
+          const c = g.comm[f.ev.id] || {};
+          const out = [];
+          if (c.pbp) out.push({ text: c.pbp, voice: 'pbp' });
+          if (c.color) out.push({ text: c.color, voice: 'color' });
+          if (!out.length) {
+            if (f.kind === 'stoppage') out.push({ text: f.ev.detail || '', voice: 'pbp' });
+            else out.push({ text: headline(f.ev), voice: 'pbp' });
+          }
+          return out.map((l) => ({ ...l, text: translated(l.text) }));
+        }
+        function visibleTexts() {
+          const out = [];
+          const f = g.focus;
+          if (f) {
+            const c = g.comm[f.ev.id] || {};
+            if (c.pbp) out.push(c.pbp);
+            if (c.color) out.push(c.color);
+            if (f.kind === 'stoppage' && f.ev.detail) out.push(f.ev.detail);
+          }
+          if (g.banner) out.push(g.banner.title);
+          return out.filter(Boolean);
+        }
+
+        /** Fallback line from parsed facts while the announcer line is on its way. */
+        function headline(p) {
+          const pp = p.parsed;
+          const name = (role) => {
+            const n = (pp.players || []).find((x) => x.role === role)?.name || '';
+            return n.split('.').pop() || n;
+          };
+          switch (pp.type) {
+            case 'pass':
+              if (pp.result === 'interception') return `${name('passer')} intercepted`;
+              if (pp.result === 'td') return `${name('passer')} to ${name('receiver')}, touchdown`;
+              return pp.result === 'incomplete'
+                ? `${name('passer')} incomplete`
+                : `${name('passer')} to ${name('receiver')}, ${pp.yards} yards`;
+            case 'run':
+              return pp.result === 'td'
+                ? `${name('rusher')} touchdown run`
+                : `${name('rusher')} runs for ${pp.yards}`;
+            case 'sack':
+              return `${name('passer')} sacked`;
+            case 'fg':
+              return `${pp.kickYards || ''}-yard field goal ${pp.result === 'good' ? 'is good' : 'missed'}`;
+            case 'punt':
+              return 'Punt';
+            case 'kickoff':
+              return 'Kickoff';
+            case 'penalty':
+              return `Flag: ${(pp.penalty && pp.penalty.name) || 'penalty'}`;
+            default:
+              return '';
+          }
+        }
+
+        // ---------- drawing ----------
+        const canvas = $('card');
+        const ctx = canvas.getContext('2d');
+        const W = 600;
+
+        function font(size, weight = 700, fam = FONT) {
+          return `${weight} ${size}px ${fam}`;
+        }
+        function text(s, x, y, size, color, align = 'left', weight = 700, fam = FONT, maxW) {
+          ctx.font = font(size, weight, fam);
+          if (maxW) {
+            while (size > 12 && ctx.measureText(s).width > maxW) {
+              size -= 2;
+              ctx.font = font(size, weight, fam);
+            }
+          }
+          ctx.fillStyle = color;
+          ctx.textAlign = align;
+          ctx.textBaseline = 'alphabetic';
+          ctx.fillText(s, x, y);
+        }
+        function wrap(s, maxW) {
+          const words = String(s).split(/\s+/).filter(Boolean);
+          const lines = [];
+          let cur = '';
+          for (const w of words) {
+            const next = cur ? cur + ' ' + w : w;
+            if (ctx.measureText(next).width <= maxW || !cur) cur = next;
+            else {
+              lines.push(cur);
+              cur = w;
+            }
+          }
+          if (cur) lines.push(cur);
+          return lines;
+        }
+
+        function teamColors() {
+          return {
+            home: bright(detail.home.color),
+            away: bright(detail.away.color),
+          };
+        }
+        function scores() {
+          const gs = g.gs;
+          return {
+            home: gs ? gs.home : (detail.home.score ?? 0),
+            away: gs ? gs.away : (detail.away.score ?? 0),
+          };
+        }
+
+        function drawHeader() {
+          const c = teamColors();
+          const s = scores();
+          const poss = g.gs && !isFinal() ? g.gs.possession : undefined;
+          // Away left, home right.
+          text(detail.away.abbr, 24, 52, 44, c.away);
+          text(String(s.away), 24, 112, 66, c.away);
+          text(detail.home.abbr, W - 24, 52, 44, c.home, 'right');
+          text(String(s.home), W - 24, 112, 66, c.home, 'right');
+          // Possession marker: a small ball beside the team with the ball.
+          ctx.font = font(44);
+          if (poss === detail.away.abbr)
+            ball(24 + ctx.measureText(detail.away.abbr).width + 22, 38);
+          if (poss === detail.home.abbr)
+            ball(W - 24 - ctx.measureText(detail.home.abbr).width - 22, 38);
+          const tl = timeLine();
+          const parts = tl.split('  ');
+          if (parts.length === 2) {
+            text(parts[0], W / 2, 56, 40, '#FFFFFF', 'center');
+            text(parts[1], W / 2, 104, 48, '#FFFFFF', 'center');
+          } else {
+            text(tl, W / 2, 84, 34, '#FFFFFF', 'center', 700, FONT, 260);
+          }
+        }
+        function ball(x, y) {
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.fillStyle = '#FF9A3C';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 13, 8, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-5, 0);
+          ctx.lineTo(5, 0);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        function drawField(y, h) {
+          const gs = g.gs;
+          const x0 = 20;
+          const w = W - 40;
+          const ez = (w * 10) / 120;
+          const yd = (v) => x0 + ez + ((w - 2 * ez) * Math.max(0, Math.min(100, v))) / 100;
+          const off = gs ? teamByAbbr(gs.possession) : undefined;
+          const def = off ? (off === detail.home ? detail.away : detail.home) : undefined;
+          // End zones: offense's own on the left, it always drives to the right.
+          ctx.fillStyle = off ? bright(off.color) : '#666666';
+          ctx.fillRect(x0, y, ez, h);
+          ctx.fillStyle = def ? bright(def.color) : '#666666';
+          ctx.fillRect(x0 + w - ez, y, ez, h);
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(x0, y, w, h);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#7A7A7A';
+          for (let v = 10; v < 100; v += 10) {
+            ctx.beginPath();
+            ctx.moveTo(yd(v), y + (v === 50 ? 0 : h * 0.25));
+            ctx.lineTo(yd(v), y + h - (v === 50 ? 0 : h * 0.25));
+            ctx.stroke();
+          }
+          if (!gs) return;
+          // Last play's gain, when the same team still has the ball.
+          const lp = g.lastPlay;
+          if (
+            lp &&
+            lp.pre &&
+            lp.pre.possession === gs.possession &&
+            lp.pre.yardLine !== gs.yardLine
+          ) {
+            ctx.fillStyle = off ? bright(off.color) : '#FFFFFF';
+            ctx.globalAlpha = 0.55;
+            const a = yd(lp.pre.yardLine);
+            const b = yd(gs.yardLine);
+            ctx.fillRect(Math.min(a, b), y + h / 2 - 5, Math.abs(b - a), 10);
+            ctx.globalAlpha = 1;
+          }
+          // Line of scrimmage (blue) and first-down line (yellow).
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = '#3FA9FF';
+          ctx.beginPath();
+          ctx.moveTo(yd(gs.yardLine), y - 6);
+          ctx.lineTo(yd(gs.yardLine), y + h + 6);
+          ctx.stroke();
+          if (gs.down && gs.distance !== undefined && gs.yardLine + gs.distance < 100) {
+            ctx.strokeStyle = '#FFE14D';
+            ctx.beginPath();
+            ctx.moveTo(yd(gs.yardLine + gs.distance), y - 6);
+            ctx.lineTo(yd(gs.yardLine + gs.distance), y + h + 6);
+            ctx.stroke();
+          }
+          ball(yd(gs.yardLine), y + h / 2);
+        }
+
+        function drawCommentary(top, bottom) {
+          const lines = cardLines().filter((l) => l.text);
+          if (!lines.length) return;
+          const maxW = W - 48;
+          const tryFit = (set) => {
+            for (let size = 46; size >= 26; size -= 2) {
+              const lh = Math.round(size * 1.18);
+              let hTotal = 0;
+              const blocks = set.map((l) => {
+                ctx.font = font(size, l.voice === 'color' ? 600 : 700);
+                const w = wrap(l.text, maxW);
+                hTotal += w.length * lh;
+                return { l, w };
+              });
+              hTotal += (set.length - 1) * 14;
+              if (hTotal <= bottom - top) return { size, lh, blocks };
+            }
+            return undefined;
+          };
+          let fit = tryFit(lines) || (lines.length > 1 ? tryFit(lines.slice(-1)) : undefined);
+          if (!fit) {
+            // Still too long: smallest size, cut at the bottom.
+            const size = 26;
+            ctx.font = font(size);
+            fit = {
+              size,
+              lh: 31,
+              blocks: [{ l: lines[lines.length - 1], w: wrap(lines[lines.length - 1].text, maxW) }],
+            };
+          }
+          let y = top + fit.size;
+          for (const b of fit.blocks) {
+            for (const ln of b.w) {
+              if (y > bottom) return;
+              text(
+                ln,
+                24,
+                y,
+                fit.size,
+                b.l.voice === 'color' ? '#D9ECFF' : '#FFFFFF',
+                'left',
+                b.l.voice === 'color' ? 600 : 700,
+              );
+              y += fit.lh;
+            }
+            y += 14;
+          }
+        }
+
+        function drawBanner(y, h) {
+          const b = g.banner;
+          ctx.strokeStyle = b.color;
+          ctx.lineWidth = 6;
+          ctx.strokeRect(20, y, W - 40, h);
+          const title = translated(b.title);
+          text(
+            title.toUpperCase(),
+            W / 2,
+            y + (b.sub ? h / 2 + 8 : h / 2 + 24),
+            64,
+            b.color,
+            'center',
+            700,
+            FONT,
+            W - 80,
+          );
+          if (b.sub)
+            text(
+              b.sub.toUpperCase(),
+              W / 2,
+              y + h - 22,
+              38,
+              '#FFFFFF',
+              'center',
+              700,
+              FONT,
+              W - 80,
+            );
+        }
+
+        function viewDots() {
+          for (let i = 0; i < 3; i++) {
+            ctx.fillStyle = i === view ? '#FFFFFF' : '#5A5A5A';
+            ctx.beginPath();
+            ctx.arc(W / 2 - 20 + i * 20, 588, 5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        function drawPlayCard() {
+          drawHeader();
+          if (g.banner && g.banner.until > Date.now()) {
+            drawBanner(132, 120);
+          } else {
+            g.banner = undefined;
+            const gs = g.gs;
+            const dd = gs && !isFinal() ? downDistance(gs) : '';
+            if (dd) text(dd, 24, 172, 52, '#FFFFFF');
+            if (gs && !isFinal()) text(ballOn(gs), W - 24, 172, 40, '#CFCFCF', 'right');
+            drawField(194, 56);
+          }
+          drawCommentary(272, 568);
+        }
+
+        function drawScoreboard() {
+          const c = teamColors();
+          const s = scores();
+          text(detail.away.abbr, 150, 130, 84, c.away, 'center');
+          text(detail.home.abbr, 450, 130, 84, c.home, 'center');
+          text(String(s.away), 150, 300, 170, c.away, 'center');
+          text(String(s.home), 450, 300, 170, c.home, 'center');
+          const poss = g.gs && !isFinal() ? g.gs.possession : undefined;
+          if (poss === detail.away.abbr) ball(150, 160);
+          if (poss === detail.home.abbr) ball(450, 160);
+          text(timeLine(), W / 2, 400, 64, '#FFFFFF', 'center', 700, FONT, W - 48);
+          if (g.gs && !isFinal()) {
+            const dd = downDistance(g.gs);
+            text(
+              [dd, ballOn(g.gs)].filter(Boolean).join('  ·  '),
+              W / 2,
+              470,
+              44,
+              '#FFFFFF',
+              'center',
+              700,
+              FONT,
+              W - 48,
+            );
+          }
+          // Timeouts left.
+          if (g.gs && g.gs.timeouts) {
+            const to = g.gs.timeouts;
+            for (const [cx, n, col] of [
+              [150, to.away, c.away],
+              [450, to.home, c.home],
+            ]) {
+              for (let i = 0; i < 3; i++) {
+                ctx.fillStyle = i < n ? col : '#444444';
+                ctx.fillRect(cx - 45 + i * 34, 520, 24, 8);
+              }
+            }
+          }
+        }
+
+        function drawWp() {
+          const c = teamColors();
+          text(t('wp'), W / 2, 62, 42, '#FFFFFF', 'center', 700, FONT, W - 48);
+          const home = g.wp ?? g.market;
+          text(detail.away.abbr, 150, 140, 56, c.away, 'center');
+          text(detail.home.abbr, 450, 140, 56, c.home, 'center');
+          text(pct(home === undefined ? undefined : 1 - home), 150, 260, 120, c.away, 'center');
+          text(pct(home), 450, 260, 120, c.home, 'center');
+          const x0 = 24;
+          const w = W - 48;
+          const awayShare = home === undefined ? 0.5 : 1 - home;
+          ctx.fillStyle = c.away;
+          ctx.fillRect(x0, 300, w * awayShare, 40);
+          ctx.fillStyle = c.home;
+          ctx.fillRect(x0 + w * awayShare, 300, w * (1 - awayShare), 40);
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(W / 2 - 1, 296, 3, 48);
+          const label =
+            g.wp !== undefined
+              ? t('model') + ' (ESPN)'
+              : g.market !== undefined
+                ? t('market') + ' (Kalshi)'
+                : '';
+          if (label) text(label, W / 2, 380, 30, '#CFCFCF', 'center', 600);
+          if (g.wp !== undefined && g.market !== undefined) {
+            text(
+              `${t('market')} (Kalshi): ${detail.away.abbr} ${pct(1 - g.market)} · ${detail.home.abbr} ${pct(g.market)}`,
+              W / 2,
+              440,
+              34,
+              '#FFFFFF',
+              'center',
+              700,
+              FONT,
+              W - 48,
+            );
+          }
+          text(timeLine(), W / 2, 500, 36, '#FFFFFF', 'center', 700, FONT, W - 48);
+          text(t('disclaimer'), W / 2, 556, 20, '#BDBDBD', 'center', 500, SANS, W - 40);
+        }
+
+        let currentFrame;
+        function render() {
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, W, W);
+          if (detail) {
+            if (view === 1) drawScoreboard();
+            else if (view === 2) drawWp();
+            else drawPlayCard();
+          } else {
+            text('GRIDCAST', W / 2, 300, 72, '#FFFFFF', 'center');
+          }
+          viewDots();
+          currentFrame = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+          queueFrame(currentFrame);
+          updateStatus();
+        }
+        let renderTimer;
+        function scheduleRender() {
+          clearTimeout(renderTimer);
+          renderTimer = setTimeout(() => {
+            requestTranslation(visibleTexts());
+            render();
+          }, 60);
+        }
+
+        // ---------- glasses bridge ----------
+        const hasBridge = () =>
+          !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.eye);
+        function eye(m) {
+          if (!hasBridge()) return false;
+          try {
+            window.webkit.messageHandlers.eye.postMessage(m);
+            return true;
+          } catch (e) {
+            log('bridge error: ' + e.message);
+            return false;
+          }
+        }
+
+        let glassesState = hasBridge() ? 'not started' : 'no glasses bridge (preview only)';
+        let displayReady = false;
+        let inFlight = null;
+        let inFlightTimer;
+        let pending = null;
+        let lastSent = null;
+        let sendId = 0;
+        let lastSend = '—';
+        let retryTimer;
+
+        // Each send replaces the whole view; one at a time, newest card wins.
+        function queueFrame(data) {
+          if (!hasBridge()) return;
+          pending = data;
+          pump();
+        }
+        function pump() {
+          if (!displayReady || inFlight !== null || !pending) return;
+          const d = pending;
+          pending = null;
+          if (d === lastSent) return;
+          const id = ++sendId;
+          inFlight = id;
+          lastSent = d;
+          if (!eye({ cmd: 'displayImage', d, id })) {
+            inFlight = null;
+            lastSent = null;
+            return;
+          }
+          clearTimeout(inFlightTimer);
+          inFlightTimer = setTimeout(() => {
+            if (inFlight !== id) return;
+            log(`send #${id} timed out`);
+            lastSend = `#${id} timed out`;
+            inFlight = null;
+            lastSent = null;
+            if (!pending) pending = currentFrame;
+            pump();
+          }, SEND_TIMEOUT_MS);
+        }
+        function onSent(data) {
+          const id = data && data.id;
+          const ok = !!(data && data.ok);
+          clearTimeout(inFlightTimer);
+          inFlight = null;
+          lastSend = `#${id} ${ok ? 'ok' : 'failed'}`;
+          if (!ok) {
+            lastSent = null;
+            log(`send #${id} failed`);
+            clearTimeout(retryTimer);
+            retryTimer = setTimeout(() => {
+              if (!pending) pending = currentFrame;
+              pump();
+            }, 3000);
+          } else pump();
+          updateStatus();
+        }
+
+        const prevEye = window.eye && typeof window.eye === 'object' ? window.eye : {};
+        window.eye = Object.assign(prevEye, {
+          _state(s) {
+            log('app: ' + (typeof s === 'string' ? s : JSON.stringify(s)));
+          },
+          _log(m) {
+            log(String(m));
+          },
+          _frame() {
+            /* camera frames: not used */
+          },
+          _event(name, data) {
+            if (name === 'displayState') {
+              const st = String((data && data.state) ?? data ?? '');
+              glassesState = st || 'unknown';
+              const ready = st.toLowerCase().includes('started');
+              if (ready && !displayReady) log('glasses display started');
+              displayReady = ready;
+              if (!ready) {
+                inFlight = null;
+                lastSent = null;
+              } else {
+                lastSent = null;
+                pending = currentFrame;
+                pump();
+              }
+            } else if (name === 'displaySent') {
+              onSent(data);
+            } else if (name === 'tap') {
+              cycleView();
+            } else {
+              log(`event ${name} ${data ? JSON.stringify(data) : ''}`);
+            }
+            updateStatus();
+          },
+        });
+
+        function cycleView() {
+          view = (view + 1) % 3;
+          render();
+        }
+
+        // ---------- status ----------
+        function updateStatus() {
+          const feed = connected ? 'connected' : 'connecting…';
+          const mode = source === 'replay' ? `replay ${speed || DEFAULT_SPEED}x` : 'live';
+          $('status').innerHTML =
+            `Glasses: <b>${esc(glassesState)}</b> · Last send: <b>${esc(lastSend)}</b><br>` +
+            `Feed: <b>${feed}</b> (${mode}${settings.follow && source === 'replay' ? ', following director' : ''})`;
+        }
+        const esc = (s) =>
+          String(s).replace(
+            /[&<>"]/g,
+            (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch],
+          );
+
+        // ---------- controls ----------
+        $('game').value = settings.game;
+        if ($('game').value !== settings.game) {
+          const o = document.createElement('option');
+          o.value = settings.game;
+          o.textContent = `Game ${settings.game}`;
+          $('game').appendChild(o);
+          $('game').value = settings.game;
+        }
+        $('lang').value = settings.lang;
+        $('follow').checked = settings.follow;
+
+        $('register').onclick = () => {
+          if (!eye({ cmd: 'register' })) log('no glasses bridge: open this page in PianoEye');
+          else log('registering: approve in the Meta AI app, then come back');
+        };
+        $('start').onclick = () => {
+          if (!eye({ cmd: 'displayStart' })) {
+            log('no glasses bridge: open this page in PianoEye');
+            return;
+          }
+          glassesState = 'starting…';
+          log('starting glasses display');
+          updateStatus();
+        };
+        $('resend').onclick = () => {
+          lastSent = null;
+          inFlight = null;
+          pending = currentFrame;
+          pump();
+          render();
+        };
+        $('game').onchange = (e) => {
+          settings.game = e.target.value;
+          store.set('game', settings.game);
+          speed = undefined;
+          void start();
+        };
+        $('lang').onchange = (e) => {
+          settings.lang = e.target.value;
+          store.set('lang', settings.lang);
+          trQueue = [];
+          trPending.clear();
+          requestTranslation(visibleTexts());
+          render();
+        };
+        $('follow').onchange = (e) => {
+          settings.follow = e.target.checked;
+          store.set('follow', settings.follow ? '1' : '0');
+          if (source === 'replay') void start();
+          else updateStatus();
+        };
+        canvas.onclick = cycleView;
+
+        // Redraw once the condensed font arrives (the first card may use the fallback).
+        if (document.fonts && document.fonts.load) {
+          document.fonts
+            .load(`700 40px 'Barlow Condensed'`)
+            .then(() => scheduleRender())
+            .catch(() => undefined);
+        }
+
+        render();
+        void start();
+      })();
+    </script>
+  </body>
+</html>
