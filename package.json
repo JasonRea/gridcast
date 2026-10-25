@@ -21,7 +21,8 @@
     "pregen": "pnpm --filter @gridcast/server pregen",
     "fixtures:fetch": "pnpm --filter @gridcast/server fixtures:fetch",
     "smoke": "node scripts/smoke.mjs",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test"
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+    "clips:backfill": "pnpm --filter @gridcast/server clips:backfill"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

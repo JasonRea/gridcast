@@ -57,7 +57,7 @@ export function createServices(
     (gameId) => void registry.refresh(gameId),
   );
   registry.addRebuildEnricher(commentary.enrichRebuild);
-  registry.addRebuildEnricher(manualClips(config.assetsDir));
+  registry.addRebuildEnricher(manualClips(config.assetsDir, config.cacheDir));
   // Finished games replay with the market's real price history next to the model.
   registry.addRebuildEnricher(kalshiHistory(join(config.fixturesDir, 'kalshi')));
   registry.onSession((s) => commentary.attach(s));
@@ -80,8 +80,11 @@ export function createServices(
     config.flags.clips && config.xBearer
       ? new ClipPoller(registry, {
           bearer: config.xBearer,
+          ...(opts.persist === false ? {} : { cacheDir: config.cacheDir }),
           ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
         })
       : undefined;
+  // Finished games: one clip search per game (while X can still reach it), big plays only.
+  if (clips) registry.onSession((s) => void clips.backfill(s));
   return { config, espn, registry, scoreboard, commentary, odds, live, analytics, clips };
 }

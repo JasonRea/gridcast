@@ -24,9 +24,13 @@ export function score(post: Post, p: PlayEvent): number {
 }
 
 /** Best play for a post among plays in its time window, or undefined below the bar. */
-export function matchPost(post: Post, plays: PlayEvent[]): PlayEvent | undefined {
+export function matchPost(
+  post: Post,
+  plays: PlayEvent[],
+  windowMs = WINDOW_MS,
+): PlayEvent | undefined {
   const candidates = plays.filter(
-    (p) => post.createdAt >= p.ts && post.createdAt - p.ts <= WINDOW_MS,
+    (p) => post.createdAt >= p.ts && post.createdAt - p.ts <= windowMs,
   );
   let best: { p: PlayEvent; s: number } | undefined;
   for (const p of candidates) {

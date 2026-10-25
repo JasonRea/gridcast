@@ -9,7 +9,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "fixtures:fetch": "tsx scripts/fetch-fixtures.ts",
     "replay": "tsx src/cli/replay.ts",
-    "pregen": "tsx src/cli/pregen.ts"
+    "pregen": "tsx src/cli/pregen.ts",
+    "clips:backfill": "tsx src/cli/clips.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
