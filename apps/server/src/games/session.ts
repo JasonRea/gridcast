@@ -5,6 +5,7 @@
 import { EventEmitter } from 'node:events';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { log } from '../util/logger.ts';
 import {
   EspnAthleteSchema,
   type DepthChart,
@@ -281,10 +282,15 @@ export class GameSession extends EventEmitter<{
     }
   }
 
+  /** Never throws: a full disk must not stop the live pipeline. */
   writeMeta(extra: { recordedLive?: boolean } = {}): void {
-    writeFileSync(
-      this.metaPath(),
-      JSON.stringify({ ...this.readMeta(), version: PIPELINE_VERSION, ...extra }),
-    );
+    try {
+      writeFileSync(
+        this.metaPath(),
+        JSON.stringify({ ...this.readMeta(), version: PIPELINE_VERSION, ...extra }),
+      );
+    } catch (e) {
+      log.warn('meta write failed', { gameId: this.gameId, error: (e as Error).message });
+    }
   }
 }

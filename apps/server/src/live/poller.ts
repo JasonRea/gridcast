@@ -1,10 +1,17 @@
 /**
  * Live ESPN polling. Every 10 s the featured game (and any live game someone is watching) is
- * fetched, every raw response is recorded to disk, and new plays go through the same normalizer
- * and event log as replays. The kill switch only changes the clock; recording continues.
+ * fetched, and new plays go through the same normalizer and event log as replays. The kill
+ * switch only changes the clock; recording continues.
+ *
+ * Recorder: raw responses are kept (gzipped) once the game has started, and only when ESPN's
+ * data changed. Oct 25: recording every 10 s from the night before, uncompressed, filled the
+ * 1 GB volume during the 4th quarter. A failed write turns the recorder off, never the poller.
+ * A finished game is polled for 10 minutes after it was first seen final, then left alone.
  */
+import { createHash } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import type { EspnClient } from '../espn/client.ts';
 import type { GameRegistry } from '../games/registry.ts';
 import type { GameSession } from '../games/session.ts';
@@ -17,12 +24,26 @@ export class LivePoller {
   private running = false;
   /** Consecutive failures per game, for logging only. */
   private failures = new Map<string, number>();
+  /** When each game was first seen final. */
+  private finalSeen = new Map<string, number>();
+  /** Hash of the last recorded response per game: unchanged responses are not written. */
+  private lastRecorded = new Map<string, string>();
+  private recorderOff = false;
 
   constructor(
     private readonly espn: EspnClient,
     private readonly registry: GameRegistry,
-    private readonly opts: { featuredGameId: string; intervalMs: number; recordDir?: string },
+    private readonly opts: {
+      featuredGameId: string;
+      intervalMs: number;
+      recordDir?: string;
+      now?: () => number;
+    },
   ) {}
+
+  private now(): number {
+    return this.opts.now?.() ?? Date.now();
+  }
 
   private wanted(s: GameSession): boolean {
     if (s.status === 'final' && s.readMeta().recordedLive !== true) return false;
@@ -32,17 +53,31 @@ export class LivePoller {
 
   /** Keep polling a just-finished featured game briefly to pick up final corrections. */
   private recentlyFinal(s: GameSession): boolean {
-    return s.lastUpdate !== undefined && Date.now() - s.lastUpdate < 10 * 60_000;
+    const seen = this.finalSeen.get(s.gameId);
+    // Never seen final in this process (e.g. a restart after the game): one last look.
+    return seen === undefined || this.now() - seen < 10 * 60_000;
   }
 
-  private record(gameId: string, body: unknown) {
-    if (!this.opts.recordDir) return;
+  /** Records a raw response: game started, data changed, gzipped. Returns whether it wrote. */
+  record(s: GameSession, body: unknown): boolean {
+    if (!this.opts.recordDir || this.recorderOff || s.status === 'pre') return false;
+    const json = JSON.stringify(body);
+    const hash = createHash('sha1').update(json).digest('hex');
+    if (this.lastRecorded.get(s.gameId) === hash) return false;
     try {
-      const dir = join(this.opts.recordDir, gameId);
+      const dir = join(this.opts.recordDir, s.gameId);
       mkdirSync(dir, { recursive: true });
-      writeFileSync(join(dir, `${Date.now()}-summary.json`), JSON.stringify(body));
+      writeFileSync(join(dir, `${this.now()}-summary.json.gz`), gzipSync(json));
+      this.lastRecorded.set(s.gameId, hash);
+      return true;
     } catch (e) {
-      log.warn('recorder write failed', { gameId, error: (e as Error).message });
+      // Disk trouble: stop recording (raw copies are a nice-to-have), keep the game flowing.
+      this.recorderOff = true;
+      log.error('recorder off after a failed write', {
+        gameId: s.gameId,
+        error: (e as Error).message,
+      });
+      return false;
     }
   }
 
@@ -51,6 +86,8 @@ export class LivePoller {
     if (this.running) return;
     this.running = true;
     try {
+      // Events kept in memory after a failed disk write get another try.
+      for (const s of this.registry.loaded()) if (s.log.unsaved) s.log.flush();
       const featured = await this.registry.get(this.opts.featuredGameId);
       const sessions = new Set(this.registry.loaded().filter((s) => this.wanted(s)));
       if (featured && this.wanted(featured)) sessions.add(featured);
@@ -64,8 +101,10 @@ export class LivePoller {
           continue;
         }
         this.failures.delete(s.gameId);
-        this.record(s.gameId, res.data);
         const fresh = s.ingestSummary(res.data);
+        this.record(s, res.data);
+        if (s.status === 'final' && !this.finalSeen.has(s.gameId))
+          this.finalSeen.set(s.gameId, this.now());
         if (fresh.length) {
           s.writeMeta({ recordedLive: true });
           log.info('live events', { gameId: s.gameId, events: fresh.length });

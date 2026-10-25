@@ -122,7 +122,7 @@ ESPN (10 s) ─┐                                                   ┌─ live
 Kalshi (5 s) ─┼─> normalizer ─> enrichment ─> JSONL event log ───┤                ├─> SSE ─> web
               │   (parser,      (commentary,   data/logs/<id>    └─ replay clock ─┘
               │    state, WP)    odds)                              (1x-8x)
-recorder ─────┘ data/recordings/<id>/*.json
+recorder ─────┘ data/recordings/<id>/*.json.gz
 ```
 
 - `packages/types`: the shared contract (`GameEvent`, `ParsedPlay`, `GameState`, zod schemas, team colors).
@@ -172,7 +172,7 @@ Open a replay mid-game with `?from=`: a play index (`/game/401873002?from=150`) 
 Checklist (from `AGENTS.md`):
 
 1. `FEATURED_GAME_ID` verified against the live ESPN scoreboard on game morning.
-2. Server deployed and polling from kickoff (recorder writes `data/recordings/<id>/`).
+2. Server deployed and polling from kickoff (recorder writes changed ESPN responses, gzipped, to `data/recordings/<id>/`; check free space with `fly ssh console -C "df -h /data"`).
 3. Kill switch tested live -> replay -> live.
 4. `pnpm pregen 401873002` run with the Claude key, cache committed to `data/assets/commentary/`.
 5. P1 flags that are not rock solid turned off.
