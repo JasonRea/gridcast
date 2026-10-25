@@ -152,3 +152,54 @@ describe('after the final whistle', () => {
     expect(r.calls()).toBe(atFinal + 1);
   });
 });
+
+describe('a watched game opened before kickoff (not the featured game)', () => {
+  it('starts polling near kickoff and goes live, instead of sitting on the preview', async () => {
+    let summary = withState('pre');
+    const fetched: string[] = [];
+    const fetcher = async (url: string) => {
+      const id = /summary\?event=(\d+)/.exec(url)?.[1];
+      if (!id) return new Response('nope', { status: 404 });
+      fetched.push(id);
+      return id === DEMO ? Response.json(summary) : new Response('nope', { status: 503 });
+    };
+    const config = { ...testConfig(), offline: false, featuredGameId: '401873011' };
+    const services = createServices(config, { fetcher, writer: null });
+    const s = (await services.registry.get(DEMO))!;
+    expect(s.status).toBe('pre');
+    const kickoff = Date.parse(s.card.kickoff);
+    let t = kickoff - 60 * 60_000;
+    const poller = new LivePoller(services.espn, services.registry, {
+      featuredGameId: '401873011',
+      intervalMs: 10_000,
+      now: () => t,
+    });
+    const demoFetches = () => fetched.filter((id) => id === DEMO).length;
+
+    // An hour before kickoff, watched: left alone.
+    s.lastViewed = t;
+    let n = demoFetches();
+    await poller.tick();
+    expect(demoFetches()).toBe(n);
+
+    // Ten minutes before kickoff: polled (still pre).
+    t = kickoff - 10 * 60_000;
+    s.lastViewed = t;
+    await poller.tick();
+    expect(demoFetches()).toBe(n + 1);
+
+    // After kickoff ESPN says in progress: the game goes live with plays.
+    t = kickoff + 60_000;
+    s.lastViewed = t;
+    summary = withState('in');
+    await poller.tick();
+    expect(s.status).toBe('live');
+    expect(s.log.all().some((e) => e.event.kind === 'play')).toBe(true);
+
+    // Nobody watching for 5+ minutes: no more polling.
+    t += 6 * 60_000;
+    n = demoFetches();
+    await poller.tick();
+    expect(demoFetches()).toBe(n);
+  });
+});

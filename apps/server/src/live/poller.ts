@@ -18,6 +18,8 @@ import type { GameSession } from '../games/session.ts';
 import { log } from '../util/logger.ts';
 
 const IDLE_MS = 5 * 60_000;
+/** Watched pre-game sessions start polling this long before the scheduled kickoff. */
+const KICKOFF_LEAD_MS = 15 * 60_000;
 
 export class LivePoller {
   private timer: ReturnType<typeof setInterval> | undefined;
@@ -48,7 +50,15 @@ export class LivePoller {
   private wanted(s: GameSession): boolean {
     if (s.status === 'final' && s.readMeta().recordedLive !== true) return false;
     if (s.gameId === this.opts.featuredGameId) return s.status !== 'final' || this.recentlyFinal(s);
-    return s.status === 'live' && Date.now() - s.lastViewed < IDLE_MS;
+    if (this.now() - s.lastViewed >= IDLE_MS) return false;
+    if (s.status === 'live') return true;
+    // A watched game opened before kickoff: start polling near kickoff, or it would stay "pre"
+    // forever (nothing else updates its status). Oct 25: SF @ ATL sat on the preview while live.
+    if (s.status === 'pre') {
+      const kickoff = Date.parse(s.card.kickoff);
+      return Number.isFinite(kickoff) && kickoff - this.now() <= KICKOFF_LEAD_MS;
+    }
+    return false;
   }
 
   /** Keep polling a just-finished featured game briefly to pick up final corrections. */
