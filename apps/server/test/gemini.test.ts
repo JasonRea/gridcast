@@ -184,6 +184,45 @@ describe('the booth on Gemini', () => {
     expect(bodies.slice(0, -1).every((b) => !b.toolConfig)).toBe(true);
   });
 
+  it('an empty answer after tool results gets one nudge, with tools off', async () => {
+    const { registry } = testServer();
+    const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });
+    config.flags.chat = true;
+    const bodies: Body[] = [];
+    const fetcher = async (_u: string, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as Body & { toolConfig?: unknown };
+      bodies.push(body);
+      const parts =
+        bodies.length === 1
+          ? [{ functionCall: { name: 'get_team_stats', args: {} }, thoughtSignature: 's' }]
+          : body.toolConfig
+            ? [{ text: 'Both teams took 5 sacks.' }]
+            : [];
+      return new Response(
+        JSON.stringify({
+          candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }],
+        }),
+      );
+    };
+    const app = new Hono();
+    chatRoutes(app, { config, registry, fetcher });
+    const msgs = await readSse(
+      await app.request(`/api/games/${DEMO}/chat`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ question: 'How many sacks?' }),
+      }),
+    );
+    expect(msgs.find((m) => m.type === 'delta')).toMatchObject({
+      text: 'Both teams took 5 sacks.',
+    });
+    expect(bodies).toHaveLength(3);
+    const last = bodies[2]!.contents;
+    // The empty model turn is not echoed; the nudge is the last user message.
+    expect(last.every((c) => c.parts.length > 0)).toBe(true);
+    expect(last.at(-1)!.parts[0]!.text).toMatch(/^Answer the question now/);
+  });
+
   it('a failed Gemini call ends with a short error, not a crash', async () => {
     const { registry } = testServer();
     const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });

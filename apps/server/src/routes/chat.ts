@@ -91,13 +91,14 @@ async function geminiChat(opts: {
   let pinned: string | undefined;
   let restarted = false;
   let answered = false;
+  let nudged = false;
   const noAnswer = () =>
     opts.send({
       type: 'error',
       message: "I couldn't pin that one down. Try asking it another way.",
     });
   for (let turn = 0; turn < MAX_TURNS; turn++) {
-    const final = lastTurn(turn);
+    const final = lastTurn(turn) || nudged;
     let r = await ask(pinned ?? opts.model, pinned ? [] : opts.fallbacks, final);
     if (!r && pinned) {
       await new Promise((ok) => setTimeout(ok, opts.retryDelayMs ?? 1500));
@@ -115,12 +116,24 @@ async function geminiChat(opts: {
       return;
     }
     pinned = r.model;
-    contents.push(r.content);
+    if (r.content.parts.length) contents.push(r.content);
     if (r.text) {
       answered = true;
       await opts.send({ type: 'delta', text: r.text });
     }
-    if (!r.calls.length || lastTurn(turn)) {
+    // Gemini 3 sometimes ends a turn after tool results with no text at all (finish reason
+    // STOP). Ask once more for the answer, with tools off.
+    if (!r.calls.length && !answered && !nudged && turn < MAX_TURNS - 1) {
+      nudged = true;
+      contents.push({
+        role: 'user',
+        parts: [
+          { text: 'Answer the question now, in 2-5 sentences, from the tool results above.' },
+        ],
+      });
+      continue;
+    }
+    if (!r.calls.length || final) {
       if (!answered) {
         log.warn('booth ended without an answer', {
           model: r.model,
