@@ -88,9 +88,8 @@ Files: `apps/mobile/app/*` (routes), `apps/mobile/src/*` (code), `apps/mobile/te
 4. **Run `npx expo-doctor`** in `apps/mobile` on the Mac. 18 of 20 checks passed here. The other
    two (config schema and React Native Directory) need the Expo API, which the build environment
    couldn't reach.
-5. **Delete `data/cache/repo.bundle` and `data/cache/mobile.bundle`** from your repo folder if
-   they're still there. They're the transfer files used to bring the commits over, and they're
-   gitignored.
+5. Nothing to clean up: the temporary transfer bundles in `data/cache/` were deleted after the
+   commits were applied.
 6. **TestFlight (optional):** needs an Expo account and an Apple Developer account. Run
    `npx eas-cli@latest init` in `apps/mobile` (it adds the project id), then
    `npx eas-cli@latest build --profile preview --platform ios`. Bundle id `com.gridcast.app`
