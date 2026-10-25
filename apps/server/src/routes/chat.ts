@@ -89,6 +89,12 @@ async function geminiChat(opts: {
   // signatures to carry).
   let pinned: string | undefined;
   let restarted = false;
+  let answered = false;
+  const noAnswer = () =>
+    opts.send({
+      type: 'error',
+      message: "I couldn't pin that one down. Try asking it another way.",
+    });
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const final = lastTurn(turn);
     let r = await ask(pinned ?? opts.model, pinned ? [] : opts.fallbacks, final);
@@ -109,8 +115,20 @@ async function geminiChat(opts: {
     }
     pinned = r.model;
     contents.push(r.content);
-    if (r.text) await opts.send({ type: 'delta', text: r.text });
-    if (!r.calls.length) return;
+    if (r.text) {
+      answered = true;
+      await opts.send({ type: 'delta', text: r.text });
+    }
+    if (!r.calls.length || lastTurn(turn)) {
+      if (!answered) {
+        log.warn('booth ended without an answer', {
+          model: r.model,
+          ...(r.finishReason ? { finishReason: r.finishReason } : {}),
+        });
+        await noAnswer();
+      }
+      return;
+    }
     const parts: GeminiPart[] = [];
     for (const call of r.calls) {
       await opts.send({ type: 'tool', name: call.name });

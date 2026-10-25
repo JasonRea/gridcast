@@ -3,7 +3,7 @@
  * use what actually happened. Inputs are validated with zod before running.
  */
 import { z } from 'zod';
-import type { OddsTick, PlayEvent } from '@gridcast/types';
+import type { FourthDownCall, OddsTick, PlayEvent } from '@gridcast/types';
 import type { GameSession } from '../games/session.ts';
 
 const label = (p: PlayEvent) => {
@@ -16,6 +16,22 @@ const text = (p: PlayEvent) => p.raw.text.replace(/^\(\s*\d{0,2}:\d{2}\s*\)\s*/,
 
 function plays(s: GameSession): PlayEvent[] {
   return s.log.all().flatMap((e) => (e.event.kind === 'play' ? [e.event] : []));
+}
+
+const CHOICE = { go: 'going for it', fg: 'a field goal', punt: 'a punt' } as const;
+
+/** The 4th-down bot's call in words, so the model never has to read the numbers itself. */
+export function fourthVerdict(f: FourthDownCall): string {
+  const ep = (k: keyof typeof CHOICE) => f.options[k];
+  const opts = (Object.keys(CHOICE) as (keyof typeof CHOICE)[])
+    .filter((k) => ep(k) !== undefined)
+    .map((k) => `${CHOICE[k]} ${ep(k)! >= 0 ? '+' : ''}${ep(k)!.toFixed(2)}`)
+    .join(', ');
+  const rec = `The bot recommended ${CHOICE[f.recommend]} (expected points: ${opts}).`;
+  if (!f.call) return rec;
+  if (f.call === f.recommend || (f.delta ?? 0) < 0.1)
+    return `${rec} The coach chose ${CHOICE[f.call]}: the bot agrees.`;
+  return `${rec} The coach chose ${CHOICE[f.call]}, which cost ${f.delta!.toFixed(2)} expected points versus the recommendation.`;
 }
 
 function summary(p: PlayEvent) {
@@ -35,7 +51,9 @@ function summary(p: PlayEvent) {
           homeWinProbAfter: Math.round(p.wpAfter * 100),
         }
       : {}),
-    ...(p.fourthDown ? { fourthDownBot: p.fourthDown } : {}),
+    ...(p.fourthDown
+      ? { fourthDownBot: { ...p.fourthDown, verdict: fourthVerdict(p.fourthDown) } }
+      : {}),
     score: `${p.state.away}-${p.state.home}`,
   };
 }

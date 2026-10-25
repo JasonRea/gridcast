@@ -42,6 +42,25 @@ describe('Ask-the-game tools on the fixture game', () => {
     expect(t.TB!.touchdowns * 7 + t.TB!.fieldGoals * 3).toBe(19);
   });
 
+  it('4th-down plays carry the bot verdict in words', async () => {
+    const s = (await testServer().registry.get(DEMO))!;
+    const { plays } = runTool(s, 'get_plays', {
+      quarter: 1,
+      team: 'PIT',
+      big_only: true,
+      limit: 40,
+    }) as {
+      plays: { when: string; fourthDownBot?: { verdict: string; recommend: string } }[];
+    };
+    const q1 = plays.find((p) => p.when === 'Q1 3:46')!;
+    const v = q1.fourthDownBot!.verdict;
+    expect(v).toMatch(/^The bot recommended /);
+    expect(v).toContain(
+      `recommended ${q1.fourthDownBot!.recommend === 'fg' ? 'a field goal' : q1.fourthDownBot!.recommend === 'go' ? 'going for it' : 'a punt'}`,
+    );
+    expect(v).toMatch(/The coach chose going for it/);
+  });
+
   it('player stats by last name', async () => {
     const s = (await testServer().registry.get(DEMO))!;
     const r = runTool(s, 'get_player_stats', { name: 'Aaron Rodgers' }) as {
