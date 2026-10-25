@@ -92,7 +92,8 @@ const nameMatch = (n: string, q: string) => {
 export const TOOL_DEFS = [
   {
     name: 'get_game_state',
-    description: 'Current score, quarter, clock, possession, down and distance, and team names.',
+    description:
+      'Current score, quarter, clock, possession, down and distance, team names, status (final when over) and the last play so far (for a final game, how it ended).',
     input_schema: { type: 'object' as const, properties: {}, additionalProperties: false },
   },
   {
@@ -182,6 +183,8 @@ export function runTool(s: GameSession, name: string, input: unknown): unknown {
             }
           : {}),
         playsSoFar: all.length,
+        // How the game (so far) ends: the model should not stop the story at the last score.
+        ...(all.length ? { lastPlay: summary(all[all.length - 1]!) } : {}),
       };
     }
     case 'get_plays': {
