@@ -11,7 +11,7 @@ import type { LinePair } from './template.ts';
  * Bump when the commentary style changes (prompt or templates): older cached lines are ignored
  * and regenerated.
  */
-export const COMMENTARY_STYLE = 2;
+export const COMMENTARY_STYLE = 3;
 
 export type CachedLines = LinePair & { source: 'claude' | 'template'; style?: number };
 

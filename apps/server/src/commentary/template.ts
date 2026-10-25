@@ -128,14 +128,21 @@ function colorLine(c: PlayContext): string | undefined {
   }
   if (p.result === 'interception' || p.result === 'fumble')
     return `A turnover, and ${c.defense} get the ball back.`;
-  if (c.before.down === 3 || c.before.down === 4) {
+  if ((c.before.down === 3 || c.before.down === 4) && ['run', 'pass', 'sack'].includes(p.type)) {
     const needed = c.before.distance ?? 0;
     const converted =
       ['run', 'pass'].includes(p.type) && p.result !== 'incomplete' && p.yards >= needed;
-    if (c.before.down === 4)
+    if (c.before.down === 4) {
+      const h = c.history;
+      // Historical twins: what teams did in this exact spot, 2016-2025.
+      if (h && converted)
+        return `They went for it and got it. Teams in this spot go for it ${h.goPct}% of the time.`;
+      if (h?.convPct !== undefined && !converted)
+        return `Stopped on fourth down. Teams convert ${h.convPct}% from here.`;
       return converted
         ? 'They went for it on fourth down and got it.'
         : 'Stopped on fourth down. Turnover on downs.';
+    }
     return converted ? 'Third down converted. The drive stays alive.' : 'Stopped on third down.';
   }
   if (p.yards >= 20) return `A chunk play: ${yds(p.yards)} on one snap.`;

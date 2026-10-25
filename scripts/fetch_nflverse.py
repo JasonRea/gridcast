@@ -19,11 +19,16 @@ FILES = [
     "depth_charts/depth_charts_2026.csv",
 ]
 
+# Ten seasons for the 4th-down historical twins (scripts/build_twins.py): --twins
+TWINS = [f"pbp/play_by_play_{y}.csv.gz" for y in range(2016, 2026)]
+
 
 def main() -> None:
     RAW.mkdir(parents=True, exist_ok=True)
-    only = set(sys.argv[1:])
-    for f in FILES:
+    args = set(sys.argv[1:])
+    files = TWINS if "--twins" in args else FILES
+    only = args - {"--twins"}
+    for f in files:
         name = f.split("/")[-1]
         if only and name not in only:
             continue

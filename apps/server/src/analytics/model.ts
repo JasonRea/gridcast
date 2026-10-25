@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { z } from 'zod';
 import type { FourthChoice, FourthDownCall, GameState, PlayEvent } from '@gridcast/types';
+import { loadTwins, type Twins } from './twins.ts';
 
 const EpTableSchema = z.object({
   distBuckets: z.array(z.number()),
@@ -19,7 +20,11 @@ const FourthSchema = z.object({
   yardLineBucket: z.number(),
 });
 
-export type Tables = { ep: z.infer<typeof EpTableSchema>; fourth: z.infer<typeof FourthSchema> };
+export type Tables = {
+  ep: z.infer<typeof EpTableSchema>;
+  fourth: z.infer<typeof FourthSchema>;
+  twins?: Twins;
+};
 
 export function loadTables(assetsDir: string): Tables | undefined {
   const epPath = join(assetsDir, 'ep_table.json');
@@ -27,7 +32,9 @@ export function loadTables(assetsDir: string): Tables | undefined {
   if (!existsSync(epPath) || !existsSync(fdPath)) return undefined;
   const ep = EpTableSchema.safeParse(JSON.parse(readFileSync(epPath, 'utf8')));
   const fourth = FourthSchema.safeParse(JSON.parse(readFileSync(fdPath, 'utf8')));
-  return ep.success && fourth.success ? { ep: ep.data, fourth: fourth.data } : undefined;
+  if (!ep.success || !fourth.success) return undefined;
+  const twins = loadTwins(assetsDir);
+  return { ep: ep.data, fourth: fourth.data, ...(twins ? { twins } : {}) };
 }
 
 const r1 = (n: number) => Math.round(n * 100) / 100;
@@ -136,13 +143,25 @@ export class Analytics {
     };
   }
 
-  /** Normalizer hook: attaches EPA and 4th-down calls to a play. */
-  enrich = (p: PlayEvent): PlayEvent => {
+  /** Adds the historical twins to a 4th-down call when the home team is known. */
+  private withHistory(
+    call: FourthDownCall | undefined,
+    s: GameState,
+    homeAbbr: string | undefined,
+  ): FourthDownCall | undefined {
+    if (!call || !homeAbbr || !this.t.twins) return call;
+    const history = this.t.twins.lookup(s, s.possession === homeAbbr);
+    return history ? { ...call, history } : call;
+  }
+
+  /** Normalizer hook: attaches EPA, 4th-down calls and their historical twins to a play. */
+  enrich = (p: PlayEvent, ctx?: { homeAbbr: string }): PlayEvent => {
     const epa = this.epa(p);
-    const fourth = p.pre.down === 4 ? this.grade(p) : undefined;
+    const home = ctx?.homeAbbr;
+    const fourth = p.pre.down === 4 ? this.withHistory(this.grade(p), p.pre, home) : undefined;
     const next =
       p.state.down === 4 && p.state.possession === p.pre.possession
-        ? this.fourthDown(p.state)
+        ? this.withHistory(this.fourthDown(p.state), p.state, home)
         : undefined;
     return {
       ...p,

@@ -111,7 +111,7 @@ export class GameNormalizer {
   constructor(
     private readonly meta: GameMeta,
     /** Optional per-play enrichment (EPA, 4th-down bot). */
-    private readonly enrich: (p: PlayEvent) => PlayEvent = (p) => p,
+    private readonly enrich: (p: PlayEvent, ctx: { homeAbbr: string }) => PlayEvent = (p) => p,
   ) {
     this.names = {
       home: meta.home.name,
@@ -374,7 +374,7 @@ export class GameNormalizer {
       ...(wpBefore !== undefined ? { wpBefore } : {}),
       ...(wpAfter !== undefined ? { wpAfter } : {}),
     };
-    out.push(this.enrich(ev));
+    out.push(this.enrich(ev, { homeAbbr: this.meta.home.abbr }));
 
     // Stoppages that come from inside a play.
     if (parsed.penalty && (parsed.penalty.accepted || parsed.penalty.offsetting)) {

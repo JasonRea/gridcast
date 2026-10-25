@@ -19,7 +19,10 @@ export class GameRegistry {
   constructor(
     private readonly config: Config,
     private readonly espn: EspnClient,
-    private readonly opts: { persist?: boolean; enrichPlay?: (p: PlayEvent) => PlayEvent } = {},
+    private readonly opts: {
+      persist?: boolean;
+      enrichPlay?: (p: PlayEvent, ctx: { homeAbbr: string }) => PlayEvent;
+    } = {},
   ) {
     if (opts.persist !== false) mkdirSync(config.logsDir, { recursive: true });
   }

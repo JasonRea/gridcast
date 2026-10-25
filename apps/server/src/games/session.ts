@@ -31,7 +31,7 @@ import {
 } from '../pipeline/normalize.ts';
 
 /** Bump when the normalizer or parser output changes, so finished games rebuild their logs. */
-export const PIPELINE_VERSION = 7;
+export const PIPELINE_VERSION = 8;
 
 export type Source = 'live' | 'replay';
 
@@ -154,7 +154,7 @@ export class GameSession extends EventEmitter<{
     readonly log: EventLog,
     summary: EspnSummary,
     private readonly metaDir: string,
-    private readonly enrich?: (p: PlayEvent) => PlayEvent,
+    private readonly enrich?: (p: PlayEvent, ctx: { homeAbbr: string }) => PlayEvent,
   ) {
     super();
     this.setMaxListeners(0);
