@@ -79,7 +79,8 @@ Missing keys disable features, never the app.
 | `ANTHROPIC_API_KEY` | none | Claude commentary. Unset means deterministic template commentary |
 | `GEMINI_API_KEY` | none | Gemini answers Ask the game / Talk to the booth and translates commentary. Without it, Claude does both when its key is set |
 | `CHAT_PROVIDER` | Gemini when its key is set | `gemini` or `claude`, when both keys are set |
-| `GEMINI_MODEL` / `GEMINI_TRANSLATE_MODEL` | `gemini-3.8-flash` / `gemini-3.5-flash-lite` | Booth model and translation model |
+| `GEMINI_MODEL` / `GEMINI_TRANSLATE_MODEL` | `gemini-3.6-flash` / `gemini-3.5-flash-lite` | Booth model and translation model |
+| `GEMINI_FALLBACK_MODELS` | `gemini-3.5-flash-lite,gemini-3.6-flash` | Tried in order when a model is overloaded (429/5xx) or slow (15 s per attempt in the booth) |
 | `GEMINI_BASE` | Google endpoint | Override for a local mock |
 | `COMMENTARY_MODEL` | `claude-haiku-5-5` | Fast model for per-play lines |
 | `CHAT_MODEL` | `claude-opus-5-5` | Stronger model for Ask the game (P1) |

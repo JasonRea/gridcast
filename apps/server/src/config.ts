@@ -36,6 +36,8 @@ export type Config = {
   chatProvider: 'claude' | 'gemini' | undefined;
   geminiModel: string;
   geminiTranslateModel: string;
+  /** Tried in order when the main model is overloaded or slow. */
+  geminiFallbackModels: string[];
   geminiBase?: string;
   /** Feature flags (P1). Each is documented in README.md. */
   flags: Record<string, boolean>;
@@ -86,8 +88,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     commentaryModel: env.COMMENTARY_MODEL ?? 'claude-haiku-5-5',
     chatModel: env.CHAT_MODEL ?? 'claude-opus-5-5',
     chatProvider,
-    geminiModel: env.GEMINI_MODEL ?? 'gemini-3.8-flash',
+    // 3.8 Flash was returning 503 "high demand" and hanging on Oct 25; 3.6 Flash answered in 2 s.
+    geminiModel: env.GEMINI_MODEL ?? 'gemini-3.6-flash',
     geminiTranslateModel: env.GEMINI_TRANSLATE_MODEL ?? 'gemini-3.5-flash-lite',
+    geminiFallbackModels: (env.GEMINI_FALLBACK_MODELS ?? 'gemini-3.5-flash-lite,gemini-3.6-flash')
+      .split(',')
+      .map((m) => m.trim())
+      .filter(Boolean),
     ...(opt(env.GEMINI_BASE) ? { geminiBase: opt(env.GEMINI_BASE)! } : {}),
     flags: {
       timeline: bool(env.FLAG_TIMELINE, true),

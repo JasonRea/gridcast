@@ -14,7 +14,7 @@ function fakeGemini() {
   const fetcher = async (url: string, init?: RequestInit) => {
     const body = JSON.parse(String(init?.body)) as Body;
     bodies.push(body);
-    expect(url).toMatch(/models\/gemini-3\.8-flash:generateContent$/);
+    expect(url).toMatch(/models\/gemini-3\.6-flash:generateContent$/);
     expect((init?.headers as Record<string, string>)['x-goog-api-key']).toBe('g');
     const parts =
       bodies.length === 1
@@ -79,6 +79,43 @@ describe('the booth on Gemini', () => {
     };
     expect(fr).toMatchObject({ id: 'c1', name: 'get_plays' });
     expect(Array.isArray(fr.response.result)).toBe(true);
+  });
+
+  it('an overloaded model falls back, and the conversation stays on the model that answered', async () => {
+    const { registry } = testServer();
+    const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });
+    config.flags.chat = true;
+    const urls: string[] = [];
+    let answered = 0;
+    const fetcher = async (url: string) => {
+      urls.push(url);
+      if (url.includes('gemini-3.6-flash')) return new Response('busy', { status: 503 });
+      answered++;
+      const parts =
+        answered === 1
+          ? [
+              {
+                functionCall: { id: 'c1', name: 'get_game_state', args: {} },
+                thoughtSignature: 's',
+              },
+            ]
+          : [{ text: 'Pittsburgh won 26-19 in overtime.' }];
+      return new Response(JSON.stringify({ candidates: [{ content: { role: 'model', parts } }] }));
+    };
+    const app = new Hono();
+    chatRoutes(app, { config, registry, fetcher });
+    const res = await app.request(`/api/games/${DEMO}/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ question: 'Final score?' }),
+    });
+    const msgs = await readSse(res);
+    expect(msgs.find((m) => m.type === 'delta')).toMatchObject({ text: /26-19/ });
+    expect(urls.map((u) => /models\/([^:]+):/.exec(u)![1])).toEqual([
+      'gemini-3.6-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.5-flash-lite',
+    ]);
   });
 
   it('a failed Gemini call ends with a short error, not a crash', async () => {

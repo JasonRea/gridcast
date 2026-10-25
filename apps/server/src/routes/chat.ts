@@ -43,6 +43,7 @@ function toolResult(
 async function geminiChat(opts: {
   apiKey: string;
   model: string;
+  fallbacks: string[];
   session: GameSession;
   question: string;
   history: History;
@@ -62,10 +63,15 @@ async function geminiChat(opts: {
     description: t.description,
     parametersJsonSchema: t.input_schema,
   }));
+  // The first turn may fall back to another model; later turns stay on the one that answered,
+  // because its thought signatures are in the conversation.
+  let pinned: string | undefined;
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const r = await geminiGenerate({
       apiKey: opts.apiKey,
-      model: opts.model,
+      model: pinned ?? opts.model,
+      ...(pinned ? {} : { fallbacks: opts.fallbacks }),
+      timeoutMs: 15_000,
       system: SYSTEM,
       contents,
       tools,
@@ -76,6 +82,7 @@ async function geminiChat(opts: {
       await opts.send({ type: 'error', message: 'The analyst is unavailable right now.' });
       return;
     }
+    pinned = r.model;
     contents.push(r.content);
     if (r.text) await opts.send({ type: 'delta', text: r.text });
     if (!r.calls.length) return;
@@ -121,6 +128,7 @@ export function chatRoutes(
         await geminiChat({
           apiKey: gemini,
           model: config.geminiModel,
+          fallbacks: config.geminiFallbackModels,
           session,
           question,
           history,

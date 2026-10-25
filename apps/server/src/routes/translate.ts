@@ -75,6 +75,7 @@ export function translateRoutes(app: Hono, config: Config, fetcher?: Fetcher) {
       const r = await geminiGenerate({
         apiKey: config.geminiKey,
         model: config.geminiTranslateModel,
+        fallbacks: config.geminiFallbackModels,
         system: translatePrompt(lang),
         contents: [{ role: 'user', parts: [{ text: input }] }],
         json: true,

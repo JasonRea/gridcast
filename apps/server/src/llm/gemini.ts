@@ -48,6 +48,8 @@ export type GeminiTool = { name: string; description: string; parametersJsonSche
 export type GeminiCall = { id?: string; name: string; args: Record<string, unknown> };
 
 export type GeminiResult = {
+  /** The model that answered. */
+  model: string;
   /** The model's turn, verbatim (thought signatures included) for the next request. */
   content: GeminiContent;
   text: string;
@@ -55,18 +57,29 @@ export type GeminiResult = {
   finishReason?: string;
 };
 
-export async function geminiGenerate(opts: {
+export type GeminiOptions = {
   apiKey: string;
   model: string;
+  /**
+   * Models to try, in order, when `model` is overloaded (429, 5xx) or times out. Thought
+   * signatures belong to the model that made them, so multi-turn callers pin the model that
+   * answered (`GeminiResult.model`) for the rest of the conversation.
+   */
+  fallbacks?: string[];
   system?: string;
   contents: GeminiContent[];
   tools?: GeminiTool[];
   json?: boolean;
   fetcher?: Fetcher;
+  /** Per attempt. */
   timeoutMs?: number;
   /** Override for tests and local mocks (GEMINI_BASE). */
   base?: string;
-}): Promise<GeminiResult | undefined> {
+};
+
+type Attempt = { result?: GeminiResult; retry: boolean };
+
+async function attempt(opts: GeminiOptions, model: string): Promise<Attempt> {
   const body = {
     ...(opts.system ? { systemInstruction: { parts: [{ text: opts.system }] } } : {}),
     contents: opts.contents,
@@ -78,7 +91,7 @@ export async function geminiGenerate(opts: {
   };
   try {
     const res = await (opts.fetcher ?? fetch)(
-      `${opts.base ?? GEMINI_BASE}/models/${encodeURIComponent(opts.model)}:generateContent`,
+      `${opts.base ?? GEMINI_BASE}/models/${encodeURIComponent(model)}:generateContent`,
       {
         method: 'POST',
         headers: { 'x-goog-api-key': opts.apiKey, 'content-type': 'application/json' },
@@ -87,38 +100,53 @@ export async function geminiGenerate(opts: {
       },
     );
     if (!res.ok) {
-      log.warn('gemini upstream error', { status: res.status, model: opts.model });
-      return undefined;
+      log.warn('gemini upstream error', { status: res.status, model });
+      return { retry: res.status === 429 || res.status >= 500 };
     }
     const parsed = ResponseSchema.safeParse(await res.json());
     if (!parsed.success) {
-      log.warn('gemini response did not validate', { model: opts.model });
-      return undefined;
+      log.warn('gemini response did not validate', { model });
+      return { retry: false };
     }
     const cand = parsed.data.candidates[0];
-    if (!cand?.content) return undefined;
+    if (!cand?.content) return { retry: true };
     const parts = cand.content.parts;
     return {
-      content: { role: 'model', parts: parts as GeminiPart[] },
-      text: parts
-        .filter((p) => p.text && !p.thought)
-        .map((p) => p.text)
-        .join(''),
-      calls: parts.flatMap((p) =>
-        p.functionCall
-          ? [
-              {
-                ...(p.functionCall.id ? { id: p.functionCall.id } : {}),
-                name: p.functionCall.name,
-                args: p.functionCall.args ?? {},
-              },
-            ]
-          : [],
-      ),
-      ...(cand.finishReason ? { finishReason: cand.finishReason } : {}),
+      retry: false,
+      result: {
+        model,
+        content: { role: 'model', parts: parts as GeminiPart[] },
+        text: parts
+          .filter((p) => p.text && !p.thought)
+          .map((p) => p.text)
+          .join(''),
+        calls: parts.flatMap((p) =>
+          p.functionCall
+            ? [
+                {
+                  ...(p.functionCall.id ? { id: p.functionCall.id } : {}),
+                  name: p.functionCall.name,
+                  args: p.functionCall.args ?? {},
+                },
+              ]
+            : [],
+        ),
+        ...(cand.finishReason ? { finishReason: cand.finishReason } : {}),
+      },
     };
   } catch (e) {
-    log.warn('gemini failed', { error: (e as Error).message });
-    return undefined;
+    // Timeouts and network errors: worth trying the next model.
+    log.warn('gemini failed', { error: (e as Error).message, model });
+    return { retry: true };
   }
+}
+
+export async function geminiGenerate(opts: GeminiOptions): Promise<GeminiResult | undefined> {
+  const models = [...new Set([opts.model, ...(opts.fallbacks ?? [])])];
+  for (const model of models) {
+    const a = await attempt(opts, model);
+    if (a.result) return a.result;
+    if (!a.retry) return undefined;
+  }
+  return undefined;
 }
