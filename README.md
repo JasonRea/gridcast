@@ -23,6 +23,7 @@ only the playback clock differs.
 | Review | Commentary in FR/ES/DE/PT (Gemini translation, ElevenLabs voices) | Done (needs a key) |
 | Review | Historical twins for every 4th down (nflverse 2016-2025, Tiger Data path) | Done |
 | Review | Phones in the room (QR code, radio mode in step with the projector) | Done |
+| Mobile | iOS app (React Native + Expo, `apps/mobile`): every P0 and P1 feature, same server API | Built; needs the on-device checks in `apps/mobile/REPORT.md` |
 
 Review checkpoints from `AGENTS.md`: step 0 is commit `data: step 0 fixtures...`, P0-3 is `test(web): browser smoke test...`.
 
@@ -51,6 +52,7 @@ GRIDCAST_OFFLINE=1 pnpm dev
 | `pnpm dev` | Web and server together (hot reload) |
 | `pnpm build` | Builds the web app into `apps/web/dist` (the server serves it) |
 | `pnpm start` | Production server on `$PORT` (serves the API, SSE and the built web app) |
+| `pnpm mobile` | Expo dev server for the iOS app (QR code for Expo Go); see [iOS app](#ios-app) |
 | `pnpm test` | All unit and integration tests (fixtures only, no network) |
 | `pnpm typecheck` | TypeScript strict across every package |
 | `pnpm lint` | ESLint |
@@ -176,6 +178,68 @@ Checklist (from `AGENTS.md`):
 4. `pnpm pregen 401873002` run with the Claude key, cache committed to `data/assets/commentary/`.
 5. P1 flags that are not rock solid turned off.
 6. Production URL tested on a phone hotspot.
+
+## iOS app
+
+`apps/mobile` is Gridcast for iPhone, built with React Native and Expo (SDK 58). It talks to the
+same server API as the web app (no new endpoints, no keys in the app) and runs in **Expo Go**: no
+Xcode or Apple developer account needed to try it.
+
+What's in it: scoreboard (pinned demo and featured games, week picker, pull to refresh, refresh
+every 30 s while a game is live), game screen with scorebug, win probability, LIVE/stale pill,
+the animated field (all 10 templates plus generic, same choreography as the web), play feed with
+streaming commentary, stoppage cards, resilient SSE (reconnect with backoff, `Last-Event-ID`
+resume, stall detection, background/foreground resume) and an offline banner. Behind the
+server's flags: playback controls and timeline scrubber, announcers (server TTS or the device
+voice, muted by default, plays with the ringer on silent), haptics, market vs model chart, EPA and
+the 4th-down bot, Ask the game with citation chips, preview, translation, radio mode and
+"Join the room" (also `gridcast://game/<id>?room=1`). Landscape gives a full-screen field.
+
+### Setup
+
+1. Install **Expo Go** from the App Store on the iPhone (it must support SDK 58).
+2. From the repo root:
+
+```bash
+pnpm install
+pnpm dev                                   # server :8787 (and web :5173)
+# in another terminal
+EXPO_PUBLIC_API_BASE=http://<your-laptop-LAN-IP>:8787 pnpm mobile
+# scan the QR code with the iPhone Camera -> opens in Expo Go (same Wi-Fi as the laptop)
+
+pnpm mobile                                # without the env var: uses production gridcast-028f.fly.dev
+GRIDCAST_OFFLINE=1 pnpm dev                # server from fixtures, no ESPN/Kalshi needed
+```
+
+`localhost` on the phone is the phone itself, so always use the laptop's LAN IP
+(`ipconfig getifaddr en0` on a Mac). If the phone and laptop can't see each other (campus Wi-Fi
+often isolates clients), use `pnpm --filter @gridcast/mobile start --tunnel` for Metro and point
+the app at production.
+
+### Env and settings
+
+| Setting | Where | Default |
+| --- | --- | --- |
+| `EXPO_PUBLIC_API_BASE` | env when starting Metro (inlined into the bundle) | `https://gridcast-028f.fly.dev` |
+| API base override | in the app: **long-press the GRIDCAST logo** -> Settings -> Server | empty (use the build default) |
+| Haptics, commentary language | Settings | on, English |
+
+Feature flags come from the server (`GET /api/games/:id` -> `features`); the app hides anything
+whose flag is off, like the web.
+
+### Tips
+
+- Open a replay mid-game: deep link `exp://<laptop-ip>:8081/--/game/401873002?from=q4` in Expo Go,
+  or `gridcast://game/401873002?from=q4` in a development build.
+- Unmute (speaker button) before expecting announcers; audio plays with the silent switch on.
+- Turn the phone sideways for the full-screen field.
+- `pnpm --filter @gridcast/mobile typecheck` and `pnpm vitest run --project mobile` run the app's
+  checks alone; `pnpm check` covers everything.
+- TestFlight: `apps/mobile/eas.json` has `development`, `preview` and `production` profiles
+  (`npx eas-cli@latest build --profile preview --platform ios`), bundle id `com.gridcast.app`.
+  Not run yet: needs an Expo account and an Apple developer account.
+
+Known gaps and the steps that still need a human are in `apps/mobile/REPORT.md`.
 
 ## Deploy
 
