@@ -70,6 +70,8 @@ export type GeminiOptions = {
   contents: GeminiContent[];
   tools?: GeminiTool[];
   json?: boolean;
+  /** Keep the tools declared but forbid calling them: the model must answer in text. */
+  toolsOff?: boolean;
   fetcher?: Fetcher;
   /** Per attempt. */
   timeoutMs?: number;
@@ -84,6 +86,9 @@ async function attempt(opts: GeminiOptions, model: string): Promise<Attempt> {
     ...(opts.system ? { systemInstruction: { parts: [{ text: opts.system }] } } : {}),
     contents: opts.contents,
     ...(opts.tools?.length ? { tools: [{ functionDeclarations: opts.tools }] } : {}),
+    ...(opts.tools?.length && opts.toolsOff
+      ? { toolConfig: { functionCallingConfig: { mode: 'NONE' } } }
+      : {}),
     generationConfig: {
       maxOutputTokens: 2048,
       ...(opts.json ? { responseMimeType: 'application/json' } : {}),

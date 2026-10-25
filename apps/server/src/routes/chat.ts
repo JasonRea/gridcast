@@ -18,11 +18,15 @@ import { log } from '../util/logger.ts';
 
 const SYSTEM = `You are the analyst for Gridcast, answering fans' questions about one NFL game.
 Use the tools to look up facts; answer only from tool results. If the tools do not have the answer, say so.
-Keep answers short: 2-5 sentences. Cite plays by quarter and clock in square brackets, exactly like [Q3 4:12], using the "when" field.
+Keep answers short: 2-5 sentences, plain sentences, no lists or markdown (answers may be read aloud). Cite plays by quarter and clock in square brackets, exactly like [Q3 4:12], using the "when" field.
+Write player names exactly as the tools give them (e.g. "J.Ramsey" or "Ramsey"); never expand an initial into a first name.
+For counts and totals, use get_team_stats or the "matching" count from get_plays, never a count of a shortened list.
 Expected points (EPA) and win probability come from models; odds are information only, never betting advice.
 Never speculate about injuries.`;
 
 const MAX_TURNS = 6;
+/** The last turn runs with tools off, so a long investigation still ends in an answer. */
+const lastTurn = (turn: number) => turn === MAX_TURNS - 1;
 
 type Send = (m: ChatMessage) => Promise<void>;
 type History = { role: 'user' | 'assistant'; text: string }[];
@@ -66,8 +70,9 @@ async function geminiChat(opts: {
     description: t.description,
     parametersJsonSchema: t.input_schema,
   }));
-  const ask = (model: string, fallbacks: string[]) =>
+  const ask = (model: string, fallbacks: string[], final = false) =>
     geminiGenerate({
+      ...(final ? { toolsOff: true } : {}),
       apiKey: opts.apiKey,
       model,
       fallbacks,
@@ -85,10 +90,11 @@ async function geminiChat(opts: {
   let pinned: string | undefined;
   let restarted = false;
   for (let turn = 0; turn < MAX_TURNS; turn++) {
-    let r = await ask(pinned ?? opts.model, pinned ? [] : opts.fallbacks);
+    const final = lastTurn(turn);
+    let r = await ask(pinned ?? opts.model, pinned ? [] : opts.fallbacks, final);
     if (!r && pinned) {
       await new Promise((ok) => setTimeout(ok, opts.retryDelayMs ?? 1500));
-      r = await ask(pinned, []);
+      r = await ask(pinned, [], final);
     }
     if (!r && pinned && !restarted) {
       restarted = true;
@@ -180,6 +186,7 @@ export function chatRoutes(
             fallbacks: 'default',
             system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
             tools,
+            ...(lastTurn(turn) ? { tool_choice: { type: 'none' as const } } : {}),
             messages,
           });
           s.on('text', (t) => void send({ type: 'delta', text: t }));

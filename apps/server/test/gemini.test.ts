@@ -75,10 +75,11 @@ describe('the booth on Gemini', () => {
     const fr = second.at(-1)!.parts[0]!.functionResponse as {
       id: string;
       name: string;
-      response: { result: unknown[] };
+      response: { result: { matching: number; plays: unknown[] } };
     };
     expect(fr).toMatchObject({ id: 'c1', name: 'get_plays' });
-    expect(Array.isArray(fr.response.result)).toBe(true);
+    expect(fr.response.result.matching).toBeGreaterThan(0);
+    expect(Array.isArray(fr.response.result.plays)).toBe(true);
   });
 
   it('an overloaded model falls back, and the conversation stays on the model that answered', async () => {
@@ -153,6 +154,34 @@ describe('the booth on Gemini', () => {
       { model: 'gemini-3.5-flash-lite', turns: 1 },
       { model: 'gemini-3.5-flash-lite', turns: 3 },
     ]);
+  });
+
+  it('a model that keeps calling tools is made to answer on the last turn', async () => {
+    const { registry } = testServer();
+    const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });
+    config.flags.chat = true;
+    const bodies: Record<string, unknown>[] = [];
+    const fetcher = async (_u: string, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      bodies.push(body);
+      const parts = body.toolConfig
+        ? [{ text: 'J.Dean had the biggest play.' }]
+        : [{ functionCall: { name: 'get_team_stats', args: {} } }];
+      return new Response(JSON.stringify({ candidates: [{ content: { role: 'model', parts } }] }));
+    };
+    const app = new Hono();
+    chatRoutes(app, { config, registry, fetcher });
+    const msgs = await readSse(
+      await app.request(`/api/games/${DEMO}/chat`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ question: 'Who had the best game?' }),
+      }),
+    );
+    expect(msgs.find((m) => m.type === 'delta')).toMatchObject({ text: /J\.Dean/ });
+    expect(bodies).toHaveLength(6);
+    expect(bodies.at(-1)!.toolConfig).toEqual({ functionCallingConfig: { mode: 'NONE' } });
+    expect(bodies.slice(0, -1).every((b) => !b.toolConfig)).toBe(true);
   });
 
   it('a failed Gemini call ends with a short error, not a crash', async () => {

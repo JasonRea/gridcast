@@ -13,13 +13,33 @@ describe('Ask-the-game tools on the fixture game', () => {
 
   it('filters plays and labels them by quarter and clock', async () => {
     const s = (await testServer().registry.get(DEMO))!;
-    const plays = runTool(s, 'get_plays', { quarter: 4, team: 'pit', type: 'fg' }) as {
-      when: string;
-      text: string;
-    }[];
+    const { matching, plays } = runTool(s, 'get_plays', {
+      quarter: 4,
+      team: 'pit',
+      type: 'fg',
+    }) as { matching: number; plays: { when: string; text: string }[] };
+    expect(matching).toBe(3);
     expect(plays.length).toBe(3);
     expect(plays.every((p) => p.when.startsWith('Q4 '))).toBe(true);
     expect(plays.map((p) => p.when)).toEqual(['Q4 8:08', 'Q4 1:55', 'Q4 1:21']);
+  });
+
+  it('counts are exact even when the list is cut short, and team totals add up', async () => {
+    const s = (await testServer().registry.get(DEMO))!;
+    const ints = runTool(s, 'get_plays', { result: 'interception', limit: 1 }) as {
+      matching: number;
+      plays: unknown[];
+    };
+    expect(ints.matching).toBe(3);
+    expect(ints.plays).toHaveLength(1);
+    const t = runTool(s, 'get_team_stats', {}) as Record<
+      string,
+      { interceptionsThrown: number; touchdowns: number; fieldGoals: number }
+    >;
+    expect(t.PIT!.interceptionsThrown + t.TB!.interceptionsThrown).toBe(3);
+    // PIT 26 = 2 TD + 4 FG; TB 19 = 1 TD + 4 FG.
+    expect(t.PIT!.touchdowns * 7 + t.PIT!.fieldGoals * 3).toBe(26);
+    expect(t.TB!.touchdowns * 7 + t.TB!.fieldGoals * 3).toBe(19);
   });
 
   it('player stats by last name', async () => {
