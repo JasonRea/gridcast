@@ -1,0 +1,16 @@
+{
+  // Unit tests run in Node (Vitest) and import server fixtures code, so they are checked with the
+  // repo's Node settings instead of the React Native globals the app uses.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@web/*": ["../web/src/*"],
+      "gsap": ["../web/node_modules/gsap"],
+      "gsap/*": ["../web/node_modules/gsap/*"]
+    }
+  },
+  "include": ["test", "vitest.config.mts"]
+}
