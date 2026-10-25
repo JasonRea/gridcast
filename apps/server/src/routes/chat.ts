@@ -58,11 +58,12 @@ async function geminiChat(opts: {
   fetcher?: Fetcher;
   base?: string;
 }): Promise<void> {
+  const prior = opts.history.map((h): GeminiContent => ({
+    role: h.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: h.text }],
+  }));
   const fresh = (): GeminiContent[] => [
-    ...opts.history.map((h): GeminiContent => ({
-      role: h.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: h.text }],
-    })),
+    ...prior,
     { role: 'user', parts: [{ text: opts.question }] },
   ];
   let contents = fresh();
@@ -71,38 +72,66 @@ async function geminiChat(opts: {
     description: t.description,
     parametersJsonSchema: t.input_schema,
   }));
-  const ask = (model: string, fallbacks: string[], final = false) =>
-    geminiGenerate({
-      ...(final ? { toolsOff: true } : {}),
-      apiKey: opts.apiKey,
-      model,
-      fallbacks,
-      timeoutMs: 15_000,
-      system: SYSTEM,
-      contents,
-      tools,
-      ...(opts.base ? { base: opts.base } : {}),
-      ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
+  const common = {
+    apiKey: opts.apiKey,
+    timeoutMs: 15_000,
+    system: SYSTEM,
+    ...(opts.base ? { base: opts.base } : {}),
+    ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
+  };
+  const ask = (model: string, fallbacks: string[]) =>
+    geminiGenerate({ ...common, model, fallbacks, contents, tools });
+
+  /** Everything the tools returned so far, for the final answer. */
+  const gathered: { tool: string; args: unknown; result: unknown }[] = [];
+  /**
+   * The answer from what was looked up: one tool-free request (the question plus the data), so
+   * the model cannot keep calling tools and no thought signatures are involved. Gemini can
+   * ignore "tools off", and sometimes ends a turn with no text; this path covers both.
+   */
+  async function finalAnswer(): Promise<void> {
+    const data = JSON.stringify(gathered).slice(0, 60_000);
+    const r = await geminiGenerate({
+      ...common,
+      model: opts.model,
+      fallbacks: opts.fallbacks,
+      contents: [
+        ...prior,
+        {
+          role: 'user',
+          parts: [
+            {
+              text: `${opts.question}\n\nGame data from the Gridcast tools (JSON):\n${data}\n\nAnswer the question now from this data only.`,
+            },
+          ],
+        },
+      ],
     });
+    if (r?.text) {
+      await opts.send({ type: 'delta', text: r.text });
+      return;
+    }
+    log.warn('booth ended without an answer', {
+      ...(r ? { model: r.model } : {}),
+      ...(r?.finishReason ? { finishReason: r.finishReason } : {}),
+    });
+    await opts.send({
+      type: 'error',
+      message: "I couldn't pin that one down. Try asking it another way.",
+    });
+  }
+
   // The first turn may fall back to another model; later turns stay on the one that answered,
   // because its thought signatures are in the conversation. If that model then fails, retry it
   // once, then start the question over on the other models (a fresh conversation has no
   // signatures to carry).
   let pinned: string | undefined;
   let restarted = false;
-  let answered = false;
-  let nudged = false;
-  const noAnswer = () =>
-    opts.send({
-      type: 'error',
-      message: "I couldn't pin that one down. Try asking it another way.",
-    });
-  for (let turn = 0; turn < MAX_TURNS; turn++) {
-    const final = lastTurn(turn) || nudged;
-    let r = await ask(pinned ?? opts.model, pinned ? [] : opts.fallbacks, final);
+  for (let turn = 0; turn < MAX_TURNS - 1; turn++) {
+    let r = await ask(pinned ?? opts.model, pinned ? [] : opts.fallbacks);
     if (!r && pinned) {
       await new Promise((ok) => setTimeout(ok, opts.retryDelayMs ?? 1500));
-      r = await ask(pinned, [], final);
+      r = await ask(pinned, []);
     }
     if (!r && pinned && !restarted) {
       restarted = true;
@@ -112,51 +141,36 @@ async function geminiChat(opts: {
       if (others[0]) r = await ask(others[0], others.slice(1));
     }
     if (!r) {
+      // Unreachable or overloaded everywhere; if tools already ran, try answering from them.
+      if (gathered.length) return finalAnswer();
       await opts.send({ type: 'error', message: 'The analyst is unavailable right now.' });
       return;
     }
     pinned = r.model;
     if (r.content.parts.length) contents.push(r.content);
-    if (r.text) {
-      answered = true;
-      await opts.send({ type: 'delta', text: r.text });
-    }
-    // Gemini 3 sometimes ends a turn after tool results with no text at all (finish reason
-    // STOP). Ask once more for the answer, with tools off.
-    if (!r.calls.length && !answered && !nudged && turn < MAX_TURNS - 1) {
-      nudged = true;
-      contents.push({
-        role: 'user',
-        parts: [
-          { text: 'Answer the question now, in 2-5 sentences, from the tool results above.' },
-        ],
-      });
-      continue;
-    }
-    if (!r.calls.length || final) {
-      if (!answered) {
-        log.warn('booth ended without an answer', {
-          model: r.model,
-          ...(r.finishReason ? { finishReason: r.finishReason } : {}),
-        });
-        await noAnswer();
-      }
+    if (!r.calls.length) {
+      if (r.text) await opts.send({ type: 'delta', text: r.text });
+      else await finalAnswer();
       return;
     }
     const parts: GeminiPart[] = [];
     for (const call of r.calls) {
       await opts.send({ type: 'tool', name: call.name });
       const { ok, out } = toolResult(opts.session, call.name, call.args);
+      const result = ok ? (JSON.parse(out) as unknown) : out;
+      if (ok) gathered.push({ tool: call.name, args: call.args, result });
       parts.push({
         functionResponse: {
           ...(call.id ? { id: call.id } : {}),
           name: call.name,
-          response: ok ? { result: JSON.parse(out) as unknown } : { error: out },
+          response: ok ? { result } : { error: out },
         },
       });
     }
     contents.push({ role: 'user', parts });
   }
+  // Out of tool turns: answer from what was gathered.
+  await finalAnswer();
 }
 
 export function chatRoutes(

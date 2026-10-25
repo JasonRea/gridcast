@@ -61,6 +61,23 @@ describe('Ask-the-game tools on the fixture game', () => {
     expect(v).toMatch(/The coach chose going for it/);
   });
 
+  it("leaders: each team's top performers and the biggest swings, in one call", async () => {
+    const s = (await testServer().registry.get(DEMO))!;
+    const l = runTool(s, 'get_leaders', {}) as Record<
+      string,
+      {
+        passing?: { name: string; passing: { yds: number; td: number } };
+        receiving?: { name: string };
+        kicking?: { name: string; made: number; long: number };
+      }
+    > & { biggestWinProbabilitySwings: { when: string }[] };
+    expect(l.PIT!.passing).toMatchObject({ name: 'A.Rodgers', passing: { td: 2 } });
+    expect(l.PIT!.passing!.passing.yds).toBeGreaterThan(200);
+    expect(l.PIT!.kicking).toMatchObject({ name: 'C.Boswell', made: 4, long: 58 });
+    expect(l.TB!.passing!.name).toBe('J.Daniels');
+    expect(l.biggestWinProbabilitySwings).toHaveLength(5);
+  });
+
   it('player stats by last name', async () => {
     const s = (await testServer().registry.get(DEMO))!;
     const r = runTool(s, 'get_player_stats', { name: 'Aaron Rodgers' }) as {

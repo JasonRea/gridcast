@@ -129,6 +129,12 @@ export const TOOL_DEFS = [
     input_schema: { type: 'object' as const, properties: {}, additionalProperties: false },
   },
   {
+    name: 'get_leaders',
+    description:
+      'Each team\'s leaders (passing, rushing, receiving, tackles, kicking) and the 5 plays that swung win probability most. Start here for "who played best" or "key plays" questions.',
+    input_schema: { type: 'object' as const, properties: {}, additionalProperties: false },
+  },
+  {
     name: 'get_player_stats',
     description:
       'Passing, rushing, receiving and tackle totals for one player in this game, by last name.',
@@ -153,6 +159,50 @@ export const TOOL_DEFS = [
 ] as const;
 
 export type ToolName = (typeof TOOL_DEFS)[number]['name'];
+
+/** Box-score line for one player, by last name (or exact name with `exact`). */
+function playerStats(all: PlayEvent[], name: string, exact = false) {
+  const stat = {
+    passing: { att: 0, comp: 0, yds: 0, td: 0, int: 0, sacked: 0 },
+    rushing: { att: 0, yds: 0, td: 0 },
+    receiving: { targets: 0, rec: 0, yds: 0, td: 0 },
+    tackles: 0,
+  };
+  let team: string | undefined;
+  const match = (n: string) => (exact ? n === name : nameMatch(n, name));
+  for (const p of all) {
+    const pp = p.parsed;
+    const has = (role: string) => pp.players.some((x) => x.role === role && match(x.name));
+    if (has('passer') && pp.type === 'pass') {
+      team = p.pre.possession;
+      stat.passing.att++;
+      if (['complete', 'td'].includes(pp.result)) {
+        stat.passing.comp++;
+        stat.passing.yds += pp.yards;
+      }
+      if (pp.result === 'td') stat.passing.td++;
+      if (pp.result === 'interception') stat.passing.int++;
+    }
+    if (has('passer') && pp.type === 'sack') stat.passing.sacked++;
+    if (has('rusher') && pp.type === 'run') {
+      team = p.pre.possession;
+      stat.rushing.att++;
+      stat.rushing.yds += pp.yards;
+      if (pp.result === 'td') stat.rushing.td++;
+    }
+    if (has('receiver') && pp.type === 'pass') {
+      team = p.pre.possession;
+      stat.receiving.targets++;
+      if (['complete', 'td'].includes(pp.result)) {
+        stat.receiving.rec++;
+        stat.receiving.yds += pp.yards;
+      }
+      if (pp.result === 'td') stat.receiving.td++;
+    }
+    if (has('tackler')) stat.tackles++;
+  }
+  return { name, ...(team ? { team } : {}), ...stat };
+}
 
 export function runTool(s: GameSession, name: string, input: unknown): unknown {
   const all = plays(s);
@@ -251,46 +301,49 @@ export function runTool(s: GameSession, name: string, input: unknown): unknown {
     }
     case 'get_player_stats': {
       const { name } = GetPlayerStatsInput.parse(input);
-      const stat = {
-        passing: { att: 0, comp: 0, yds: 0, td: 0, int: 0, sacked: 0 },
-        rushing: { att: 0, yds: 0, td: 0 },
-        receiving: { targets: 0, rec: 0, yds: 0, td: 0 },
-        tackles: 0,
+      return playerStats(all, name);
+    }
+    case 'get_leaders': {
+      Empty.parse(input ?? {});
+      const names = new Map<string, string>();
+      for (const p of all)
+        for (const x of p.parsed.players)
+          if (x.team && !names.has(x.name)) names.set(x.name, x.team);
+      const rows = [...names].map(([n, t]) => ({ ...playerStats(all, n, true), team: t }));
+      const top = (team: string, score: (r: (typeof rows)[number]) => number) => {
+        const r = rows.filter((x) => x.team === team).sort((a, b) => score(b) - score(a))[0];
+        return r && score(r) > 0 ? r : undefined;
       };
-      let team: string | undefined;
-      for (const p of all) {
-        const pp = p.parsed;
-        const has = (role: string) =>
-          pp.players.some((x) => x.role === role && nameMatch(x.name, name));
-        if (has('passer') && pp.type === 'pass') {
-          team = p.pre.possession;
-          stat.passing.att++;
-          if (['complete', 'td'].includes(pp.result)) {
-            stat.passing.comp++;
-            stat.passing.yds += pp.yards;
-          }
-          if (pp.result === 'td') stat.passing.td++;
-          if (pp.result === 'interception') stat.passing.int++;
-        }
-        if (has('passer') && pp.type === 'sack') stat.passing.sacked++;
-        if (has('rusher') && pp.type === 'run') {
-          team = p.pre.possession;
-          stat.rushing.att++;
-          stat.rushing.yds += pp.yards;
-          if (pp.result === 'td') stat.rushing.td++;
-        }
-        if (has('receiver') && pp.type === 'pass') {
-          team = p.pre.possession;
-          stat.receiving.targets++;
-          if (['complete', 'td'].includes(pp.result)) {
-            stat.receiving.rec++;
-            stat.receiving.yds += pp.yards;
-          }
-          if (pp.result === 'td') stat.receiving.td++;
-        }
-        if (has('tackler')) stat.tackles++;
-      }
-      return { name, ...(team ? { team } : {}), ...stat };
+      const kicks = (team: string) => {
+        const k = all.filter((p) => p.pre.possession === team && p.parsed.type === 'fg');
+        const good = k.filter((p) => p.parsed.result === 'good');
+        const kicker = good[0]?.parsed.players.find((x) => x.role === 'kicker')?.name;
+        return kicker
+          ? {
+              name: kicker,
+              made: good.length,
+              attempts: k.length,
+              long: Math.max(...good.map((p) => p.parsed.kickYards ?? 0)),
+            }
+          : undefined;
+      };
+      const teamLeaders = (team: string) => ({
+        passing: top(team, (r) => r.passing.yds),
+        rushing: top(team, (r) => r.rushing.yds),
+        receiving: top(team, (r) => r.receiving.yds),
+        tackles: top(team, (r) => r.tackles),
+        kicking: kicks(team),
+      });
+      const swings = all
+        .filter((p) => p.wpBefore !== undefined && p.wpAfter !== undefined)
+        .sort((a, b) => Math.abs(b.wpAfter! - b.wpBefore!) - Math.abs(a.wpAfter! - a.wpBefore!))
+        .slice(0, 5)
+        .map(summary);
+      return {
+        [s.card.away.abbr]: teamLeaders(s.card.away.abbr),
+        [s.card.home.abbr]: teamLeaders(s.card.home.abbr),
+        biggestWinProbabilitySwings: swings,
+      };
     }
     case 'get_odds_history': {
       Empty.parse(input ?? {});

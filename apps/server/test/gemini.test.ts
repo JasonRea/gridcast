@@ -156,17 +156,17 @@ describe('the booth on Gemini', () => {
     ]);
   });
 
-  it('a model that keeps calling tools is made to answer on the last turn', async () => {
+  it('a model that keeps calling tools (even when told not to) answers from the gathered data', async () => {
     const { registry } = testServer();
     const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });
     config.flags.chat = true;
-    const bodies: Record<string, unknown>[] = [];
+    const bodies: (Body & { tools?: unknown })[] = [];
     const fetcher = async (_u: string, init?: RequestInit) => {
-      const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      const body = JSON.parse(String(init?.body)) as Body & { tools?: unknown };
       bodies.push(body);
-      const parts = body.toolConfig
-        ? [{ text: 'J.Dean had the biggest play.' }]
-        : [{ functionCall: { name: 'get_team_stats', args: {} } }];
+      const parts = body.tools
+        ? [{ functionCall: { name: 'get_team_stats', args: {} } }]
+        : [{ text: 'J.Dean had the biggest play.' }];
       return new Response(JSON.stringify({ candidates: [{ content: { role: 'model', parts } }] }));
     };
     const app = new Hono();
@@ -180,24 +180,29 @@ describe('the booth on Gemini', () => {
     );
     expect(msgs.find((m) => m.type === 'delta')).toMatchObject({ text: /J\.Dean/ });
     expect(bodies).toHaveLength(6);
-    expect(bodies.at(-1)!.toolConfig).toEqual({ functionCallingConfig: { mode: 'NONE' } });
-    expect(bodies.slice(0, -1).every((b) => !b.toolConfig)).toBe(true);
+    const last = bodies.at(-1)!;
+    // Final request: no tools, one user message with the question and the looked-up data.
+    expect(last.tools).toBeUndefined();
+    expect(last.contents).toHaveLength(1);
+    const text = String(last.contents[0]!.parts[0]!.text);
+    expect(text).toMatch(/^Who had the best game\?/);
+    expect(text).toContain('"tool":"get_team_stats"');
   });
 
-  it('an empty answer after tool results gets one nudge, with tools off', async () => {
+  it('an empty answer after tool results is answered from the gathered data', async () => {
     const { registry } = testServer();
     const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });
     config.flags.chat = true;
-    const bodies: Body[] = [];
+    const bodies: (Body & { tools?: unknown })[] = [];
     const fetcher = async (_u: string, init?: RequestInit) => {
-      const body = JSON.parse(String(init?.body)) as Body & { toolConfig?: unknown };
+      const body = JSON.parse(String(init?.body)) as Body & { tools?: unknown };
       bodies.push(body);
       const parts =
         bodies.length === 1
           ? [{ functionCall: { name: 'get_team_stats', args: {} }, thoughtSignature: 's' }]
-          : body.toolConfig
-            ? [{ text: 'Both teams took 5 sacks.' }]
-            : [];
+          : body.tools
+            ? []
+            : [{ text: 'Both teams took 5 sacks.' }];
       return new Response(
         JSON.stringify({
           candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }],
@@ -217,10 +222,7 @@ describe('the booth on Gemini', () => {
       text: 'Both teams took 5 sacks.',
     });
     expect(bodies).toHaveLength(3);
-    const last = bodies[2]!.contents;
-    // The empty model turn is not echoed; the nudge is the last user message.
-    expect(last.every((c) => c.parts.length > 0)).toBe(true);
-    expect(last.at(-1)!.parts[0]!.text).toMatch(/^Answer the question now/);
+    expect(bodies[2]!.tools).toBeUndefined();
   });
 
   it('a failed Gemini call ends with a short error, not a crash', async () => {
