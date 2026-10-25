@@ -31,7 +31,7 @@ import {
 } from '../pipeline/normalize.ts';
 
 /** Bump when the normalizer or parser output changes, so finished games rebuild their logs. */
-export const PIPELINE_VERSION = 8;
+export const PIPELINE_VERSION = 9;
 
 export type Source = 'live' | 'replay';
 
