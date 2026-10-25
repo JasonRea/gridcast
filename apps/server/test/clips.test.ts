@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { Clip, PlayEvent } from '@gridcast/types';
@@ -60,7 +60,10 @@ describe('clip poller', () => {
     expect(await poller.pollGame(s)).toBe(1);
     expect(await poller.pollGame(s)).toBe(0);
     expect(auth).toBe('Bearer xyz');
-    const clip = s.log.all().find((e) => e.event.kind === 'clip')?.event as Clip;
+    const clip = s.log
+      .all()
+      .map((e) => e.event)
+      .find((e): e is Clip => e.kind === 'clip' && e.source === 'x');
     expect(clip).toMatchObject({ playId: td.id, url: 'https://x.com/i/status/99', source: 'x' });
   });
 
@@ -112,7 +115,13 @@ describe('reputable accounts only', () => {
 
 describe('finished games: clip backfill', () => {
   async function setup(nowAfterEnd: number) {
-    const cfg = testConfig();
+    // Assets without committed clips, so the automatic backfill is what reaches the log.
+    const base = testConfig();
+    const assetsDir = join(base.dataDir, 'assets-noclips');
+    mkdirSync(assetsDir, { recursive: true });
+    for (const f of readdirSync(base.assetsDir).filter((f) => f.endsWith('.json')))
+      copyFileSync(join(base.assetsDir, f), join(assetsDir, f));
+    const cfg = { ...base, assetsDir };
     const { registry } = testServer(cfg);
     const s = (await registry.get(DEMO))!;
     const plays = s.log
@@ -155,6 +164,7 @@ describe('finished games: clip backfill', () => {
       bearer: 'x',
       fetcher,
       cacheDir: cfg.cacheDir,
+      assetsDir: cfg.assetsDir,
       now: () => last + nowAfterEnd,
     });
     return { cfg, registry, poller, td, small, urls };
@@ -238,5 +248,26 @@ describe('matching mistakes seen on real posts (PIT @ TB)', () => {
     };
     const fg2 = all.find((p) => p.raw.text.includes('C.Boswell 20 yard field goal is GOOD'))!;
     expect(matchPost({ ...lead, createdAt: after(fg2, 1) }, all, 10 * 60_000)?.id).toBe(fg2.id);
+  });
+});
+
+describe('committed clips', () => {
+  it('the reviewed demo clips load, and a game with them is never searched', async () => {
+    const { registry, config } = testServer();
+    const s = (await registry.get(DEMO))!;
+    const clips = s.log.all().filter((e) => e.event.kind === 'clip');
+    expect(clips.length).toBe(17);
+    let calls = 0;
+    const poller = new ClipPoller(registry, {
+      bearer: 'x',
+      cacheDir: config.cacheDir,
+      assetsDir: config.assetsDir,
+      fetcher: async () => {
+        calls++;
+        return Response.json({});
+      },
+    });
+    await poller.backfill(s);
+    expect(calls).toBe(0);
   });
 });
