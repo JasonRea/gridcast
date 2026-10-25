@@ -18,7 +18,7 @@ import { Scorebug } from '@/components/game/Scorebug';
 import { StoppageCard } from '@/components/game/StoppageCard';
 import { api } from '@/lib/api';
 import { Announcer } from '@/lib/announcer';
-import { playLabel } from '@/lib/plays';
+import { firstPlayOfQuarter, playLabel, startSeq } from '@/lib/plays';
 import { GameStream } from '@/lib/stream';
 import { useGame } from '@/store/game';
 
@@ -32,7 +32,16 @@ function LiveGame({ detail }: { detail: GameDetail }) {
   useEffect(() => {
     const s = new GameStream(detail.id, detail.source);
     streamRef.current = s;
-    void s.start(detail.source === 'replay' ? { speed: DEFAULT_REPLAY_SPEED } : {});
+    if (detail.source === 'replay') {
+      // `?from=120` (play index) or `?from=q4` / `?from=ot` opens the replay mid-game.
+      const from = new URLSearchParams(window.location.search).get('from');
+      void (async () => {
+        const seq = from ? startSeq(await s.events(), from) : undefined;
+        await s.start({ speed: DEFAULT_REPLAY_SPEED, ...(seq !== undefined ? { from: seq } : {}) });
+      })();
+    } else {
+      void s.start({});
+    }
     return () => s.close();
     // Restart only when the game changes; source flips arrive over the stream itself.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,6 +161,12 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     const j = s.plays.findIndex((p, k) => k > i && k < s.presented && p.big);
     if (j >= 0) s.showPlay(j);
   }, [replaySpeed]);
+  const fourthQuarter = useCallback(async () => {
+    if (!streamRef.current) return;
+    const seq = firstPlayOfQuarter(await streamRef.current.events(), 4);
+    if (seq !== undefined)
+      await streamRef.current.start({ from: seq, speed: replaySpeed, source: 'replay' });
+  }, [replaySpeed]);
   const changeReplaySpeed = useCallback((sp: number) => {
     setReplaySpeed(sp);
     useGame.getState().setStreamSpeed(sp);
@@ -241,6 +256,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               onPrev={prev}
               onNext={next}
               onBig={() => void nextBig()}
+              onFourth={() => void fourthQuarter()}
               replay={isReplay}
               streamSpeed={replaySpeed}
               onStreamSpeed={changeReplaySpeed}

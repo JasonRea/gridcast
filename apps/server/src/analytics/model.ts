@@ -57,8 +57,9 @@ export class Analytics {
     if (!p.pre.down) return undefined;
     const before = this.ep(p.pre.down, p.pre.distance ?? 10, p.pre.yardLine);
     let after: number;
-    // A touchdown is worth its 6 points plus the expected extra point.
-    if (pp.points && pp.result === 'td') after = pp.points + 0.95;
+    // A touchdown is worth 6 plus the expected try, whatever the try did (ESPN folds it into
+    // the same play, so pp.points can be 6, 7 or 8).
+    if (pp.points && pp.result === 'td') after = 6.95;
     else if (pp.points && pp.result === 'good') after = pp.points;
     else if (p.state.possession !== p.pre.possession) after = -this.epState(p.state);
     else after = this.epState(p.state);

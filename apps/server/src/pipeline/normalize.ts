@@ -210,10 +210,14 @@ export class GameNormalizer {
 
     // Feed bookkeeping rows become stoppages, not plays.
     if (isTimeout(play)) {
-      const m = /timeout #(\d) by ([A-Z]{2,3})/i.exec(play.text);
-      const team = m?.[2] ? normalizeAbbr(m[2]) : (this.abbrFor(play.start?.team?.id) ?? offense);
+      // Only "Timeout #N by TEAM" is charged to a team. "Official Timeout" rows are TV breaks
+      // (about 14 a game) and other non-team timeouts carry no team: skip them so they never
+      // touch the timeouts-left count.
+      const m = /timeout #(\d) by ([A-Z]{2,3})\b/i.exec(play.text);
+      if (!m?.[1] || !m[2]) return out;
+      const team = normalizeAbbr(m[2]);
       const h = this.half(quarter);
-      const n = m?.[1] ? Number(m[1]) : (this.used.get(`${h}:${team}`) ?? 0) + 1;
+      const n = Number(m[1]);
       this.used.set(`${h}:${team}`, n);
       const state: GameState = {
         ...(this.last ?? pre),

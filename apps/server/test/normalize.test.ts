@@ -21,6 +21,11 @@ const summary = EspnSummarySchema.parse(
 const { events } = normalizeSummary(summary)!;
 const plays = events.filter((e): e is PlayEvent => e.kind === 'play');
 const stops = events.filter((e): e is StoppageEvent => e.kind === 'stoppage');
+/** "0:40" and "00:40" are the same clock (ESPN does not zero-pad minutes). */
+const clockSeconds = (c: string) => {
+  const [m, sec] = c.split(':').map(Number);
+  return (m ?? 0) * 60 + (sec ?? 0);
+};
 
 describe('normalizer on the demo game', () => {
   it('emits only schema-valid events', () => {
@@ -39,7 +44,18 @@ describe('normalizer on the demo game', () => {
     expect(timeouts.every((t) => /Timeouts left/.test(t.detail))).toBe(true);
     expect(stops.some((s) => s.reason === 'halftime')).toBe(true);
     expect(stops.filter((s) => s.reason === 'quarter_end').length).toBeGreaterThanOrEqual(3);
-    expect(stops.filter((s) => s.reason === 'two_minute').length).toBe(2);
+    // Q2, Q4 and overtime each have a two-minute warning.
+    expect(stops.filter((s) => s.reason === 'two_minute').length).toBe(3);
+  });
+
+  it('never charges a TV break ("Official Timeout") to a team', () => {
+    const timeouts = stops.filter((s) => s.reason === 'timeout');
+    expect(timeouts.some((t) => /official/i.test(`${t.title} ${t.detail}`))).toBe(false);
+    // PIT's first timeout of the game came at 3:46 in Q1, not at the 10:51 TV break.
+    const pitFirst = timeouts.find((t) => t.team === 'PIT');
+    expect(pitFirst?.state.quarter).toBe(1);
+    expect(clockSeconds(pitFirst!.state.clock)).toBe(3 * 60 + 46);
+    expect(pitFirst?.detail).toMatch(/timeout #1\b/);
   });
 
   it('tracks timeouts left per half', () => {
@@ -48,7 +64,7 @@ describe('normalizer on the demo game', () => {
         s.reason === 'timeout' &&
         /TB|Buccaneers/.test(s.title ?? '') &&
         s.state.quarter === 4 &&
-        s.state.clock === '00:40',
+        clockSeconds(s.state.clock) === 40,
     );
     expect(tbThird?.state.timeouts.home).toBe(0);
   });

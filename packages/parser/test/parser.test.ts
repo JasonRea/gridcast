@@ -282,3 +282,89 @@ describe('accuracy vs nflverse labels (PRD target 95%+)', () => {
     });
   }
 });
+
+describe('ESPN touchdowns with the try in the same text', () => {
+  const ESPN_TDS = [
+    [
+      '(Shotgun) J.Daniels pass short left to E.Egbuka for 2 yards, TOUCHDOWN. C.McLaughlin extra point is GOOD, Center-E.Deckers, Holder-R.Dixon.',
+      'J.Daniels',
+      'E.Egbuka',
+      2,
+    ],
+    [
+      '(Shotgun) A.Rodgers pass short left to D.Washington for 5 yards, TOUCHDOWN. C.Boswell extra point is GOOD, Center-C.Kuntz, Holder-C.Johnston.',
+      'A.Rodgers',
+      'D.Washington',
+      5,
+    ],
+    [
+      '(Shotgun) A.Rodgers pass short right to G.Bernard for 6 yards, TOUCHDOWN. C.Boswell extra point is GOOD, Center-C.Kuntz, Holder-C.Johnston.',
+      'A.Rodgers',
+      'G.Bernard',
+      6,
+    ],
+  ] as const;
+
+  it.each(ESPN_TDS)('parses the pass, not the kick: %s', (text, passer, receiver, yards) => {
+    const p = P(text, { yardsToEndzone: yards, distance: yards });
+    expect(p).toMatchObject({ type: 'pass', result: 'td', yards, points: 7, endYd: 100 });
+    expect(p.players.find((x) => x.role === 'passer')?.name).toBe(passer);
+    expect(p.players.find((x) => x.role === 'receiver')?.name).toBe(receiver);
+    expect(p.players.find((x) => x.role === 'kicker')).toMatchObject({ team: 'PIT' });
+  });
+
+  it('a missed extra point leaves 6', () => {
+    const p = P(
+      'J.Warren right end for 12 yards, TOUCHDOWN. C.Boswell extra point is No Good, Wide Right, Center-C.Kuntz, Holder-C.Johnston.',
+      { yardsToEndzone: 12 },
+    );
+    expect(p).toMatchObject({ type: 'run', result: 'td', yards: 12, points: 6 });
+    expect(p.players.find((x) => x.role === 'rusher')?.name).toBe('J.Warren');
+  });
+
+  it('a two-point try that succeeds adds 2, one that fails adds 0', () => {
+    const base =
+      '(Shotgun) A.Rodgers pass short middle to D.Metcalf for 9 yards, TOUCHDOWN. TWO-POINT CONVERSION ATTEMPT. ';
+    const good = P(`${base}J.Warren rushes up the middle. ATTEMPT SUCCEEDS.`, {
+      yardsToEndzone: 9,
+    });
+    expect(good).toMatchObject({ type: 'pass', result: 'td', yards: 9, points: 8 });
+    expect(good.twoPoint).toBeUndefined();
+    const bad = P(`${base}A.Rodgers pass to P.Freiermuth is incomplete. ATTEMPT FAILS.`, {
+      yardsToEndzone: 9,
+    });
+    expect(bad).toMatchObject({ type: 'pass', result: 'td', points: 6 });
+  });
+
+  it('a pick-six scores for the defense', () => {
+    const p = parsePlay({
+      text: '(Shotgun) B.Mayfield pass short left intended for M.Evans INTERCEPTED by J.Porter at TB 30. J.Porter for 30 yards, TOUCHDOWN. C.Boswell extra point is GOOD, Center-C.Kuntz, Holder-C.Johnston.',
+      offense: 'TB',
+      defense: 'PIT',
+      yardsToEndzone: 70,
+      down: 1,
+      distance: 10,
+    });
+    expect(p).toMatchObject({ type: 'pass', result: 'interception', points: 7 });
+    expect(p.players.find((x) => x.role === 'kicker')).toMatchObject({ team: 'PIT' });
+  });
+
+  it('a fumble returned for a touchdown scores for the defense', () => {
+    const p = parsePlay({
+      text: 'B.Irving left tackle to TB 30 for 3 yards (T.Watt). FUMBLES (T.Watt), RECOVERED by PIT-P.Queen at TB 30. P.Queen for 30 yards, TOUCHDOWN. C.Boswell extra point is GOOD, Center-C.Kuntz, Holder-C.Johnston.',
+      offense: 'TB',
+      defense: 'PIT',
+      yardsToEndzone: 73,
+      down: 1,
+      distance: 10,
+    });
+    expect(p).toMatchObject({ type: 'run', result: 'fumble', points: 7 });
+  });
+
+  it('a standalone extra point (nflverse style) is still a PAT', () => {
+    const p = P('C.Boswell extra point is GOOD, Center-C.Kuntz, Holder-C.Johnston.', {
+      yardsToEndzone: 15,
+    });
+    expect(p).toMatchObject({ type: 'pat', result: 'good', points: 1 });
+  });
+});

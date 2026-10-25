@@ -7,7 +7,7 @@ import {
   type ScoreboardResponse,
 } from '@gridcast/types';
 import type { EspnClient } from '../espn/client.ts';
-import { matchupTeams } from '../espn/teams.ts';
+import { broadcastName, matchupTeams } from '../espn/teams.ts';
 
 /** 2026 regular season week 1 starts Tuesday Sep 8 (games Thu Sep 10). */
 const SEASON_START: Record<number, number> = { 2026: Date.UTC(2026, 8, 8, 12) };
@@ -40,9 +40,10 @@ export function cardFromEvent(e: EspnEvent): GameCard | undefined {
         ? teams.away.abbr
         : undefined;
   const odds = comp.odds?.[0];
-  const tv = comp.broadcasts?.flatMap(
+  const rawTv = comp.broadcasts?.flatMap(
     (b) => b.names ?? (b.media?.shortName ? [b.media.shortName] : []),
   )[0];
+  const tv = rawTv ? broadcastName(rawTv) : undefined;
   const wp = sit?.lastPlay?.probability?.homeWinPercentage;
   const statusObj = e.status ?? comp.status;
   return {

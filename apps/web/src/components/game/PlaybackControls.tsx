@@ -14,6 +14,7 @@ export function PlaybackControls({
   onPrev,
   onNext,
   onBig,
+  onFourth,
   replay,
   streamSpeed,
   onStreamSpeed,
@@ -28,6 +29,8 @@ export function PlaybackControls({
   onPrev: () => void;
   onNext: () => void;
   onBig: () => void;
+  /** Jumps the replay to the first play of the 4th quarter. */
+  onFourth?: () => void;
   replay: boolean;
   streamSpeed: number;
   onStreamSpeed: (s: number) => void;
@@ -123,6 +126,16 @@ export function PlaybackControls({
           >
             <Zap /> Big play
           </Button>
+          {onFourth && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={onFourth}
+              aria-label="Jump to the start of the 4th quarter"
+            >
+              Q4
+            </Button>
+          )}
         </>
       )}
     </div>

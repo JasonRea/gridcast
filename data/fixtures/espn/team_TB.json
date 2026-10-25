@@ -1,13 +1,1447 @@
 {
- "_synthetic": true,
  "team": {
-  "id": "27",
   "abbreviation": "TB",
-  "displayName": "Tampa Bay Buccaneers",
-  "shortDisplayName": "Buccaneers",
-  "name": "Buccaneers",
-  "location": "Tampa Bay",
+  "alternateColor": "3e3a35",
   "color": "bd1c36",
-  "alternateColor": "3e3a35"
+  "displayName": "Tampa Bay Buccaneers",
+  "franchise": {
+   "abbreviation": "TB",
+   "color": "bd1c36",
+   "displayName": "Tampa Bay Buccaneers",
+   "id": "27",
+   "isActive": true,
+   "location": "Tampa Bay",
+   "name": "Buccaneers",
+   "nickname": "Buccaneers",
+   "shortDisplayName": "Buccaneers",
+   "slug": "tampa-bay-buccaneers",
+   "uid": "s:20~l:28~f:27",
+   "venue": {
+    "address": {
+     "city": "Tampa",
+     "country": "USA",
+     "state": "FL",
+     "zipCode": "33607"
+    },
+    "fullName": "Raymond James Stadium",
+    "grass": true,
+    "guid": "aab423e5-c4ef-3dd1-a6fb-cf7efdbe0be8",
+    "id": "3886",
+    "images": [
+     {
+      "alt": "",
+      "height": 1125,
+      "href": "https://a.espncdn.com/i/venues/nfl/day/3886.jpg",
+      "rel": [
+       "full",
+       "day"
+      ],
+      "width": 2000
+     },
+     {
+      "alt": "",
+      "height": 1125,
+      "href": "https://a.espncdn.com/i/venues/nfl/day/interior/3886.jpg",
+      "rel": [
+       "full",
+       "day",
+       "interior"
+      ],
+      "width": 2000
+     }
+    ],
+    "indoor": false
+   }
+  },
+  "groups": {
+   "id": "7",
+   "isConference": true,
+   "parent": {
+    "id": "9"
+   }
+  },
+  "id": "27",
+  "isActive": true,
+  "links": [
+   {
+    "href": "https://www.espn.com/nfl/team/_/name/tb/tampa-bay-buccaneers",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "clubhouse",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Clubhouse",
+    "text": "Clubhouse"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/roster/_/name/tb/tampa-bay-buccaneers",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "roster",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Roster",
+    "text": "Roster"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=roster",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "roster",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Roster",
+    "text": "Roster"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/stats/_/name/tb/tampa-bay-buccaneers",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "stats",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Statistics",
+    "text": "Statistics"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=stats",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "stats",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Statistics",
+    "text": "Statistics"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/schedule/_/name/tb",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "schedule",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Schedule",
+    "text": "Schedule"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=scores",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "schedule",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Schedule",
+    "text": "Schedule"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/photos/_/name/tb",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "photos",
+     "desktop",
+     "team"
+    ],
+    "shortText": "photos",
+    "text": "photos"
+   },
+   {
+    "href": "https://www.vividseats.com/tampa-bay-buccaneers-tickets--sports-nfl-football/performer/839?wsUser=717",
+    "isExternal": true,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "tickets",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Tickets",
+    "text": "Tickets"
+   },
+   {
+    "href": "https://www.espn.com/nfl/draft/teams/_/name/tb/tampa-bay-buccaneers",
+    "isExternal": false,
+    "isPremium": true,
+    "language": "en-US",
+    "rel": [
+     "draftpicks",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Draft Picks",
+    "text": "Draft Picks"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/transactions/_/name/tb",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "transactions",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Transactions",
+    "text": "Transactions"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/injuries/_/name/tb",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "injuries",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Injuries",
+    "text": "Injuries"
+   },
+   {
+    "href": "https://www.espn.com/nfl/team/depth/_/name/tb",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "depthchart",
+     "desktop",
+     "team"
+    ],
+    "shortText": "Depth Chart",
+    "text": "Depth Chart"
+   },
+   {
+    "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=depthchart",
+    "isExternal": false,
+    "isPremium": false,
+    "language": "en-US",
+    "rel": [
+     "depthchart",
+     "sportscenter",
+     "app",
+     "team"
+    ],
+    "shortText": "Depth Chart",
+    "text": "Depth Chart"
+   }
+  ],
+  "location": "Tampa Bay",
+  "logos": [
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png",
+    "rel": [
+     "full",
+     "default"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/tb.png",
+    "rel": [
+     "full",
+     "dark"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
+    "rel": [
+     "full",
+     "scoreboard"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/tb.png",
+    "rel": [
+     "full",
+     "scoreboard",
+     "dark"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 500,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/grayscale.png",
+    "rel": [
+     "full",
+     "grayscale"
+    ],
+    "width": 500
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_white_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_white_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_black_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_black_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_primary_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_primary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_secondary_color.png",
+    "rel": [
+     "full",
+     "primary_logo_on_secondary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_black.png",
+    "rel": [
+     "full",
+     "primary_logo_black"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_white.png",
+    "rel": [
+     "full",
+     "primary_logo_white"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_white_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_white_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_black_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_black_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_primary_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_primary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_secondary_color.png",
+    "rel": [
+     "full",
+     "secondary_logo_on_secondary_color"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_black.png",
+    "rel": [
+     "full",
+     "secondary_logo_black"
+    ],
+    "width": 4096
+   },
+   {
+    "alt": "",
+    "height": 4096,
+    "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_white.png",
+    "rel": [
+     "full",
+     "secondary_logo_white"
+    ],
+    "width": 4096
+   }
+  ],
+  "name": "Buccaneers",
+  "nextEvent": [
+   {
+    "competitions": [
+     {
+      "attendance": 0,
+      "boxscoreAvailable": false,
+      "broadcasts": [
+       {
+        "lang": "en",
+        "market": {
+         "id": "1",
+         "type": "National"
+        },
+        "media": {
+         "shortName": "Fox"
+        },
+        "partnered": false,
+        "region": "us",
+        "type": {
+         "id": "1",
+         "shortName": "TV"
+        }
+       }
+      ],
+      "competitors": [
+       {
+        "curatedRank": {
+         "current": 99
+        },
+        "homeAway": "home",
+        "id": "29",
+        "order": 0,
+        "team": {
+         "abbreviation": "CAR",
+         "displayName": "Carolina Panthers",
+         "id": "29",
+         "links": [
+          {
+           "href": "https://www.espn.com/nfl/team/_/name/car/carolina-panthers",
+           "rel": [
+            "clubhouse",
+            "desktop",
+            "team"
+           ],
+           "text": "Clubhouse"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/roster/_/name/car/carolina-panthers",
+           "rel": [
+            "roster",
+            "desktop",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:29&section=roster",
+           "rel": [
+            "roster",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/stats/_/name/car/carolina-panthers",
+           "rel": [
+            "stats",
+            "desktop",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:29&section=stats",
+           "rel": [
+            "stats",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/schedule/_/name/car",
+           "rel": [
+            "schedule",
+            "desktop",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:29&section=scores",
+           "rel": [
+            "schedule",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/photos/_/name/car",
+           "rel": [
+            "photos",
+            "desktop",
+            "team"
+           ],
+           "text": "photos"
+          },
+          {
+           "href": "https://www.vividseats.com/carolina-panthers-tickets--sports-nfl-football/performer/144?wsUser=717",
+           "rel": [
+            "tickets",
+            "desktop",
+            "team"
+           ],
+           "text": "Tickets"
+          },
+          {
+           "href": "https://www.espn.com/nfl/draft/teams/_/name/car/carolina-panthers",
+           "rel": [
+            "draftpicks",
+            "desktop",
+            "team"
+           ],
+           "text": "Draft Picks"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/transactions/_/name/car",
+           "rel": [
+            "transactions",
+            "desktop",
+            "team"
+           ],
+           "text": "Transactions"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/injuries/_/name/car",
+           "rel": [
+            "injuries",
+            "desktop",
+            "team"
+           ],
+           "text": "Injuries"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/depth/_/name/car",
+           "rel": [
+            "depthchart",
+            "desktop",
+            "team"
+           ],
+           "text": "Depth Chart"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:29&section=depthchart",
+           "rel": [
+            "depthchart",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Depth Chart"
+          }
+         ],
+         "location": "Carolina",
+         "logos": [
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/car.png",
+           "rel": [
+            "full",
+            "default"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/car.png",
+           "rel": [
+            "full",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/car.png",
+           "rel": [
+            "full",
+            "scoreboard"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/car.png",
+           "rel": [
+            "full",
+            "scoreboard",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/grayscale.png",
+           "rel": [
+            "full",
+            "grayscale"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/primary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/primary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/primary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/primary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/primary_logo_black.png",
+           "rel": [
+            "full",
+            "primary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/primary_logo_white.png",
+           "rel": [
+            "full",
+            "primary_logo_white"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/secondary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/secondary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/secondary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/secondary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/secondary_logo_black.png",
+           "rel": [
+            "full",
+            "secondary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/647c27bf-ab86-550e-5b83-91c29e73e4a9/logos/secondary_logo_white.png",
+           "rel": [
+            "full",
+            "secondary_logo_white"
+           ],
+           "width": 4096
+          }
+         ],
+         "nickname": "Panthers",
+         "shortDisplayName": "Panthers"
+        },
+        "type": "team"
+       },
+       {
+        "curatedRank": {
+         "current": 99
+        },
+        "homeAway": "away",
+        "id": "27",
+        "order": 1,
+        "team": {
+         "abbreviation": "TB",
+         "displayName": "Tampa Bay Buccaneers",
+         "id": "27",
+         "links": [
+          {
+           "href": "https://www.espn.com/nfl/team/_/name/tb/tampa-bay-buccaneers",
+           "rel": [
+            "clubhouse",
+            "desktop",
+            "team"
+           ],
+           "text": "Clubhouse"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/roster/_/name/tb/tampa-bay-buccaneers",
+           "rel": [
+            "roster",
+            "desktop",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=roster",
+           "rel": [
+            "roster",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Roster"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/stats/_/name/tb/tampa-bay-buccaneers",
+           "rel": [
+            "stats",
+            "desktop",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=stats",
+           "rel": [
+            "stats",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Statistics"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/schedule/_/name/tb",
+           "rel": [
+            "schedule",
+            "desktop",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=scores",
+           "rel": [
+            "schedule",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Schedule"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/photos/_/name/tb",
+           "rel": [
+            "photos",
+            "desktop",
+            "team"
+           ],
+           "text": "photos"
+          },
+          {
+           "href": "https://www.vividseats.com/tampa-bay-buccaneers-tickets--sports-nfl-football/performer/839?wsUser=717",
+           "rel": [
+            "tickets",
+            "desktop",
+            "team"
+           ],
+           "text": "Tickets"
+          },
+          {
+           "href": "https://www.espn.com/nfl/draft/teams/_/name/tb/tampa-bay-buccaneers",
+           "rel": [
+            "draftpicks",
+            "desktop",
+            "team"
+           ],
+           "text": "Draft Picks"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/transactions/_/name/tb",
+           "rel": [
+            "transactions",
+            "desktop",
+            "team"
+           ],
+           "text": "Transactions"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/injuries/_/name/tb",
+           "rel": [
+            "injuries",
+            "desktop",
+            "team"
+           ],
+           "text": "Injuries"
+          },
+          {
+           "href": "https://www.espn.com/nfl/team/depth/_/name/tb",
+           "rel": [
+            "depthchart",
+            "desktop",
+            "team"
+           ],
+           "text": "Depth Chart"
+          },
+          {
+           "href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:27&section=depthchart",
+           "rel": [
+            "depthchart",
+            "sportscenter",
+            "app",
+            "team"
+           ],
+           "text": "Depth Chart"
+          }
+         ],
+         "location": "Tampa Bay",
+         "logos": [
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png",
+           "rel": [
+            "full",
+            "default"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/tb.png",
+           "rel": [
+            "full",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/tb.png",
+           "rel": [
+            "full",
+            "scoreboard"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/tb.png",
+           "rel": [
+            "full",
+            "scoreboard",
+            "dark"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 500,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/grayscale.png",
+           "rel": [
+            "full",
+            "grayscale"
+           ],
+           "width": 500
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "primary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_black.png",
+           "rel": [
+            "full",
+            "primary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/primary_logo_white.png",
+           "rel": [
+            "full",
+            "primary_logo_white"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_white_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_white_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_black_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_black_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_primary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_primary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_on_secondary_color.png",
+           "rel": [
+            "full",
+            "secondary_logo_on_secondary_color"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_black.png",
+           "rel": [
+            "full",
+            "secondary_logo_black"
+           ],
+           "width": 4096
+          },
+          {
+           "alt": "",
+           "height": 4096,
+           "href": "https://a.espncdn.com/guid/13e8b157-a75a-ff24-ae91-fa3d52ddf204/logos/secondary_logo_white.png",
+           "rel": [
+            "full",
+            "secondary_logo_white"
+           ],
+           "width": 4096
+          }
+         ],
+         "nickname": "Buccaneers",
+         "shortDisplayName": "Buccaneers"
+        },
+        "type": "team"
+       }
+      ],
+      "date": "2026-10-25T17:00Z",
+      "id": "401873018",
+      "neutralSite": false,
+      "notes": [],
+      "status": {
+       "clock": 0,
+       "displayClock": "0:00",
+       "isTBDFlex": false,
+       "period": 0,
+       "type": {
+        "completed": false,
+        "description": "Scheduled",
+        "detail": "Sun, October 25th at 1:00 PM EDT",
+        "id": "1",
+        "name": "STATUS_SCHEDULED",
+        "shortDetail": "10/25 - 1:00 PM EDT",
+        "state": "pre"
+       }
+      },
+      "tickets": [
+       {
+        "description": "Tampa Bay Buccaneers at Carolina Panthers",
+        "id": "6488703",
+        "links": [
+         {
+          "href": "https://www.vividseats.com/carolina-panthers-tickets-charlotte-bank-of-america-stadium-3-1-2026/production/6488703?wsUser=717",
+          "rel": [
+           "tickets",
+           "desktop",
+           "event"
+          ]
+         },
+         {
+          "href": "https://www.vividseats.com/bank-of-america-stadium-tickets/venue/518?wsUser=717",
+          "rel": [
+           "tickets",
+           "desktop",
+           "venue"
+          ]
+         }
+        ],
+        "maxPrice": 10365,
+        "numberAvailable": 2462,
+        "startingPrice": 75,
+        "summary": "Tickets as low as $75",
+        "totalPostings": 929
+       }
+      ],
+      "ticketsAvailable": true,
+      "timeValid": true,
+      "type": {
+       "abbreviation": "STD",
+       "id": "1",
+       "slug": "standard",
+       "text": "Standard",
+       "type": "standard"
+      },
+      "venue": {
+       "address": {
+        "city": "Charlotte",
+        "country": "USA",
+        "state": "NC",
+        "zipCode": "28202"
+       },
+       "fullName": "Bank of America Stadium"
+      }
+     }
+    ],
+    "date": "2026-10-25T17:00Z",
+    "id": "401873018",
+    "links": [
+     {
+      "href": "https://www.espn.com/nfl/game/_/gameId/401873018/buccaneers-panthers",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "summary",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Summary",
+      "text": "Gamecast"
+     },
+     {
+      "href": "sportscenter://x-callback-url/showGame?sportName=football&leagueAbbrev=nfl&gameId=401873018",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "summary",
+       "sportscenter",
+       "app",
+       "event"
+      ],
+      "shortText": "Summary",
+      "text": "Gamecast"
+     },
+     {
+      "href": "https://www.espn.com/nfl/game/_/gameId/401873018",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "now",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Now",
+      "text": "Now"
+     },
+     {
+      "href": "https://www.espn.com/nfl/preview/_/gameId/401873018",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "preview",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Preview",
+      "text": "Preview"
+     },
+     {
+      "href": "https://fantasy.espn.com/football/welcome?addata=nfl_gamecast_ffl2026",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "fantasy",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Play Fantasy Football",
+      "text": "Play Fantasy Football"
+     },
+     {
+      "href": "https://www.espn.com/nfl/odds/_/gameId/401873018",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "odds",
+       "desktop",
+       "event"
+      ],
+      "shortText": "Odds",
+      "text": "Odds"
+     },
+     {
+      "href": "https://m.espn.com/nfl/odds/_/gameId/401873018",
+      "isExternal": false,
+      "isPremium": false,
+      "language": "en-US",
+      "rel": [
+       "odds",
+       "mobile",
+       "event"
+      ],
+      "shortText": "Odds",
+      "text": "Odds"
+     }
+    ],
+    "name": "Tampa Bay Buccaneers at Carolina Panthers",
+    "season": {
+     "displayName": "2026",
+     "year": 2026
+    },
+    "seasonType": {
+     "abbreviation": "reg",
+     "id": "2",
+     "name": "Regular Season",
+     "type": 2
+    },
+    "shortName": "TB @ CAR",
+    "timeValid": true,
+    "week": {
+     "number": 7,
+     "text": "Week 7"
+    }
+   }
+  ],
+  "nickname": "Buccaneers",
+  "record": {
+   "items": [
+    {
+     "stats": [
+      {
+       "name": "OTLosses",
+       "value": 1
+      },
+      {
+       "name": "OTWins",
+       "value": 0
+      },
+      {
+       "name": "avgPointsAgainst",
+       "value": 23
+      },
+      {
+       "name": "avgPointsFor",
+       "value": 19.833334
+      },
+      {
+       "name": "differential",
+       "value": -19
+      },
+      {
+       "name": "divisionWinPercent",
+       "value": 0
+      },
+      {
+       "name": "gamesBehind",
+       "value": 0
+      },
+      {
+       "name": "gamesPlayed",
+       "value": 6
+      },
+      {
+       "name": "leagueWinPercent",
+       "value": 0.33333334
+      },
+      {
+       "name": "losses",
+       "value": 5
+      },
+      {
+       "name": "playoffSeed",
+       "value": 16
+      },
+      {
+       "name": "pointDifferential",
+       "value": -19
+      },
+      {
+       "name": "points",
+       "value": -2
+      },
+      {
+       "name": "pointsAgainst",
+       "value": 138
+      },
+      {
+       "name": "pointsFor",
+       "value": 119
+      },
+      {
+       "name": "streak",
+       "value": -1
+      },
+      {
+       "name": "ties",
+       "value": 0
+      },
+      {
+       "name": "winPercent",
+       "value": 0.16666667
+      },
+      {
+       "name": "wins",
+       "value": 1
+      },
+      {
+       "name": "divisionLosses",
+       "value": 0
+      },
+      {
+       "name": "divisionRecord",
+       "value": 0
+      },
+      {
+       "name": "divisionTies",
+       "value": 0
+      },
+      {
+       "name": "divisionWins",
+       "value": 0
+      },
+      {
+       "name": "lockedDivRank",
+       "value": 0
+      }
+     ],
+     "summary": "1-5",
+     "type": "total"
+    },
+    {
+     "description": "Home Record",
+     "stats": [
+      {
+       "name": "wins",
+       "value": 0
+      },
+      {
+       "name": "losses",
+       "value": 4
+      },
+      {
+       "name": "ties",
+       "value": 0
+      },
+      {
+       "name": "winPercent",
+       "value": 0
+      },
+      {
+       "name": "OTLosses",
+       "value": 1
+      }
+     ],
+     "summary": "0-4",
+     "type": "home"
+    },
+    {
+     "description": "Away Record",
+     "stats": [
+      {
+       "name": "wins",
+       "value": 1
+      },
+      {
+       "name": "losses",
+       "value": 1
+      },
+      {
+       "name": "ties",
+       "value": 0
+      },
+      {
+       "name": "winPercent",
+       "value": 0.5
+      },
+      {
+       "name": "OTLosses",
+       "value": 0
+      }
+     ],
+     "summary": "1-1",
+     "type": "road"
+    }
+   ]
+  },
+  "shortDisplayName": "Buccaneers",
+  "slug": "tampa-bay-buccaneers",
+  "standingSummary": "16th in National Football Conference",
+  "uid": "s:20~l:28~t:27"
  }
 }

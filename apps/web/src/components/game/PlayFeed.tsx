@@ -28,11 +28,28 @@ const FILTERS: { key: FeedFilter; label: string; test: (p: PlayEvent) => boolean
   },
 ];
 
-export function filterPlays(plays: PlayEvent[], filter: FeedFilter, team?: string) {
+/**
+ * The team a play belongs to for the team filter. Scores go to the team whose score went up, so
+ * a pick-six or punt-return touchdown counts for the defense, not the offense.
+ */
+function playTeam(p: PlayEvent, teams?: { home: string; away: string }): string {
+  if (teams && p.parsed.points) {
+    if (p.state.home > p.pre.home) return teams.home;
+    if (p.state.away > p.pre.away) return teams.away;
+  }
+  return p.pre.possession;
+}
+
+export function filterPlays(
+  plays: PlayEvent[],
+  filter: FeedFilter,
+  team?: string,
+  teams?: { home: string; away: string },
+) {
   const f = FILTERS.find((x) => x.key === filter) ?? FILTERS[0]!;
   return plays
     .map((p, i) => ({ p, i }))
-    .filter(({ p }) => f.test(p) && (!team || p.pre.possession === team));
+    .filter(({ p }) => f.test(p) && (!team || playTeam(p, teams) === team));
 }
 
 /** Right rail: newest play first, raw text always visible, commentary under it. */
@@ -57,7 +74,10 @@ export function PlayFeed({
 }) {
   const [filter, setFilter] = useState<FeedFilter>('all');
   const [team, setTeam] = useState<string | undefined>();
-  const rows = filterPlays(plays, filter, team).reverse();
+  const rows = filterPlays(plays, filter, team, {
+    home: teams.home.abbr,
+    away: teams.away.abbr,
+  }).reverse();
   const chip = (active: boolean) =>
     cn(
       'h-7 shrink-0 rounded-md px-2.5 text-xs font-semibold num',
