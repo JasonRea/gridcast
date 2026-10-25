@@ -118,6 +118,43 @@ describe('the booth on Gemini', () => {
     ]);
   });
 
+  it('the pinned model failing mid-answer: retry once, then start over on the fallback', async () => {
+    const { registry } = testServer();
+    const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });
+    config.flags.chat = true;
+    const seen: { model: string; turns: number }[] = [];
+    const fetcher = async (url: string, init?: RequestInit) => {
+      const model = /models\/([^:]+):/.exec(url)![1]!;
+      const turns = (JSON.parse(String(init?.body)) as Body).contents.length;
+      seen.push({ model, turns });
+      if (model === 'gemini-3.6-flash' && turns > 1) return new Response('busy', { status: 503 });
+      const parts =
+        turns === 1
+          ? [{ functionCall: { name: 'get_game_state', args: {} }, thoughtSignature: model }]
+          : [{ text: `Answered by ${model}.` }];
+      return new Response(JSON.stringify({ candidates: [{ content: { role: 'model', parts } }] }));
+    };
+    const app = new Hono();
+    chatRoutes(app, { config, registry, fetcher });
+    const res = await app.request(`/api/games/${DEMO}/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ question: 'Final score?' }),
+    });
+    const msgs = await readSse(res);
+    expect(msgs.find((m) => m.type === 'delta')).toMatchObject({
+      text: 'Answered by gemini-3.5-flash-lite.',
+    });
+    expect(seen).toEqual([
+      { model: 'gemini-3.6-flash', turns: 1 },
+      { model: 'gemini-3.6-flash', turns: 3 },
+      { model: 'gemini-3.6-flash', turns: 3 },
+      // Restarted from the question alone: no 3.6 signatures sent to another model.
+      { model: 'gemini-3.5-flash-lite', turns: 1 },
+      { model: 'gemini-3.5-flash-lite', turns: 3 },
+    ]);
+  });
+
   it('a failed Gemini call ends with a short error, not a crash', async () => {
     const { registry } = testServer();
     const config = testConfig({ geminiKey: 'g', chatProvider: 'gemini' });

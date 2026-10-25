@@ -44,6 +44,8 @@ async function geminiChat(opts: {
   apiKey: string;
   model: string;
   fallbacks: string[];
+  /** Pause before retrying a pinned model (tests use 0). */
+  retryDelayMs?: number;
   session: GameSession;
   question: string;
   history: History;
@@ -51,26 +53,24 @@ async function geminiChat(opts: {
   fetcher?: Fetcher;
   base?: string;
 }): Promise<void> {
-  const contents: GeminiContent[] = [
+  const fresh = (): GeminiContent[] => [
     ...opts.history.map((h): GeminiContent => ({
       role: h.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: h.text }],
     })),
     { role: 'user', parts: [{ text: opts.question }] },
   ];
+  let contents = fresh();
   const tools = TOOL_DEFS.map((t) => ({
     name: t.name,
     description: t.description,
     parametersJsonSchema: t.input_schema,
   }));
-  // The first turn may fall back to another model; later turns stay on the one that answered,
-  // because its thought signatures are in the conversation.
-  let pinned: string | undefined;
-  for (let turn = 0; turn < MAX_TURNS; turn++) {
-    const r = await geminiGenerate({
+  const ask = (model: string, fallbacks: string[]) =>
+    geminiGenerate({
       apiKey: opts.apiKey,
-      model: pinned ?? opts.model,
-      ...(pinned ? {} : { fallbacks: opts.fallbacks }),
+      model,
+      fallbacks,
       timeoutMs: 15_000,
       system: SYSTEM,
       contents,
@@ -78,6 +78,25 @@ async function geminiChat(opts: {
       ...(opts.base ? { base: opts.base } : {}),
       ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
     });
+  // The first turn may fall back to another model; later turns stay on the one that answered,
+  // because its thought signatures are in the conversation. If that model then fails, retry it
+  // once, then start the question over on the other models (a fresh conversation has no
+  // signatures to carry).
+  let pinned: string | undefined;
+  let restarted = false;
+  for (let turn = 0; turn < MAX_TURNS; turn++) {
+    let r = await ask(pinned ?? opts.model, pinned ? [] : opts.fallbacks);
+    if (!r && pinned) {
+      await new Promise((ok) => setTimeout(ok, opts.retryDelayMs ?? 1500));
+      r = await ask(pinned, []);
+    }
+    if (!r && pinned && !restarted) {
+      restarted = true;
+      const others = [opts.model, ...opts.fallbacks].filter((m) => m !== pinned);
+      contents = fresh();
+      pinned = undefined;
+      if (others[0]) r = await ask(others[0], others.slice(1));
+    }
     if (!r) {
       await opts.send({ type: 'error', message: 'The analyst is unavailable right now.' });
       return;
