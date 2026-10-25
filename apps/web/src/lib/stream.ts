@@ -11,6 +11,10 @@ export class GameStream {
   private log: LoggedEvent[] = [];
   private closed = false;
 
+  /** Called whenever playback (re)starts: the room host shares it with phones. */
+  onStart:
+    ((from: number, speed: number | undefined, source: 'live' | 'replay') => void) | undefined;
+
   constructor(
     private readonly gameId: string,
     private readonly initialSource: 'live' | 'replay',
@@ -41,12 +45,15 @@ export class GameStream {
     store.reset(this.gameId);
     store.applyInstant(all.filter((e) => e.seq < from));
     this.open(from, opts.speed);
+    this.onStart?.(from, opts.speed, source);
   }
 
   /** Reconnects from the next unreceived event, keeping what is on screen (speed change). */
   resume(speed?: number): void {
     this.close(false);
-    this.open(useGame.getState().lastSeq + 1, speed);
+    const from = useGame.getState().lastSeq + 1;
+    this.open(from, speed);
+    this.onStart?.(from, speed, useGame.getState().source);
   }
 
   private open(from: number, speed?: number) {

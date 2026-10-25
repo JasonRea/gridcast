@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from '@tanstack/react-router';
-import { ArrowLeft, Ear, Radio } from 'lucide-react';
+import { ArrowLeft, Ear, Radio, Smartphone } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GameDetail, LoggedEvent } from '@gridcast/types';
 import { AnalyticsPanel } from '@/components/analytics/AnalyticsPanel';
@@ -17,6 +17,7 @@ import { Preview } from '@/components/game/Preview';
 import { Scorebug } from '@/components/game/Scorebug';
 import { StoppageCard } from '@/components/game/StoppageCard';
 import { Button } from '@/components/ui/button';
+import { PhonesPanel } from '@/components/game/PhonesPanel';
 import { RadioView } from '@/components/game/RadioView';
 import { AccessAudio, describePlay } from '@/lib/access';
 import { api } from '@/lib/api';
@@ -44,13 +45,32 @@ function LiveGame({ detail }: { detail: GameDetail }) {
   const streamRef = useRef<GameStream | null>(null);
   const [replaySpeed, setReplaySpeed] = useState(DEFAULT_REPLAY_SPEED);
 
+  // Phones in the room (A5): the projector hosts, phones opened from the QR code follow it.
+  const hosting = useRef(false);
+  const [phones, setPhones] = useState(false);
+
   useEffect(() => {
     const s = new GameStream(detail.id, detail.source);
     streamRef.current = s;
+    s.onStart = (from, speed, source) => {
+      if (hosting.current && source === 'replay')
+        api.hostRoom(detail.id, from, speed ?? DEFAULT_REPLAY_SPEED);
+    };
     if (detail.source === 'replay') {
+      const params = new URLSearchParams(window.location.search);
       // `?from=120` (play index) or `?from=q4` / `?from=ot` opens the replay mid-game.
-      const from = new URLSearchParams(window.location.search).get('from');
+      const from = params.get('from');
+      const room = params.get('room') === '1';
       void (async () => {
+        if (room) {
+          const r = await api.room(detail.id).catch(() => undefined);
+          if (r?.seq !== undefined) {
+            setReplaySpeed(r.speed);
+            useGame.getState().setStreamSpeed(r.speed);
+            await s.start({ from: r.seq, speed: r.speed });
+            return;
+          }
+        }
         const seq = from ? startSeq(await s.events(), from) : undefined;
         await s.start({ speed: DEFAULT_REPLAY_SPEED, ...(seq !== undefined ? { from: seq } : {}) });
       })();
@@ -263,6 +283,40 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     if (seq !== undefined)
       await streamRef.current.start({ from: seq, speed: replaySpeed, source: 'replay' });
   }, [replaySpeed]);
+  // A phone in the room re-joins when the projector jumps (more than 2 plays apart).
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('room') !== '1') return;
+    const t = setInterval(() => {
+      void (async () => {
+        const s = streamRef.current;
+        if (!s || useGame.getState().source !== 'replay') return;
+        const r = await api.room(detail.id).catch(() => undefined);
+        if (r?.seq === undefined) return;
+        const all = await s.events();
+        const plays = all.filter((e) => e.event.kind === 'play');
+        const cur = useGame.getState().current;
+        const mine = plays.findIndex((e) => e.event.kind === 'play' && e.event.id === cur?.id);
+        const theirs = plays.findIndex((e) => e.seq === r.seq);
+        if (theirs >= 0 && Math.abs(theirs - mine) > 2) {
+          setReplaySpeed(r.speed);
+          useGame.getState().setStreamSpeed(r.speed);
+          await s.start({ from: r.seq, speed: r.speed, source: 'replay' });
+        }
+      })();
+    }, 10_000);
+    return () => clearInterval(t);
+  }, [detail.id]);
+
+  const openPhones = useCallback(async () => {
+    setPhones(true);
+    hosting.current = true;
+    const s = streamRef.current;
+    if (!s || useGame.getState().source !== 'replay') return;
+    const cur = useGame.getState().current;
+    const all = await s.events();
+    const seq = all.find((e) => e.event.kind === 'play' && e.event.id === cur?.id)?.seq ?? 0;
+    api.hostRoom(detail.id, seq, replaySpeed);
+  }, [detail.id, replaySpeed]);
   const changeReplaySpeed = useCallback((sp: number) => {
     setReplaySpeed(sp);
     useGame.getState().setStreamSpeed(sp);
@@ -396,6 +450,14 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               >
                 <Radio /> Radio
               </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => void openPhones()}
+                title="Show a QR code: phones follow this screen"
+              >
+                <Smartphone /> Phones
+              </Button>
               {features.translate && (
                 <div
                   className="flex rounded-md bg-secondary p-0.5"
@@ -457,6 +519,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
           />
         </aside>
       </div>
+      {phones && <PhonesPanel onClose={() => setPhones(false)} />}
       {features.chat && (
         <ChatDrawer
           gameId={detail.id}

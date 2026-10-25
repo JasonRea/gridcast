@@ -1,6 +1,8 @@
 /** The web app talks only to the Gridcast server. Never to ESPN, Kalshi, X or Claude directly. */
 import {
+  RoomResponseSchema,
   TranslateResponseSchema,
+  type RoomResponse,
   type EventsResponse,
   type GameDetail,
   type Language,
@@ -34,6 +36,17 @@ export const api = {
     });
     if (!res.ok) throw new Error(`translate ${res.status}`);
     return TranslateResponseSchema.parse(await res.json()).texts;
+  },
+  /** Phones in the room: where the projector's replay is now. */
+  room: async (id: string): Promise<RoomResponse> =>
+    RoomResponseSchema.parse(await get<unknown>(`/api/games/${id}/room`)),
+  /** The projector shares its replay start and speed (fire and forget). */
+  hostRoom: (id: string, from: number, speed: number): void => {
+    void fetch(`${API_BASE}/api/games/${id}/room`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ from, speed }),
+    }).catch(() => undefined);
   },
   streamUrl: (id: string, opts: { from: number; speed?: number }) => {
     const q = new URLSearchParams({ from: String(opts.from) });
