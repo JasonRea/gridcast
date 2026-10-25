@@ -176,19 +176,32 @@ const FieldSurface = memo(function FieldSurface({
   );
 });
 
-function Player({
-  p,
-  s,
-  fill,
-  text,
-  label,
-}: {
+type PlayerProps = {
   p: FieldPlayer;
   s: TargetState | undefined;
   fill: string;
   text: string;
   label: boolean;
-}) {
+};
+
+/**
+ * Re-render a player only when it crosses a 0.5-unit (0.05 yd) grid step or changes look.
+ * Quantizing (rather than comparing deltas) means slow drifts still land: every step counts.
+ */
+const q = (v: number, step: number) => Math.round(v / step);
+function samePlayerFrame(a: PlayerProps, b: PlayerProps): boolean {
+  if (a.p !== b.p || a.fill !== b.fill || a.text !== b.text || a.label !== b.label) return false;
+  if (a.s === b.s) return true;
+  if (!a.s || !b.s) return false;
+  return (
+    q(a.s.x, 0.5) === q(b.s.x, 0.5) &&
+    q(a.s.y, 0.5) === q(b.s.y, 0.5) &&
+    q(a.s.opacity, 0.01) === q(b.s.opacity, 0.01) &&
+    q(a.s.scale, 0.005) === q(b.s.scale, 0.005)
+  );
+}
+
+const Player = memo(function Player({ p, s, fill, text, label }: PlayerProps) {
   const x = s?.x ?? p.pos.x;
   const y = s?.y ?? p.pos.y;
   const scale = s?.scale ?? 1;
@@ -217,7 +230,7 @@ function Player({
       ) : null}
     </G>
   );
-}
+}, samePlayerFrame);
 
 /** Text with a black outline: a stroked copy underneath (react-native-svg has no paint-order). */
 function OutlinedText(props: {

@@ -76,7 +76,7 @@ async function playServer(line: Line): Promise<boolean> {
     const file = new File(Paths.cache, `tts-${line.voice}-${hash(line.text)}-${n++ % 8}.mp3`);
     if (file.exists) file.delete();
     file.create({ overwrite: true });
-    file.write(bytes);
+    await file.write(bytes);
     await new Promise<void>((resolve) => {
       const p = createAudioPlayer({ uri: file.uri });
       player = p;

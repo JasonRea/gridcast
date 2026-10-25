@@ -46,15 +46,7 @@ function playTeam(p: PlayEvent, teams: { home: string; away: string }): string {
 
 const MAX_ROWS = 120;
 
-const Row = memo(function Row({
-  p,
-  team,
-  lines,
-  current,
-  showEpa,
-  clip,
-  onPress,
-}: {
+type RowProps = {
   p: PlayEvent;
   team: TeamInfo;
   lines: Lines;
@@ -62,7 +54,22 @@ const Row = memo(function Row({
   showEpa: boolean;
   clip: Clip | undefined;
   onPress: () => void;
-}) {
+};
+
+/** Rows re-render only when their own text changes (deltas stream several times a second). */
+function sameRow(a: RowProps, b: RowProps): boolean {
+  return (
+    a.p === b.p &&
+    a.team === b.team &&
+    a.lines.pbp === b.lines.pbp &&
+    a.lines.color === b.lines.color &&
+    a.current === b.current &&
+    a.showEpa === b.showEpa &&
+    a.clip === b.clip
+  );
+}
+
+const Row = memo(function Row({ p, team, lines, current, showEpa, clip, onPress }: RowProps) {
   const result = p.parsed.points
     ? `+${p.parsed.points}`
     : p.parsed.type === 'penalty'
@@ -148,7 +155,7 @@ const Row = memo(function Row({
       )}
     </View>
   );
-});
+}, sameRow);
 
 export function PlayFeed({
   plays,

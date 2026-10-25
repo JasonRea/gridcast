@@ -338,8 +338,12 @@ function LiveGame({ detail, from, room }: { detail: GameDetail; from?: string; r
     useGame.getState().setStreamSpeed(sp);
     streamRef.current?.resume(sp);
   }, []);
+  const [roomNote, setRoomNote] = useState<string | undefined>();
   const onJoin = useCallback(async () => {
-    if (await joinRoom()) setJoined(true);
+    if (await joinRoom()) {
+      setJoined(true);
+      setRoomNote(undefined);
+    } else setRoomNote('No room is showing this game right now.');
   }, [joinRoom]);
 
   const clockPulse = g.current?.parsed.type === 'kneel' || g.current?.parsed.type === 'spike';
@@ -520,6 +524,11 @@ function LiveGame({ detail, from, room }: { detail: GameDetail; from?: string; r
               Following the room
             </T>
           )}
+          {roomNote && !joined ? (
+            <T size={12} muted>
+              {roomNote}
+            </T>
+          ) : null}
           {features.translate && (
             <Segmented
               accessibilityLabel="Commentary language"
