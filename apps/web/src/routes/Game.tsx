@@ -21,6 +21,8 @@ import { RadioView } from '@/components/game/RadioView';
 import { AccessAudio, describePlay } from '@/lib/access';
 import { api } from '@/lib/api';
 import { Announcer } from '@/lib/announcer';
+import { isLang, LANGS, useTranslations, type Lang } from '@/lib/useTranslations';
+import type { Lines } from '@/store/game';
 import { firstPlayOfQuarter, playLabel, startSeq } from '@/lib/plays';
 import { GameStream } from '@/lib/stream';
 import { useGame } from '@/store/game';
@@ -115,6 +117,39 @@ function LiveGame({ detail }: { detail: GameDetail }) {
     audio.current?.onBall(s);
   }, []);
 
+  // Commentary language (A3): lines for recent plays and the stoppage card are translated on
+  // the server; the feed, cards, radio view and announcers all use them.
+  const [lang, setLang] = useState<Lang>(() => {
+    const q = new URLSearchParams(window.location.search).get('lang');
+    return features.translate && isLang(q) ? q : 'en';
+  });
+  const recentTexts = useMemo(() => {
+    if (lang === 'en') return [];
+    const ids = g.plays.slice(Math.max(0, g.presented - 8), g.presented + 1).map((p) => p.id);
+    if (g.card) ids.push(g.card.id);
+    return ids.flatMap((id) => {
+      const l = g.commentary[id];
+      return [l?.pbp, l?.color].filter((t): t is string => !!t);
+    });
+  }, [lang, g.plays, g.presented, g.card, g.commentary]);
+  const tr = useTranslations(lang, recentTexts);
+  const lines = useMemo<Record<string, Lines>>(() => {
+    if (lang === 'en') return g.commentary;
+    const out: Record<string, Lines> = {};
+    for (const [id, l] of Object.entries(g.commentary)) {
+      out[id] = {
+        ...(l.pbp ? { pbp: tr[l.pbp] ?? l.pbp } : {}),
+        ...(l.color ? { color: tr[l.color] ?? l.color } : {}),
+      };
+    }
+    return out;
+  }, [lang, g.commentary, tr]);
+  /** The line to speak: in another language, only once its translation has arrived. */
+  const speakable = useCallback(
+    (text: string | undefined) => (!text ? undefined : lang === 'en' ? text : tr[text]),
+    [lang, tr],
+  );
+
   // Two-voice announcers (P1): speak each presented play's lines once, play-by-play first.
   const announcer = useRef<Announcer | null>(null);
   const spoken = useRef(new Set<string>());
@@ -131,21 +166,21 @@ function LiveGame({ detail }: { detail: GameDetail }) {
       const p = g.plays[i];
       if (!p) continue;
       for (const voice of ['pbp', 'color'] as const) {
-        const text = g.commentary[p.id]?.[voice];
+        const text = speakable(g.commentary[p.id]?.[voice]);
         const key = `${p.id}:${voice}`;
         if (text && !spoken.current.has(key)) {
           spoken.current.add(key);
-          a.say({ text, voice, playIndex: i });
+          a.say({ text, voice, playIndex: i, lang });
         }
       }
     }
     const card = g.card;
-    const cardLine = card ? g.commentary[card.id]?.color : undefined;
+    const cardLine = card ? speakable(g.commentary[card.id]?.color) : undefined;
     if (card && cardLine && !spoken.current.has(`${card.id}:color`)) {
       spoken.current.add(`${card.id}:color`);
-      a.say({ text: cardLine, voice: 'color', playIndex: g.presented - 1 });
+      a.say({ text: cardLine, voice: 'color', playIndex: g.presented - 1, lang });
     }
-  }, [g.presented, g.commentary, g.card, g.plays, g.muted]);
+  }, [g.presented, g.commentary, g.card, g.plays, g.muted, speakable, lang]);
 
   const timelineEntries: LoggedEvent[] = isReplay
     ? fullLog
@@ -254,7 +289,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
   }, [prev, next, nextBig, toggleAccess, toggleRadio]);
 
   const clockPulse = g.current?.parsed.type === 'kneel' || g.current?.parsed.type === 'spike';
-  const cardLines = g.card ? g.commentary[g.card.id] : undefined;
+  const cardLines = g.card ? lines[g.card.id] : undefined;
 
   return (
     <div className="flex flex-col gap-4">
@@ -289,7 +324,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               teams={teams}
               state={g.state ?? detail.state}
               play={lastPresented ?? g.current}
-              lines={lastPresented ? g.commentary[lastPresented.id] : undefined}
+              lines={lastPresented ? lines[lastPresented.id] : undefined}
               homeWp={g.wp}
             />
           )}
@@ -361,6 +396,30 @@ function LiveGame({ detail }: { detail: GameDetail }) {
               >
                 <Radio /> Radio
               </Button>
+              {features.translate && (
+                <div
+                  className="flex rounded-md bg-secondary p-0.5"
+                  role="group"
+                  aria-label="Commentary language"
+                >
+                  {LANGS.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => setLang(l.code)}
+                      aria-pressed={lang === l.code}
+                      title={l.name}
+                      lang={l.code}
+                      className={
+                        lang === l.code
+                          ? 'h-8 rounded bg-white px-2 text-xs font-semibold text-black'
+                          : 'h-8 rounded px-2 text-xs font-semibold text-muted-foreground hover:text-foreground'
+                      }
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {isReplay && g.done && !g.queue.length && (
               <span className="text-xs text-muted-foreground">End of game</span>
@@ -388,7 +447,7 @@ function LiveGame({ detail }: { detail: GameDetail }) {
         <aside className="min-w-0 lg:max-h-[calc(100dvh-220px)] lg:overflow-y-auto lg:pr-1">
           <PlayFeed
             plays={presentedPlays}
-            commentary={g.commentary}
+            commentary={lines}
             deltas={g.deltas}
             teams={teams}
             {...(g.current ? { currentId: g.current.id } : {})}
@@ -398,7 +457,13 @@ function LiveGame({ detail }: { detail: GameDetail }) {
           />
         </aside>
       </div>
-      {features.chat && <ChatDrawer gameId={detail.id} onCite={(l) => void cite(l)} />}
+      {features.chat && (
+        <ChatDrawer
+          gameId={detail.id}
+          onCite={(l) => void cite(l)}
+          ttsServer={!!features.ttsServer}
+        />
+      )}
     </div>
   );
 }

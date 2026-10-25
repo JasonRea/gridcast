@@ -19,6 +19,7 @@ export type Config = {
   demoGameId: string;
   adminToken?: string;
   anthropicKey?: string;
+  geminiKey?: string;
   elevenLabsKey?: string;
   xBearer?: string;
   oddsApiKey?: string;
@@ -31,6 +32,11 @@ export type Config = {
   /** Fast model for per-play commentary, stronger model for chat. */
   commentaryModel: string;
   chatModel: string;
+  /** Who answers Ask the game / the booth: Gemini when GEMINI_API_KEY is set, else Claude. */
+  chatProvider: 'claude' | 'gemini' | undefined;
+  geminiModel: string;
+  geminiTranslateModel: string;
+  geminiBase?: string;
   /** Feature flags (P1). Each is documented in README.md. */
   flags: Record<string, boolean>;
 };
@@ -40,6 +46,18 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const opt = (v: string | undefined) => (v && v.trim() ? v.trim() : undefined);
   const adminToken = opt(env.ADMIN_TOKEN);
   const anthropicKey = opt(env.ANTHROPIC_API_KEY);
+  const geminiKey = opt(env.GEMINI_API_KEY);
+  const wanted = opt(env.CHAT_PROVIDER)?.toLowerCase();
+  const chatProvider: Config['chatProvider'] =
+    wanted === 'claude' && anthropicKey
+      ? 'claude'
+      : wanted === 'gemini' && geminiKey
+        ? 'gemini'
+        : geminiKey
+          ? 'gemini'
+          : anthropicKey
+            ? 'claude'
+            : undefined;
   const elevenLabsKey = opt(env.ELEVENLABS_API_KEY);
   const xBearer = opt(env.X_BEARER_TOKEN);
   const oddsApiKey = opt(env.ODDS_API_KEY);
@@ -56,6 +74,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     demoGameId: env.DEMO_GAME_ID ?? '401873002',
     ...(adminToken ? { adminToken } : {}),
     ...(anthropicKey ? { anthropicKey } : {}),
+    ...(geminiKey ? { geminiKey } : {}),
     ...(elevenLabsKey ? { elevenLabsKey } : {}),
     ...(xBearer ? { xBearer } : {}),
     ...(oddsApiKey ? { oddsApiKey } : {}),
@@ -66,6 +85,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     season: Number(env.SEASON ?? 2026),
     commentaryModel: env.COMMENTARY_MODEL ?? 'claude-haiku-5-5',
     chatModel: env.CHAT_MODEL ?? 'claude-opus-5-5',
+    chatProvider,
+    geminiModel: env.GEMINI_MODEL ?? 'gemini-3.8-flash',
+    geminiTranslateModel: env.GEMINI_TRANSLATE_MODEL ?? 'gemini-3.5-flash-lite',
+    ...(opt(env.GEMINI_BASE) ? { geminiBase: opt(env.GEMINI_BASE)! } : {}),
     flags: {
       timeline: bool(env.FLAG_TIMELINE, true),
       epa: bool(env.FLAG_EPA, true),
@@ -73,7 +96,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       oddsChart: bool(env.FLAG_ODDS_CHART, true),
       tts: bool(env.FLAG_TTS, true),
       fourthDown: bool(env.FLAG_FOURTH_DOWN, true),
-      chat: bool(env.FLAG_CHAT, true) && !!anthropicKey,
+      chat: bool(env.FLAG_CHAT, true) && !!chatProvider,
+      // Commentary in other languages: Gemini translates (Claude if only that key is set).
+      translate: bool(env.FLAG_TRANSLATE, true) && !!(geminiKey || anthropicKey),
       clips: bool(env.FLAG_CLIPS, true) && !!xBearer,
     },
   };

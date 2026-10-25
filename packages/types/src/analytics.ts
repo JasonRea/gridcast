@@ -62,3 +62,21 @@ export const TtsRequestSchema = z.object({
   voice: z.enum(['pbp', 'color']),
 });
 export type TtsRequest = z.infer<typeof TtsRequestSchema>;
+
+/** Commentary languages (P2 addition: A3 multilingual commentary). English is the source. */
+export const LanguageSchema = z.enum(['fr', 'es', 'de', 'pt']);
+export type Language = z.infer<typeof LanguageSchema>;
+
+/** POST /api/translate: commentary lines into another language. */
+export const TranslateRequestSchema = z.object({
+  lang: LanguageSchema,
+  texts: z.array(z.string().min(1).max(400)).min(1).max(20),
+});
+export type TranslateRequest = z.infer<typeof TranslateRequestSchema>;
+
+/** Same order and length as the request. A line that failed the check comes back in English. */
+export const TranslateResponseSchema = z.object({
+  lang: LanguageSchema,
+  texts: z.array(z.string()),
+});
+export type TranslateResponse = z.infer<typeof TranslateResponseSchema>;

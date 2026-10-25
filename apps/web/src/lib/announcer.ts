@@ -16,7 +16,11 @@ const DEEP_VOICES = [
   /male/i,
 ];
 
-function pickVoice(kind: 'pbp' | 'color'): SpeechSynthesisVoice | undefined {
+function pickVoice(kind: 'pbp' | 'color', lang = 'en'): SpeechSynthesisVoice | undefined {
+  if (lang !== 'en') {
+    const local = speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith(lang));
+    return kind === 'pbp' ? local[0] : (local[1] ?? local[0]);
+  }
   const english = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en'));
   const us = english.filter((v) => v.lang === 'en-US');
   const deep = DEEP_VOICES.map(
@@ -26,7 +30,13 @@ function pickVoice(kind: 'pbp' | 'color'): SpeechSynthesisVoice | undefined {
   return english.find((v) => v !== (deep[0] ?? us[0])) ?? english[0];
 }
 
-export type Line = { text: string; voice: 'pbp' | 'color'; playIndex: number };
+export type Line = {
+  text: string;
+  voice: 'pbp' | 'color';
+  playIndex: number;
+  /** Base language of the text ("en", "fr", ...). ElevenLabs reads any of them. */
+  lang?: string;
+};
 
 export class Announcer {
   private queue: Line[] = [];
@@ -100,7 +110,8 @@ export class Announcer {
     if (typeof speechSynthesis === 'undefined') return Promise.resolve();
     return new Promise((resolve) => {
       const u = new SpeechSynthesisUtterance(line.text);
-      const voice = pickVoice(line.voice);
+      const voice = pickVoice(line.voice, line.lang);
+      if (line.lang && line.lang !== 'en') u.lang = line.lang;
       if (voice) u.voice = voice;
       // Play-by-play: lower and unhurried, network style. Color: natural, a touch brighter.
       u.rate = line.voice === 'pbp' ? 0.95 : 1.0;

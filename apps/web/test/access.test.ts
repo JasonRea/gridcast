@@ -76,3 +76,15 @@ describe('Access mode sound mapping', () => {
     expect(describePlay(first, undefined, teams)).toMatch(/(First|Second|Third|Fourth) and/);
   });
 });
+
+describe('talk to the booth', () => {
+  it('reads citations as words and finds the play to replay', async () => {
+    const { speakableAnswer, firstCitation } = await import('../src/lib/booth');
+    const a = 'They went for it [Q4 2:47] and scored in overtime [OT 3:15].';
+    expect(speakableAnswer(a)).toBe(
+      'They went for it at 2:47 of the fourth quarter and scored in overtime at 3:15 of overtime.',
+    );
+    expect(firstCitation(a)).toBe('Q4 2:47');
+    expect(firstCitation('No plays cited.')).toBeUndefined();
+  });
+});

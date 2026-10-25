@@ -1,7 +1,8 @@
 /**
- * POST /api/games/:id/chat: Ask the game. Claude answers with tools that read the event log, and
- * cites plays as [Q3 4:12] so the web app can link them to replays. Streamed over SSE.
- * Off (404) without ANTHROPIC_API_KEY or with FLAG_CHAT=0.
+ * POST /api/games/:id/chat: Ask the game, and the voice booth. Gemini (GEMINI_API_KEY) or Claude
+ * (ANTHROPIC_API_KEY) answers with tools that read the event log, and cites plays as [Q3 4:12]
+ * so the web app can link them to replays. Streamed over SSE. Off (404) with neither key or with
+ * FLAG_CHAT=0. CHAT_PROVIDER picks one when both keys are set.
  */
 import Anthropic from '@anthropic-ai/sdk';
 import type { Hono } from 'hono';
@@ -10,6 +11,9 @@ import { ChatRequestSchema, type ChatMessage } from '@gridcast/types';
 import type { Config } from '../config.ts';
 import { runTool, TOOL_DEFS } from '../chat/tools.ts';
 import type { GameRegistry } from '../games/registry.ts';
+import type { GameSession } from '../games/session.ts';
+import { geminiGenerate, type GeminiContent, type GeminiPart } from '../llm/gemini.ts';
+import type { Fetcher } from '../util/fetchJson.ts';
 import { log } from '../util/logger.ts';
 
 const SYSTEM = `You are the analyst for Gridcast, answering fans' questions about one NFL game.
@@ -20,14 +24,91 @@ Never speculate about injuries.`;
 
 const MAX_TURNS = 6;
 
-export function chatRoutes(app: Hono, deps: { config: Config; registry: GameRegistry }) {
+type Send = (m: ChatMessage) => Promise<void>;
+type History = { role: 'user' | 'assistant'; text: string }[];
+
+function toolResult(
+  session: GameSession,
+  name: string,
+  input: unknown,
+): { ok: boolean; out: string } {
+  try {
+    return { ok: true, out: JSON.stringify(runTool(session, name, input)) };
+  } catch (e) {
+    return { ok: false, out: `Invalid input: ${(e as Error).message}` };
+  }
+}
+
+/** Gemini answers with function calling over REST. Model turns go back verbatim. */
+async function geminiChat(opts: {
+  apiKey: string;
+  model: string;
+  session: GameSession;
+  question: string;
+  history: History;
+  send: Send;
+  fetcher?: Fetcher;
+  base?: string;
+}): Promise<void> {
+  const contents: GeminiContent[] = [
+    ...opts.history.map((h): GeminiContent => ({
+      role: h.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: h.text }],
+    })),
+    { role: 'user', parts: [{ text: opts.question }] },
+  ];
+  const tools = TOOL_DEFS.map((t) => ({
+    name: t.name,
+    description: t.description,
+    parametersJsonSchema: t.input_schema,
+  }));
+  for (let turn = 0; turn < MAX_TURNS; turn++) {
+    const r = await geminiGenerate({
+      apiKey: opts.apiKey,
+      model: opts.model,
+      system: SYSTEM,
+      contents,
+      tools,
+      ...(opts.base ? { base: opts.base } : {}),
+      ...(opts.fetcher ? { fetcher: opts.fetcher } : {}),
+    });
+    if (!r) {
+      await opts.send({ type: 'error', message: 'The analyst is unavailable right now.' });
+      return;
+    }
+    contents.push(r.content);
+    if (r.text) await opts.send({ type: 'delta', text: r.text });
+    if (!r.calls.length) return;
+    const parts: GeminiPart[] = [];
+    for (const call of r.calls) {
+      await opts.send({ type: 'tool', name: call.name });
+      const { ok, out } = toolResult(opts.session, call.name, call.args);
+      parts.push({
+        functionResponse: {
+          ...(call.id ? { id: call.id } : {}),
+          name: call.name,
+          response: ok ? { result: JSON.parse(out) as unknown } : { error: out },
+        },
+      });
+    }
+    contents.push({ role: 'user', parts });
+  }
+}
+
+export function chatRoutes(
+  app: Hono,
+  deps: { config: Config; registry: GameRegistry; fetcher?: Fetcher },
+) {
   const { config } = deps;
-  const client = config.anthropicKey
-    ? new Anthropic({ apiKey: config.anthropicKey, maxRetries: 1 })
-    : undefined;
+  const client =
+    config.chatProvider === 'claude' && config.anthropicKey
+      ? new Anthropic({ apiKey: config.anthropicKey, maxRetries: 1 })
+      : undefined;
+  const gemini =
+    config.chatProvider === 'gemini' && config.geminiKey ? config.geminiKey : undefined;
 
   app.post('/api/games/:id/chat', async (c) => {
-    if (!client || !config.flags.chat) return c.json({ error: 'chat disabled' }, 404);
+    if ((!client && !gemini) || !config.flags.chat) return c.json({ error: 'chat disabled' }, 404);
     const session = await deps.registry.get(c.req.param('id'));
     if (!session) return c.json({ error: 'game not found' }, 404);
     const parsed = ChatRequestSchema.safeParse(await c.req.json().catch(() => ({})));
@@ -36,6 +117,21 @@ export function chatRoutes(app: Hono, deps: { config: Config; registry: GameRegi
 
     return streamSSE(c, async (stream) => {
       const send = (m: ChatMessage) => stream.writeSSE({ event: 'chat', data: JSON.stringify(m) });
+      if (gemini) {
+        await geminiChat({
+          apiKey: gemini,
+          model: config.geminiModel,
+          session,
+          question,
+          history,
+          send,
+          ...(config.geminiBase ? { base: config.geminiBase } : {}),
+          ...(deps.fetcher ? { fetcher: deps.fetcher } : {}),
+        });
+        await send({ type: 'done' });
+        return;
+      }
+      if (!client) return;
       const messages: Anthropic.Beta.BetaMessageParam[] = [
         ...history.map((h) => ({ role: h.role, content: h.text })),
         { role: 'user', content: question },
@@ -71,20 +167,13 @@ export function chatRoutes(app: Hono, deps: { config: Config; registry: GameRegi
           for (const block of msg.content) {
             if (block.type !== 'tool_use') continue;
             await send({ type: 'tool', name: block.name });
-            try {
-              results.push({
-                type: 'tool_result',
-                tool_use_id: block.id,
-                content: JSON.stringify(runTool(session, block.name, block.input)),
-              });
-            } catch (e) {
-              results.push({
-                type: 'tool_result',
-                tool_use_id: block.id,
-                content: `Invalid input: ${(e as Error).message}`,
-                is_error: true,
-              });
-            }
+            const { ok, out } = toolResult(session, block.name, block.input);
+            results.push({
+              type: 'tool_result',
+              tool_use_id: block.id,
+              content: out,
+              ...(ok ? {} : { is_error: true }),
+            });
           }
           messages.push({ role: 'user', content: results });
         }
