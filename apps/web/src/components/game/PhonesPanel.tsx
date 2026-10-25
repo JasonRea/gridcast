@@ -54,6 +54,9 @@ export function PhonesPanel({ onClose }: { onClose: () => void }) {
           Your phone becomes a radio for this game: large text, your language, the announcers, and a
           buzz on big plays (Android). It follows this screen.
         </p>
+        <a className="text-sm underline" href="/glasses.html">
+          Show on Meta glasses
+        </a>
       </div>
     </div>
   );
